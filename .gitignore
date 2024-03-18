@@ -1,0 +1,44 @@
+# 构建产物
+out/
+run/
+build/
+**/build/
+compile_commands.json
+
+# 本地笔记 / 非工程目录
+www/
+
+# imgui 仅跟踪构建所需源码，忽略其余官方示例/后端
+modules/imgui/.editorconfig
+modules/imgui/.gitattributes
+modules/imgui/.github/
+modules/imgui/.gitignore
+modules/imgui/docs/
+modules/imgui/examples/
+modules/imgui/misc/
+modules/imgui/imgui_demo.cpp
+modules/imgui/backends/imgui_impl_allegro5.*
+modules/imgui/backends/imgui_impl_android.*
+modules/imgui/backends/imgui_impl_dx*.*
+modules/imgui/backends/imgui_impl_glut.*
+modules/imgui/backends/imgui_impl_metal*
+modules/imgui/backends/imgui_impl_null.*
+modules/imgui/backends/imgui_impl_opengl2.*
+modules/imgui/backends/imgui_impl_osx.*
+modules/imgui/backends/imgui_impl_qnx.*
+modules/imgui/backends/imgui_impl_sdl*
+modules/imgui/backends/imgui_impl_vulkan.*
+modules/imgui/backends/imgui_impl_wgpu.*
+modules/imgui/backends/sdlgpu3/
+modules/imgui/backends/vulkan/
+
+# IDE / 编辑器缓存
+.vs/
+**/.vs/
+.clangd
+.cache/
+
+# VS 本地输出目录
+x64/
+**/x64/Debug/
+**/x64/Release/
