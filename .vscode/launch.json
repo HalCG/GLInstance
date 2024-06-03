@@ -11,6 +11,17 @@
             "preLaunchTask": "Build: MSVC 2022 (Anti-Aliasing)",
             "stopAtEntry": false,
             "console": "integratedTerminal"
+        },
+        {
+            "name": "OpenGL_OIT_Depth_Peeling",
+            "type": "cppvsdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/run/Debug/OpenGL_OIT_Depth_Peeling/OpenGL_OIT_Depth_Peeling.exe",
+            "args": [],
+            "cwd": "${workspaceFolder}/run/Debug/OpenGL_OIT_Depth_Peeling",
+            "preLaunchTask": "Build: MSVC 2022 (OIT Depth Peeling)",
+            "stopAtEntry": false,
+            "console": "integratedTerminal"
         }
     ]
 }
