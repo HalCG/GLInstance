@@ -12,11 +12,13 @@ OpenGL 4.x 图形学 Demo 集合（完善中）。每个子项目为 **独立可
 |--------|------|-------------------|----------|
 | [OpenGL_Anti_Aliasing](OpenGL_Anti_Aliasing/) | 抗锯齿 | `1`～`4`：None / MSAA / FXAA / TAA | [README](OpenGL_Anti_Aliasing/README.md) · [技术大纲](OpenGL_Anti_Aliasing/docs/README.md) |
 | [OpenGL_OIT_Depth_Peeling](OpenGL_OIT_Depth_Peeling/) | OIT · 深度剥离 | 多 Pass 逐层剥离 | [README](OpenGL_OIT_Depth_Peeling/README.md) · [技术大纲](OpenGL_OIT_Depth_Peeling/docs/README.md) · [OIT_MD 笔记](OpenGL_OIT_Depth_Peeling/OIT_MD/) |
+| [OpenGL_OIT_Stochastic_Transparency](OpenGL_OIT_Stochastic_Transparency/) | OIT · 随机透明 | 单 Pass 随机 discard + 累积 | [README](OpenGL_OIT_Stochastic_Transparency/README.md) · [技术大纲](OpenGL_OIT_Stochastic_Transparency/docs/README.md) |
 
 ### 按主题选读
 
 - **锯齿 / MSAA / FXAA / TAA** → `OpenGL_Anti_Aliasing`
 - **透明、深度剥离** → `OpenGL_OIT_Depth_Peeling`
+- **透明、随机采样** → `OpenGL_OIT_Stochastic_Transparency`
 
 ---
 
@@ -46,6 +48,7 @@ cmake --build out/build/x64-msvc-2022 --config Debug
 ```bash
 cmake --build out/build/x64-msvc-2022 --config Debug --target OpenGL_Anti_Aliasing
 cmake --build out/build/x64-msvc-2022 --config Debug --target OpenGL_OIT_Depth_Peeling
+cmake --build out/build/x64-msvc-2022 --config Debug --target OpenGL_OIT_Stochastic_Transparency
 ```
 
 VS Code：`.vscode/tasks.json` 的 **CMake: Configure MSVC 2022** 与各 **Build: MSVC 2022 (...)**；调试用 `.vscode/launch.json`。
@@ -87,7 +90,8 @@ OpenGLInstance/
 ├── out/build/                  # CMake 中间产物（gitignore）
 ├── .vscode/                    # MSVC 2022 构建与调试
 ├── OpenGL_Anti_Aliasing/
-└── OpenGL_OIT_Depth_Peeling/
+├── OpenGL_OIT_Depth_Peeling/
+└── OpenGL_OIT_Stochastic_Transparency/
 ```
 
 每个子项目典型布局：

@@ -22,6 +22,17 @@
             "preLaunchTask": "Build: MSVC 2022 (OIT Depth Peeling)",
             "stopAtEntry": false,
             "console": "integratedTerminal"
+        },
+        {
+            "name": "OpenGL_OIT_Stochastic_Transparency",
+            "type": "cppvsdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/run/Debug/OpenGL_OIT_Stochastic_Transparency/OpenGL_OIT_Stochastic_Transparency.exe",
+            "args": [],
+            "cwd": "${workspaceFolder}/run/Debug/OpenGL_OIT_Stochastic_Transparency",
+            "preLaunchTask": "Build: MSVC 2022 (OIT Stochastic)",
+            "stopAtEntry": false,
+            "console": "integratedTerminal"
         }
     ]
 }

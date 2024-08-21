@@ -22,3 +22,4 @@ include("${OGL_WS_CMAKE_DIR}/OpenGLWorkspaceDeploy.cmake")
 # subprojects
 add_subdirectory(OpenGL_Anti_Aliasing)
 add_subdirectory(OpenGL_OIT_Depth_Peeling)
+add_subdirectory(OpenGL_OIT_Stochastic_Transparency)
