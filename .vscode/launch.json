@@ -33,6 +33,17 @@
             "preLaunchTask": "Build: MSVC 2022 (OIT Stochastic)",
             "stopAtEntry": false,
             "console": "integratedTerminal"
+        },
+        {
+            "name": "OpenGL_OIT_Linked_list",
+            "type": "cppvsdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/run/Debug/OpenGL_OIT_Linked_list/OpenGL_OIT_Linked_list.exe",
+            "args": [],
+            "cwd": "${workspaceFolder}/run/Debug/OpenGL_OIT_Linked_list",
+            "preLaunchTask": "Build: MSVC 2022 (OIT Linked List)",
+            "stopAtEntry": false,
+            "console": "integratedTerminal"
         }
     ]
 }

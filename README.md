@@ -13,12 +13,12 @@ OpenGL 4.x 图形学 Demo 集合（完善中）。每个子项目为 **独立可
 | [OpenGL_Anti_Aliasing](OpenGL_Anti_Aliasing/) | 抗锯齿 | `1`～`4`：None / MSAA / FXAA / TAA | [README](OpenGL_Anti_Aliasing/README.md) · [技术大纲](OpenGL_Anti_Aliasing/docs/README.md) |
 | [OpenGL_OIT_Depth_Peeling](OpenGL_OIT_Depth_Peeling/) | OIT · 深度剥离 | 多 Pass 逐层剥离 | [README](OpenGL_OIT_Depth_Peeling/README.md) · [技术大纲](OpenGL_OIT_Depth_Peeling/docs/README.md) · [OIT_MD 笔记](OpenGL_OIT_Depth_Peeling/OIT_MD/) |
 | [OpenGL_OIT_Stochastic_Transparency](OpenGL_OIT_Stochastic_Transparency/) | OIT · 随机透明 | 单 Pass 随机 discard + 累积 | [README](OpenGL_OIT_Stochastic_Transparency/README.md) · [技术大纲](OpenGL_OIT_Stochastic_Transparency/docs/README.md) |
+| [OpenGL_OIT_Linked_list](OpenGL_OIT_Linked_list/) | OIT · 链表 | SSBO + 原子操作，逐像素收集透明片元 | [README](OpenGL_OIT_Linked_list/README.md) · [技术大纲](OpenGL_OIT_Linked_list/docs/README.md) |
 
 ### 按主题选读
 
 - **锯齿 / MSAA / FXAA / TAA** → `OpenGL_Anti_Aliasing`
-- **透明、深度剥离** → `OpenGL_OIT_Depth_Peeling`
-- **透明、随机采样** → `OpenGL_OIT_Stochastic_Transparency`
+- **透明、与绘制顺序无关** → `OpenGL_OIT_*` 子项目横向对比
 
 ---
 
@@ -91,7 +91,8 @@ OpenGLInstance/
 ├── .vscode/                    # MSVC 2022 构建与调试
 ├── OpenGL_Anti_Aliasing/
 ├── OpenGL_OIT_Depth_Peeling/
-└── OpenGL_OIT_Stochastic_Transparency/
+├── OpenGL_OIT_Stochastic_Transparency/
+└── OpenGL_OIT_Linked_list/
 ```
 
 每个子项目典型布局：
