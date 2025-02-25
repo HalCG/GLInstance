@@ -44,6 +44,17 @@
             "preLaunchTask": "Build: MSVC 2022 (OIT Linked List)",
             "stopAtEntry": false,
             "console": "integratedTerminal"
+        },
+        {
+            "name": "OpenGL_Rendering_Paths",
+            "type": "cppvsdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/run/Debug/OpenGL_Rendering_Paths/OpenGL_Rendering_Paths.exe",
+            "args": [],
+            "cwd": "${workspaceFolder}/run/Debug/OpenGL_Rendering_Paths",
+            "preLaunchTask": "Build: MSVC 2022 (Rendering Paths)",
+            "stopAtEntry": false,
+            "console": "integratedTerminal"
         }
     ]
 }
