@@ -1,0 +1,13 @@
+{
+    "cmake.configurePreset": "x64-msvc-2022",
+    "cmake.buildPreset": "x64-msvc-2022-debug",
+    "cmake.debugConfig": {
+        "type": "cppvsdbg",
+        "request": "launch",
+        "cwd": "${command:cmake.launchTargetDirectory}",
+        "console": "integratedTerminal"
+    },
+    "files.associations": {
+        "memory": "cpp"
+    }
+}

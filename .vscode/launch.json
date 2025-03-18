@@ -1,0 +1,16 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "OpenGL_Anti_Aliasing",
+            "type": "cppvsdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/run/Debug/OpenGL_Anti_Aliasing/OpenGL_Anti_Aliasing.exe",
+            "args": [],
+            "cwd": "${workspaceFolder}/run/Debug/OpenGL_Anti_Aliasing",
+            "preLaunchTask": "Build: MSVC 2022 (Anti-Aliasing)",
+            "stopAtEntry": false,
+            "console": "integratedTerminal"
+        }
+    ]
+}
