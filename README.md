@@ -1,6 +1,6 @@
 # OpenGLInstance
 
-OpenGL 4.x 图形学 Demo（完善中）。当前包含抗锯齿示例，后续会继续补充渲染相关子项目。
+OpenGL 4.x 图形学 Demo 集合（完善中）。每个子项目为 **独立可执行程序**，围绕同一主题（抗锯齿、顺序无关透明 等）提供可运行示例与中文文档。
 
 **仓库地址：** [https://github.com/HalCG/OpenGLInstance](https://github.com/HalCG/OpenGLInstance)
 
@@ -11,10 +11,12 @@ OpenGL 4.x 图形学 Demo（完善中）。当前包含抗锯齿示例，后续�
 | 子项目 | 主题 | 运行时切换 / 要点 | 文档入口 |
 |--------|------|-------------------|----------|
 | [OpenGL_Anti_Aliasing](OpenGL_Anti_Aliasing/) | 抗锯齿 | `1`～`4`：None / MSAA / FXAA / TAA | [README](OpenGL_Anti_Aliasing/README.md) · [技术大纲](OpenGL_Anti_Aliasing/docs/README.md) |
+| [OpenGL_OIT_Depth_Peeling](OpenGL_OIT_Depth_Peeling/) | OIT · 深度剥离 | 多 Pass 逐层剥离 | [README](OpenGL_OIT_Depth_Peeling/README.md) · [技术大纲](OpenGL_OIT_Depth_Peeling/docs/README.md) · [OIT_MD 笔记](OpenGL_OIT_Depth_Peeling/OIT_MD/) |
 
 ### 按主题选读
 
 - **锯齿 / MSAA / FXAA / TAA** → `OpenGL_Anti_Aliasing`
+- **透明、深度剥离** → `OpenGL_OIT_Depth_Peeling`
 
 ---
 
@@ -43,6 +45,7 @@ cmake --build out/build/x64-msvc-2022 --config Debug
 
 ```bash
 cmake --build out/build/x64-msvc-2022 --config Debug --target OpenGL_Anti_Aliasing
+cmake --build out/build/x64-msvc-2022 --config Debug --target OpenGL_OIT_Depth_Peeling
 ```
 
 VS Code：`.vscode/tasks.json` 的 **CMake: Configure MSVC 2022** 与各 **Build: MSVC 2022 (...)**；调试用 `.vscode/launch.json`。
@@ -83,7 +86,8 @@ OpenGLInstance/
 ├── run/                        # Demo 可执行文件（gitignore，构建后生成）
 ├── out/build/                  # CMake 中间产物（gitignore）
 ├── .vscode/                    # MSVC 2022 构建与调试
-└── OpenGL_Anti_Aliasing/
+├── OpenGL_Anti_Aliasing/
+└── OpenGL_OIT_Depth_Peeling/
 ```
 
 每个子项目典型布局：

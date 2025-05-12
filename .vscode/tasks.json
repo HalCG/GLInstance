@@ -51,6 +51,24 @@
             },
             "group": "build",
             "problemMatcher": "$msCompile"
+        },
+        {
+            "label": "Build: MSVC 2022 (OIT Depth Peeling)",
+            "type": "shell",
+            "command": "cmake",
+            "args": [
+                "--build",
+                "${workspaceFolder}/out/build/x64-msvc-2022",
+                "--config",
+                "Debug",
+                "--target",
+                "OpenGL_OIT_Depth_Peeling"
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "group": "build",
+            "problemMatcher": "$msCompile"
         }
     ]
 }
