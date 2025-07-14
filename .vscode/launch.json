@@ -55,6 +55,17 @@
             "preLaunchTask": "Build: MSVC 2022 (Rendering Paths)",
             "stopAtEntry": false,
             "console": "integratedTerminal"
+        },
+        {
+            "name": "OpenGL_PBR",
+            "type": "cppvsdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/run/Debug/OpenGL_PBR/OpenGL_PBR.exe",
+            "args": [],
+            "cwd": "${workspaceFolder}/run/Debug/OpenGL_PBR",
+            "preLaunchTask": "Build: MSVC 2022 (PBR)",
+            "stopAtEntry": false,
+            "console": "integratedTerminal"
         }
     ]
 }
