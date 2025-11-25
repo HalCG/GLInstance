@@ -1,6 +1,6 @@
 # OpenGLInstance
 
-OpenGL 4.x 图形学 Demo 集合（完善中）。每个子项目为 **独立可执行程序**，围绕同一主题（抗锯齿、顺序无关透明 等）提供可运行示例与中文文档。
+OpenGL 4.x 图形学 Demo 集合（完善中）。每个子项目为 **独立可执行程序**，围绕同一主题（抗锯齿、顺序无关透明、渲染路径 等）提供可运行示例与中文文档。
 
 **仓库地址：** [https://github.com/HalCG/OpenGLInstance](https://github.com/HalCG/OpenGLInstance)
 
@@ -14,11 +14,13 @@ OpenGL 4.x 图形学 Demo 集合（完善中）。每个子项目为 **独立可
 | [OpenGL_OIT_Depth_Peeling](OpenGL_OIT_Depth_Peeling/) | OIT · 深度剥离 | 多 Pass 逐层剥离 | [README](OpenGL_OIT_Depth_Peeling/README.md) · [技术大纲](OpenGL_OIT_Depth_Peeling/docs/README.md) · [OIT_MD 笔记](OpenGL_OIT_Depth_Peeling/OIT_MD/) |
 | [OpenGL_OIT_Stochastic_Transparency](OpenGL_OIT_Stochastic_Transparency/) | OIT · 随机透明 | 单 Pass 随机 discard + 累积 | [README](OpenGL_OIT_Stochastic_Transparency/README.md) · [技术大纲](OpenGL_OIT_Stochastic_Transparency/docs/README.md) |
 | [OpenGL_OIT_Linked_list](OpenGL_OIT_Linked_list/) | OIT · 链表 | SSBO + 原子操作，逐像素收集透明片元 | [README](OpenGL_OIT_Linked_list/README.md) · [技术大纲](OpenGL_OIT_Linked_list/docs/README.md) |
+| [OpenGL_Rendering_Paths](OpenGL_Rendering_Paths/) | 渲染路径 | `1`～`3`：Forward / Deferred / Forward+ | [README](OpenGL_Rendering_Paths/README.md) · [技术大纲](OpenGL_Rendering_Paths/docs/README.md) |
 
 ### 按主题选读
 
 - **锯齿 / MSAA / FXAA / TAA** → `OpenGL_Anti_Aliasing`
 - **透明、与绘制顺序无关** → `OpenGL_OIT_*` 子项目横向对比
+- **多光源 / Forward vs Deferred vs Forward+** → `OpenGL_Rendering_Paths`
 
 ---
 
@@ -92,7 +94,8 @@ OpenGLInstance/
 ├── OpenGL_Anti_Aliasing/
 ├── OpenGL_OIT_Depth_Peeling/
 ├── OpenGL_OIT_Stochastic_Transparency/
-└── OpenGL_OIT_Linked_list/
+├── OpenGL_OIT_Linked_list/
+└── OpenGL_Rendering_Paths/
 ```
 
 每个子项目典型布局：
