@@ -123,6 +123,24 @@
             },
             "group": "build",
             "problemMatcher": "$msCompile"
+        },
+        {
+            "label": "Build: MSVC 2022 (PBR)",
+            "type": "shell",
+            "command": "cmake",
+            "args": [
+                "--build",
+                "${workspaceFolder}/out/build/x64-msvc-2022",
+                "--config",
+                "Debug",
+                "--target",
+                "OpenGL_PBR"
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "group": "build",
+            "problemMatcher": "$msCompile"
         }
     ]
 }
