@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="src">
+      <UniqueIdentifier>{a1b2c3d4-e5f6-7890-abcd-ef1234567890}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\App">
+      <UniqueIdentifier>{b2c3d4e5-f6a7-8901-bcde-f12345678901}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Core">
+      <UniqueIdentifier>{c3d4e5f6-a7b8-9012-cdef-123456789012}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Math">
+      <UniqueIdentifier>{7b9bdb32-8d87-468e-b8d8-09ba8715cd5b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Platform">
+      <UniqueIdentifier>{d4e5f6a7-b8c9-0123-def0-234567890123}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Camera">
+      <UniqueIdentifier>{e5f6a7b8-c9d0-1234-ef01-345678901234}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Render">
+      <UniqueIdentifier>{f6a7b8c9-d0e1-2345-f012-456789012345}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Scene">
+      <UniqueIdentifier>{a7b8c9d0-e1f2-3456-0123-567890123456}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Res">
+      <UniqueIdentifier>{b8c9d0e1-f2a3-4567-1234-678901234567}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Res\Shaders">
+      <UniqueIdentifier>{c9d0e1f2-a3b4-5678-2345-789012345678}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ThirdParty\GLEW">
+      <UniqueIdentifier>{d0e1f2a3-b4c5-6789-3456-890123456789}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="scripts">
+      <UniqueIdentifier>{e1f2a3b4-c5d6-7890-4567-901234567890}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="src\Core\utils.h">
+      <Filter>src\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Math\float4.h">
+      <Filter>src\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Math\matrix4.h">
+      <Filter>src\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Math\quaternion.h">
+      <Filter>src\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Platform\oglcontext.h">
+      <Filter>src\Platform</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Camera\trackball_camera.h">
+      <Filter>src\Camera</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Render\RenderPass.h">
+      <Filter>src\Render</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Render\fullscreenquad.h">
+      <Filter>src\Render</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Render\StaticMesh.h">
+      <Filter>src\Render</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Scene\scene.h">
+      <Filter>src\Scene</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="src\App\main.cpp">
+      <Filter>src\App</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Core\utils.cpp">
+      <Filter>src\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Math\float4.cpp">
+      <Filter>src\Math</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Math\matrix4.cpp">
+      <Filter>src\Math</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Math\quaternion.cpp">
+      <Filter>src\Math</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Platform\oglcontext.cpp">
+      <Filter>src\Platform</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Camera\trackball_camera.cpp">
+      <Filter>src\Camera</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Render\RenderPass.cpp">
+      <Filter>src\Render</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Render\fullscreenquad.cpp">
+      <Filter>src\Render</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Render\StaticMesh.cpp">
+      <Filter>src\Render</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Scene\scene.cpp">
+      <Filter>src\Scene</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Res\Shaders\ClusterCull.glsl">
+      <Filter>Res\Shaders</Filter>
+    </None>
+    <None Include="Res\Shaders\NodeAndClusterCull.glsl">
+      <Filter>Res\Shaders</Filter>
+    </None>
+    <None Include="Res\Shaders\RasterClear.glsl">
+      <Filter>Res\Shaders</Filter>
+    </None>
+    <None Include="Res\Shaders\HWRasterizeVS.glsl">
+      <Filter>Res\Shaders</Filter>
+    </None>
+    <None Include="Res\Shaders\HWRasterizeFS.glsl">
+      <Filter>Res\Shaders</Filter>
+    </None>
+    <None Include="Res\Shaders\Visualization.glsl">
+      <Filter>Res\Shaders</Filter>
+    </None>
+    <None Include="Res\Shaders\fsqVS.glsl">
+      <Filter>Res\Shaders</Filter>
+    </None>
+    <None Include="Res\Shaders\fsqFS.glsl">
+      <Filter>Res\Shaders</Filter>
+    </None>
+    <None Include="ThirdParty\GLEW\lib\x64\glew32.lib">
+      <Filter>ThirdParty\GLEW</Filter>
+    </None>
+    <None Include="ThirdParty\GLEW\bin\x64\glew32.dll">
+      <Filter>ThirdParty\GLEW</Filter>
+    </None>
+  </ItemGroup>
+</Project>

@@ -66,6 +66,17 @@
             "preLaunchTask": "Build: MSVC 2022 (PBR)",
             "stopAtEntry": false,
             "console": "integratedTerminal"
+        },
+        {
+            "name": "OpenGL_NaniteInUE5.5.4",
+            "type": "cppvsdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/run/Debug/OpenGL_NaniteInUE5.5.4/OpenGL_NaniteInUE5.5.4.exe",
+            "args": [],
+            "cwd": "${workspaceFolder}/run/Debug/OpenGL_NaniteInUE5.5.4",
+            "preLaunchTask": "Build: MSVC 2022 (Nanite)",
+            "stopAtEntry": false,
+            "console": "integratedTerminal"
         }
     ]
 }

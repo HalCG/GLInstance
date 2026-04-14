@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 520" font-family="Segoe UI, Microsoft YaHei, sans-serif">
+  <defs>
+    <marker id="arrowBlue" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+      <path d="M0,0 L6,3 L0,6 Z" fill="#1a5fb4"/>
+    </marker>
+  </defs>
+  <rect width="720" height="520" fill="#fafafa"/>
+  <text x="360" y="28" text-anchor="middle" font-size="17" font-weight="600" fill="#e5a50a">Step 3 / 5 &#8212; &#24352;&#35282;&#38142; Ty / By</text>
+  <text x="360" y="48" text-anchor="middle" font-size="11" fill="#555">L162-166: sin=R, cos=DistToT &#65292;&#20877;&#32467;&#21512; X,Z &#24471;&#21040;&#35282;&#24230;&#33539;&#22260;</text>
+
+  <circle cx="120" cy="280" r="9" fill="#333"/>
+  <text x="120" y="305" text-anchor="middle" font-size="11">O</text>
+
+  <line x1="128" y1="280" x2="500" y2="280" stroke="#1a5fb4" stroke-width="2" marker-end="url(#arrowBlue)"/>
+  <text x="510" y="284" font-size="10" fill="#1a5fb4">view</text>
+
+  <line x1="120" y1="280" x2="200" y2="120" stroke="#e5a50a" stroke-width="2" stroke-dasharray="5,3"/>
+  <line x1="120" y1="280" x2="200" y2="400" stroke="#e5a50a" stroke-width="2" stroke-dasharray="5,3"/>
+  <text x="155" y="115" font-size="10" fill="#e5a50a">&#24352;&#35282;&#38142;&#19978;&#30028;</text>
+  <text x="155" y="410" font-size="10" fill="#e5a50a">&#24352;&#35282;&#38142;&#19979;&#30028;</text>
+
+  <circle cx="320" cy="280" r="50" fill="#e8f4fc" stroke="#1a5fb4" stroke-width="2"/>
+  <circle cx="320" cy="230" r="4" fill="#c01c28"/>
+  <text x="340" y="225" font-size="11" fill="#c01c28">C</text>
+
+  <path d="M 155 280 A 35 35 0 0 0 148 250" fill="none" stroke="#813d9c" stroke-width="2"/>
+  <text x="158" y="258" font-size="11" fill="#813d9c">&#952;</text>
+  <text x="200" y="268" font-size="10" fill="#813d9c">sin&#952;=R/|C|</text>
+  <text x="200" y="282" font-size="10" fill="#813d9c">cos&#952;=DistToT/|C|</text>
+
+  <rect x="400" y="90" width="290" height="200" rx="8" fill="#fff" stroke="#e5a50a"/>
+  <text x="545" y="115" text-anchor="middle" font-size="12" font-weight="600" fill="#333">&#35745;&#31639;&#38142;</text>
+  <text x="415" y="138" font-size="10" fill="#333">ScaledSinTheta = Radius</text>
+  <text x="415" y="156" font-size="10" fill="#333">ScaledCosTheta = DistToT</text>
+  <text x="415" y="174" font-size="10" fill="#333">ScaleToUnit = 1 / DistToClusterSq</text>
+  <text x="415" y="198" font-size="10" fill="#e5a50a">By = (R*X + DistToT*Z) * ScaleToUnit</text>
+  <text x="415" y="216" font-size="10" fill="#e5a50a">Ty = (-R*X + DistToT*Z) * ScaleToUnit</text>
+  <text x="415" y="240" font-size="10" fill="#666">MinCosAngle = Ty</text>
+  <text x="415" y="256" font-size="10" fill="#666">MaxCosAngle = By</text>
+  <text x="415" y="278" font-size="9" fill="#888">&#29699;&#24515;&#19981;&#22312;&#35270;&#32447;&#19978;&#65288;X&gt;0&#65289;&#26102;&#65292;</text>
+
+  <rect x="40" y="400" width="640" height="95" rx="8" fill="#fff8e6" stroke="#e5a50a"/>
+  <text x="360" y="422" text-anchor="middle" font-size="12" font-weight="600" fill="#333">&#30452;&#35266;</text>
+  <text x="55" y="442" font-size="10" fill="#333">&#20174;&#30456;&#26426;&#30475;&#65292;&#29699;&#25104;&#20102;&#19968;&#20010;&#22278;&#38181;&#65288;&#24352;&#35282;&#38142;&#65289;</text>
+  <text x="55" y="458" font-size="10" fill="#333">Ty / By &#26159;&#36825;&#20010;&#38181;&#22312;&#25237;&#24433;&#19979;&#30340;&#35282;&#24230;&#33539;&#22260;&#65288;&#20445;&#23432;&#20272;&#35745;&#65289;</text>
+  <text x="55" y="478" font-size="10" fill="#666">&#19982; Step1 &#30340; X,Z &#32858;&#21512;&#22312;&#19968;&#36215;&#65292;&#24433;&#21709;&#26368;&#32456;&#23631;&#24149;&#23610;&#24230;</text>
+
+  <text x="360" y="512" text-anchor="middle" font-size="9" fill="#888">03_cone_Ty_By.svg</text>
+</svg>
