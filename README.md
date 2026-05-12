@@ -1,6 +1,6 @@
 # OpenGLInstance
 
-OpenGL 4.x 图形学 Demo 集合（完善中）。每个子项目为 **独立可执行程序**，围绕同一主题（抗锯齿、顺序无关透明、渲染路径、PBR 等）提供可运行示例与中文文档。
+OpenGL 4.x 图形学 Demo 集合（完善中）。每个子项目为 **独立可执行程序**，围绕同一主题（抗锯齿、顺序无关透明、渲染路径、PBR、Nanite 等）提供可运行示例与中文文档。
 
 **仓库地址：** [https://github.com/HalCG/OpenGLInstance](https://github.com/HalCG/OpenGLInstance)
 
@@ -16,6 +16,7 @@ OpenGL 4.x 图形学 Demo 集合（完善中）。每个子项目为 **独立可
 | [OpenGL_OIT_Linked_list](OpenGL_OIT_Linked_list/) | OIT · 链表 | SSBO + 原子操作，逐像素收集透明片元 | [README](OpenGL_OIT_Linked_list/README.md) · [技术大纲](OpenGL_OIT_Linked_list/docs/README.md) |
 | [OpenGL_Rendering_Paths](OpenGL_Rendering_Paths/) | 渲染路径 | `1`～`3`：Forward / Deferred / Forward+ | [README](OpenGL_Rendering_Paths/README.md) · [技术大纲](OpenGL_Rendering_Paths/docs/README.md) |
 | [OpenGL_PBR](OpenGL_PBR/) | PBR 渲染 & IBL 预计算 | Cook-Torrance、Split-Sum 离屏预计算、HDR | [README](OpenGL_PBR/README.md) · [原理与架构](OpenGL_PBR/docs/PBR_原理与架构.md) · [Shader 与实现](OpenGL_PBR/docs/PBR_Shader与关键实现.md) |
+| [OpenGL_NaniteInUE5.5.4](OpenGL_NaniteInUE5.5.4/) | Nanite 风格虚拟几何 | GPU Driven / SW·HW 光栅 | [README](OpenGL_NaniteInUE5.5.4/README.md) · [文档目录](OpenGL_NaniteInUE5.5.4/doc/README.md) |
 
 ### 按主题选读
 
@@ -24,6 +25,7 @@ OpenGL 4.x 图形学 Demo 集合（完善中）。每个子项目为 **独立可
 - **多光源 / Forward vs Deferred vs Forward+** → `OpenGL_Rendering_Paths`
 - **物理渲染 / IBL** → `OpenGL_PBR`
 - **PBR 入门** → [docs/PBR_Beginner_Guide.md](docs/PBR_Beginner_Guide.md)
+- **虚拟几何 / Nanite** → `OpenGL_NaniteInUE5.5.4`
 
 ---
 
@@ -100,7 +102,8 @@ OpenGLInstance/
 ├── OpenGL_OIT_Stochastic_Transparency/
 ├── OpenGL_OIT_Linked_list/
 ├── OpenGL_Rendering_Paths/
-└── OpenGL_PBR/
+├── OpenGL_PBR/
+└── OpenGL_NaniteInUE5.5.4/
 ```
 
 每个子项目典型布局：

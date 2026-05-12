@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 620" font-family="Segoe UI, Microsoft YaHei, sans-serif">
+  <rect width="800" height="620" fill="#fafafa"/>
+  <text x="400" y="32" text-anchor="middle" font-size="18" font-weight="600" fill="#222">GetProjectionScales &#23376;&#27493;&#39588;&#24635;&#35266;</text>
+  <text x="400" y="54" text-anchor="middle" font-size="12" fill="#555">ClusterCull.glsl L144-177 &#65288;&#27599;&#27493;&#26377;&#21333;&#29420; SVG &#22270;&#65289;</text>
+
+  <rect x="280" y="75" width="240" height="44" rx="6" fill="#eee" stroke="#888"/>
+  <text x="400" y="102" text-anchor="middle" font-size="11" fill="#333">L147: &#27491;&#20132;&#25237;&#24433; &#8594; return (1,1)</text>
+
+  <line x1="400" y1="119" x2="400" y2="138" stroke="#888" stroke-width="2" marker-end="url(#a)"/>
+  <defs><marker id="a" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#888"/></marker></defs>
+
+  <rect x="40" y="145" width="720" height="48" rx="6" fill="#f0f6ff" stroke="#1a5fb4"/>
+  <text x="400" y="165" text-anchor="middle" font-size="12" font-weight="600" fill="#1a5fb4">Step 1 &#8594; 01_decompose_Z_X.svg</text>
+  <text x="400" y="183" text-anchor="middle" font-size="10" fill="#333">L154-158: DistToClusterSq, Z, X &#20998;&#37327;&#20998;&#35299;</text>
+
+  <line x1="400" y1="193" x2="400" y2="212" stroke="#888" stroke-width="2" marker-end="url(#a)"/>
+
+  <rect x="40" y="218" width="720" height="48" rx="6" fill="#fff5f5" stroke="#c01c28"/>
+  <text x="400" y="238" text-anchor="middle" font-size="12" font-weight="600" fill="#c01c28">Step 2 &#8594; 02_dist_to_tangent.svg</text>
+  <text x="400" y="256" text-anchor="middle" font-size="10" fill="#333">L160-161: DistToT = sqrt(|C|^2 - R^2) &#20999;&#32447;&#38271;</text>
+
+  <line x1="400" y1="266" x2="400" y2="285" stroke="#888" stroke-width="2" marker-end="url(#a)"/>
+
+  <rect x="40" y="291" width="720" height="48" rx="6" fill="#fff8e6" stroke="#e5a50a"/>
+  <text x="400" y="311" text-anchor="middle" font-size="12" font-weight="600" fill="#e5a50a">Step 3 &#8594; 03_cone_Ty_By.svg</text>
+  <text x="400" y="329" text-anchor="middle" font-size="10" fill="#333">L162-166: Ty, By &#8594; &#24352;&#35282;&#38142;&#30340; cos &#33539;&#22260;</text>
+
+  <line x1="400" y1="339" x2="400" y2="358" stroke="#888" stroke-width="2" marker-end="url(#a)"/>
+
+  <rect x="40" y="364" width="720" height="48" rx="6" fill="#f0fff4" stroke="#2ec27e"/>
+  <text x="400" y="384" text-anchor="middle" font-size="12" font-weight="600" fill="#2ec27e">Step 4 &#8594; 04_minz_maxz.svg</text>
+  <text x="400" y="402" text-anchor="middle" font-size="10" fill="#333">L169-170: MinZ, MaxZ &#28145;&#24230;&#33539;&#22260; + ZNear &#22841;&#21462;</text>
+
+  <line x1="400" y1="412" x2="400" y2="431" stroke="#888" stroke-width="2" marker-end="url(#a)"/>
+
+  <rect x="40" y="437" width="720" height="48" rx="6" fill="#f3e8ff" stroke="#813d9c"/>
+  <text x="400" y="457" text-anchor="middle" font-size="12" font-weight="600" fill="#813d9c">Step 5 &#8594; 05_final_output.svg</text>
+  <text x="400" y="475" text-anchor="middle" font-size="10" fill="#333">L174-177: minScale=MinZ*Ty, maxScale=MaxZ*By, &#21487;&#35265;&#24615;</text>
+
+  <rect x="120" y="510" width="560" height="90" rx="8" fill="#fff" stroke="#ccc"/>
+  <text x="400" y="535" text-anchor="middle" font-size="12" font-weight="600" fill="#333">Pass 3 &#20351;&#29992;</text>
+  <text x="400" y="555" text-anchor="middle" font-size="11" fill="#333">projectionScales.x (minScale) &gt; mLODError * LODScale &#8594; &#30011;&#36825;&#20010; Cluster</text>
+  <text x="400" y="575" text-anchor="middle" font-size="10" fill="#666">&#25972;&#20307;&#27969;&#31243;&#22270;: ../GetProjectionScales.svg</text>
+
+  <text x="400" y="608" text-anchor="middle" font-size="10" fill="#888">doc/figures/GetProjectionScales/00_overview.svg</text>
+</svg>

@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 520" font-family="Segoe UI, Microsoft YaHei, sans-serif">
+  <rect width="720" height="520" fill="#fafafa"/>
+  <text x="360" y="28" text-anchor="middle" font-size="17" font-weight="600" fill="#c01c28">Step 2 / 5 &#8212; &#20999;&#32447;&#38271; DistToT</text>
+  <text x="360" y="48" text-anchor="middle" font-size="11" fill="#555">L160-161: DistToTSq = |C|^2 - R^2; DistToT = sqrt(...)</text>
+
+  <circle cx="100" cy="300" r="10" fill="#333"/>
+  <text x="100" y="328" text-anchor="middle" font-size="12" font-weight="600">O &#30456;&#26426;</text>
+
+  <circle cx="380" cy="300" r="70" fill="#e8f4fc" stroke="#1a5fb4" stroke-width="2"/>
+  <circle cx="380" cy="300" r="4" fill="#c01c28"/>
+  <text x="380" y="285" text-anchor="middle" font-size="12" fill="#c01c28">C &#29699;&#24515;</text>
+
+  <line x1="100" y1="300" x2="380" y2="300" stroke="#333" stroke-width="2" stroke-dasharray="6,4"/>
+  <text x="240" y="318" text-anchor="middle" font-size="11" fill="#333">|C| &#65288;&#21040;&#29699;&#24515;&#65289;</text>
+
+  <line x1="380" y1="300" x2="450" y2="300" stroke="#c01c28" stroke-width="3"/>
+  <text x="420" y="290" text-anchor="middle" font-size="12" fill="#c01c28">R</text>
+
+  <line x1="100" y1="300" x2="310" y2="175" stroke="#e5a50a" stroke-width="3"/>
+  <circle cx="310" cy="175" r="5" fill="#e5a50a"/>
+  <text x="175" y="220" font-size="14" font-weight="600" fill="#e5a50a">DistToT</text>
+  <text x="175" y="238" font-size="10" fill="#e5a50a">&#20999;&#32447;&#38271;</text>
+
+  <line x1="310" y1="175" x2="380" y2="300" stroke="#c01c28" stroke-width="2"/>
+  <text x="355" y="220" font-size="10" fill="#c01c28">R &#19982;&#20999;&#32447;&#22402;&#30452;</text>
+
+  <rect x="430" y="90" width="260" height="150" rx="8" fill="#fff8e6" stroke="#e5a50a"/>
+  <text x="560" y="115" text-anchor="middle" font-size="12" font-weight="600" fill="#333">&#21208;&#23039;&#23450;&#29702;</text>
+  <text x="445" y="140" font-size="11" fill="#333">DistToT^2 + R^2 = |C|^2</text>
+  <text x="445" y="165" font-size="11" fill="#e5a50a">DistToT = sqrt(|C|^2 - R^2)</text>
+  <text x="445" y="190" font-size="10" fill="#666">&#20174;&#30456;&#26426;&#21040;&#29699;&#38754;&#30340;</text>
+  <text x="445" y="205" font-size="10" fill="#666">&#20999;&#32447;&#38271;&#24230;&#65288;&#29992;&#20110;&#24352;&#35282;&#65289;</text>
+  <text x="445" y="228" font-size="10" fill="#333">ScaledCosTheta = DistToT</text>
+
+  <rect x="40" y="400" width="640" height="95" rx="8" fill="#fff" stroke="#c01c28"/>
+  <text x="360" y="422" text-anchor="middle" font-size="12" font-weight="600" fill="#333">&#20195;&#30721;</text>
+  <text x="55" y="442" font-size="10" fill="#333">DistToTSq = DistToClusterSq - Radius * Radius;</text>
+  <text x="55" y="458" font-size="10" fill="#c01c28">DistToT = sqrt(max(0.0, DistToTSq));</text>
+  <text x="55" y="478" font-size="10" fill="#666">&#19979;&#19968;&#27493;: ScaledCosTheta=DistToT, ScaledSinTheta=Radius</text>
+
+  <text x="360" y="512" text-anchor="middle" font-size="9" fill="#888">02_dist_to_tangent.svg</text>
+</svg>
