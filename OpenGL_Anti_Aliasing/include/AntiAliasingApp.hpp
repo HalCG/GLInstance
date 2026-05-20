@@ -1,6 +1,7 @@
 #ifndef ANTI_ALIASING_APP_HPP
 #define ANTI_ALIASING_APP_HPP
 
+#include "AaTechnique.hpp"
 #include "AATestScene.hpp"
 #include "AppConfig.hpp"
 #include "Framebuffer.hpp"
@@ -12,8 +13,9 @@
 #include "VtkTrackballCamera.hpp"
 
 #include <GLFW/glfw3.h>
+#include <memory>
 
-// AA 对比 Demo：左右 Wipe、内部分辨率、自动旋转，便于肉眼看出差异
+// AA 对比 Demo：四种模式走 IAaTechnique；Wipe / UI / 相机仍由 App 管理
 class AntiAliasingApp {
 public:
     bool init();
@@ -28,46 +30,39 @@ public:
 
 private:
     bool initWindow();
+    void setMode(AAMode mode);              // 切换策略：createAaTechnique + onEnter
+    AaFrameContext makeFrameContext();      // 把 App 持有的资源塞进上下文给策略用
     FrameCamera buildCamera(glm::vec2 jitterNdc) const;
     void renderFrame();
     void resizeTargets();
-    void renderScenePass(const FrameCamera &camera, bool useMsaa);
-    // 把当前 AA 模式结果写入 resolveFbo_（颜色）
-    void renderAaToResolve(const FrameCamera &camera);
-    // 无 AA 基线写入 baselineFbo_
-    void renderBaselineToBaseline(const FrameCamera &camera);
-    std::string buildOverlayText() const;
-    void updateWindowTitle();
+    void renderBaselineToBaseline(const FrameCamera &camera); // Wipe 左侧：无 AA 基线
     int nextMsaaPreset(int delta) const;
-    void markCameraDirty();
     void computeRenderSize(int &outW, int &outH) const;
 
     GLFWwindow *window_ = nullptr;
     unsigned int width_ = AppConfig::kInitialWidth;
     unsigned int height_ = AppConfig::kInitialHeight;
-    int renderW_ = AppConfig::kInitialWidth;
+    int renderW_ = AppConfig::kInitialWidth;  // 内部分辨率（可被 renderScale_ 缩小）
     int renderH_ = AppConfig::kInitialHeight;
 
-    AAMode currentMode_ = AAMode::MSAA; // 默认 MSAA，配合 Wipe 与左侧 None 同机位对比
+    AAMode currentMode_ = AAMode::MSAA;
+    std::unique_ptr<IAaTechnique> technique_; // 当前 AA 策略（None/MSAA/FXAA/TAA）
     int msaaPresetIndex_ = AppConfig::kDefaultMsaaPresetIndex;
     VtkTrackballCamera camera_;
-    bool cameraDirty_ = true;
     bool vsyncEnabled_ = false;
-    bool wipeCompare_ = true;          // 左 None / 右当前 AA：同一相机、同一场景
-    float wipeAmount_ = 0.5f;
-    float renderScale_ = 1.0f;         // 默认原生分辨率看模型；可降到 75%/50% 放大锯齿
-    bool autoOrbit_ = false;           // 默认关闭，保持用户自己的交互与机位
+    bool wipeCompare_ = true;   // 左 None / 右当前 AA 同机位对比
+    float wipeAmount_ = 0.5f;   // 分割线位置 [0,1]
+    float renderScale_ = 1.0f;  // 内部分辨率比例，降低可放大锯齿
+    bool autoOrbit_ = false;
     double lastFrameTime_ = 0.0;
-    glm::mat4 prevViewProj_ = glm::mat4(1.0f);
+    glm::mat4 prevViewProj_ = glm::mat4(1.0f); // 供 TAA 的上一帧无 jitter VP
     bool hasPrevViewProj_ = false;
-    int titleUpdateCounter_ = 0;
-    std::string cachedOverlayText_;
 
     AATestScene scene_;
     SceneRenderer sceneRenderer_;
-    SingleSampleFbo singleFbo_;
-    SingleSampleFbo baselineFbo_;
-    SingleSampleFbo resolveFbo_;
+    SingleSampleFbo singleFbo_;   // 场景单采样离屏（None/FXAA/TAA/基线绘制）
+    SingleSampleFbo baselineFbo_; // Wipe 左侧 None 结果
+    SingleSampleFbo resolveFbo_;  // 当前 AA 最终颜色
     MsaaFbo msaaFbo_;
     PostProcess postProcess_;
     TaaPass taaPass_;

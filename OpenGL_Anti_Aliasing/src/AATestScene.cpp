@@ -165,7 +165,3 @@ void AATestScene::drawOpaque(Shader &shader) const {
         helmet_->Draw(shader);
     }
 }
-
-void AATestScene::drawLines(Shader & /*lineShader*/) const {
-    // 模型展陈场景不画辅助线，避免干扰轮廓观察
-}

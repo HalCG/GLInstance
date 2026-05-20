@@ -49,7 +49,7 @@ struct VtkTrackballCamera {
     // 是否正在拖拽（用于主循环 poll 与性能统计开关）
     bool isDragging() const { return dragMode != CameraDragMode::None; }
 
-    // 应用光标位移；返回 true 表示相机参数已变化，应 markCameraDirty
+    // 应用光标位移；返回 true 表示相机参数已变化
     bool applyCursorDelta(double x, double y, unsigned width, unsigned height) {
         if (dragMode == CameraDragMode::None) {
             return false;

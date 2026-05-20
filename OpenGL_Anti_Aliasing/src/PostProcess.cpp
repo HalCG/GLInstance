@@ -103,35 +103,48 @@ void PostProcess::blitTexture(GLuint colorTexture) const {
     glEnable(GL_DEPTH_TEST);
 }
 
+// FXAA 模式：对场景离屏颜色图做全屏后处理抗锯齿，结果画到当前绑定的 FBO/屏幕
 void PostProcess::applyFxaa(GLuint colorTexture) const {
+    // 后处理不需要深度
     glDisable(GL_DEPTH_TEST);
     glUseProgram(fxaaShader_);
+
+    // 输入颜色图 → texture unit 0
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, colorTexture);
     glUniform1i(fxaaLocInput_, 0);
-    glUniform2f(fxaaLocTexelSize_, 1.0f / static_cast<float>(width_), 1.0f / static_cast<float>(height_));
+
+    // texelSize：按分辨率换算的像素尺寸，供 FXAA 邻域采样
+    glUniform2f(fxaaLocTexelSize_,
+                1.0f / static_cast<float>(width_),
+                1.0f / static_cast<float>(height_));
+
     drawFullscreen();
     glEnable(GL_DEPTH_TEST);
 }
 
+// 对比模式：左右两张图按 wipe 比例拼到同一全屏，便于同机位对比 AA 效果
 void PostProcess::applyWipe(GLuint leftTexture, GLuint rightTexture, float wipe) const {
+    // 后处理不需要深度
     glDisable(GL_DEPTH_TEST);
     glUseProgram(wipeShader_);
+
+    // 左图 → texture unit 0
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, leftTexture);
     glUniform1i(wipeLocLeft_, 0);
+
+    // 右图 → texture unit 1
     glActiveTexture(GL_TEXTURE1);
     glBindTexture(GL_TEXTURE_2D, rightTexture);
     glUniform1i(wipeLocRight_, 1);
+
+    // wipe：分界位置；texelSize：按分辨率换算的像素尺寸
     glUniform1f(wipeLocWipe_, wipe);
-    glUniform2f(wipeLocTexelSize_, 1.0f / static_cast<float>(width_), 1.0f / static_cast<float>(height_));
+    glUniform2f(wipeLocTexelSize_,
+                1.0f / static_cast<float>(width_),
+                1.0f / static_cast<float>(height_));
+
     drawFullscreen();
     glEnable(GL_DEPTH_TEST);
-}
-
-void PostProcess::resolveMsaaToScreen(GLuint msaaFbo, int width, int height) const {
-    glBindFramebuffer(GL_READ_FRAMEBUFFER, msaaFbo);
-    glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
-    glBlitFramebuffer(0, 0, width_, height_, 0, 0, width, height, GL_COLOR_BUFFER_BIT, GL_NEAREST);
-    glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
