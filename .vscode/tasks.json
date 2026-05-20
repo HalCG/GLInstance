@@ -2,161 +2,137 @@
     "version": "2.0.0",
     "tasks": [
         {
-            "label": "CMake: Configure MSVC 2022",
+            "label": "CMake: Configure MSVC 2026",
             "type": "shell",
             "command": "cmake",
-            "args": [
-                "--preset",
-                "x64-msvc-2022"
-            ],
-            "options": {
-                "cwd": "${workspaceFolder}"
-            },
+            "args": ["--preset", "x64-msvc-2026"],
+            "options": { "cwd": "${workspaceFolder}" },
             "group": "build",
             "problemMatcher": []
         },
         {
-            "label": "Build: MSVC 2022 (All)",
+            "label": "Build: MSVC 2026 (All)",
             "type": "shell",
             "command": "cmake",
             "args": [
                 "--build",
-                "${workspaceFolder}/out/build/x64-msvc-2022",
+                "${workspaceFolder}/out/build/x64-msvc-2026",
                 "--config",
                 "Debug"
             ],
-            "options": {
-                "cwd": "${workspaceFolder}"
-            },
-            "group": {
-                "kind": "build",
-                "isDefault": true
-            },
+            "options": { "cwd": "${workspaceFolder}" },
+            "group": { "kind": "build", "isDefault": true },
             "problemMatcher": "$msCompile"
         },
         {
-            "label": "Build: MSVC 2022 (Anti-Aliasing)",
+            "label": "Build: MSVC 2026 (Anti-Aliasing)",
             "type": "shell",
             "command": "cmake",
             "args": [
                 "--build",
-                "${workspaceFolder}/out/build/x64-msvc-2022",
+                "${workspaceFolder}/out/build/x64-msvc-2026",
                 "--config",
                 "Debug",
                 "--target",
                 "OpenGL_Anti_Aliasing"
             ],
-            "options": {
-                "cwd": "${workspaceFolder}"
-            },
+            "options": { "cwd": "${workspaceFolder}" },
             "group": "build",
             "problemMatcher": "$msCompile"
         },
         {
-            "label": "Build: MSVC 2022 (OIT Depth Peeling)",
+            "label": "Build: MSVC 2026 (Rendering Paths)",
             "type": "shell",
             "command": "cmake",
             "args": [
                 "--build",
-                "${workspaceFolder}/out/build/x64-msvc-2022",
-                "--config",
-                "Debug",
-                "--target",
-                "OpenGL_OIT_Depth_Peeling"
-            ],
-            "options": {
-                "cwd": "${workspaceFolder}"
-            },
-            "group": "build",
-            "problemMatcher": "$msCompile"
-        },
-        {
-            "label": "Build: MSVC 2022 (OIT Stochastic)",
-            "type": "shell",
-            "command": "cmake",
-            "args": [
-                "--build",
-                "${workspaceFolder}/out/build/x64-msvc-2022",
-                "--config",
-                "Debug",
-                "--target",
-                "OpenGL_OIT_Stochastic_Transparency"
-            ],
-            "options": {
-                "cwd": "${workspaceFolder}"
-            },
-            "group": "build",
-            "problemMatcher": "$msCompile"
-        },
-        {
-            "label": "Build: MSVC 2022 (OIT Linked List)",
-            "type": "shell",
-            "command": "cmake",
-            "args": [
-                "--build",
-                "${workspaceFolder}/out/build/x64-msvc-2022",
-                "--config",
-                "Debug",
-                "--target",
-                "OpenGL_OIT_Linked_list"
-            ],
-            "options": {
-                "cwd": "${workspaceFolder}"
-            },
-            "group": "build",
-            "problemMatcher": "$msCompile"
-        },
-        {
-            "label": "Build: MSVC 2022 (Rendering Paths)",
-            "type": "shell",
-            "command": "cmake",
-            "args": [
-                "--build",
-                "${workspaceFolder}/out/build/x64-msvc-2022",
+                "${workspaceFolder}/out/build/x64-msvc-2026",
                 "--config",
                 "Debug",
                 "--target",
                 "OpenGL_Rendering_Paths"
             ],
-            "options": {
-                "cwd": "${workspaceFolder}"
-            },
+            "options": { "cwd": "${workspaceFolder}" },
             "group": "build",
             "problemMatcher": "$msCompile"
         },
         {
-            "label": "Build: MSVC 2022 (PBR)",
+            "label": "Build: MSVC 2026 (PBR)",
             "type": "shell",
             "command": "cmake",
             "args": [
                 "--build",
-                "${workspaceFolder}/out/build/x64-msvc-2022",
+                "${workspaceFolder}/out/build/x64-msvc-2026",
                 "--config",
                 "Debug",
                 "--target",
                 "OpenGL_PBR"
             ],
-            "options": {
-                "cwd": "${workspaceFolder}"
-            },
+            "options": { "cwd": "${workspaceFolder}" },
             "group": "build",
             "problemMatcher": "$msCompile"
         },
         {
-            "label": "Build: MSVC 2022 (Nanite)",
+            "label": "Build: MSVC 2026 (OIT Depth Peeling)",
             "type": "shell",
             "command": "cmake",
             "args": [
                 "--build",
-                "${workspaceFolder}/out/build/x64-msvc-2022",
+                "${workspaceFolder}/out/build/x64-msvc-2026",
+                "--config",
+                "Debug",
+                "--target",
+                "OpenGL_OIT_Depth_Peeling"
+            ],
+            "options": { "cwd": "${workspaceFolder}" },
+            "group": "build",
+            "problemMatcher": "$msCompile"
+        },
+        {
+            "label": "Build: MSVC 2026 (OIT Linked List)",
+            "type": "shell",
+            "command": "cmake",
+            "args": [
+                "--build",
+                "${workspaceFolder}/out/build/x64-msvc-2026",
+                "--config",
+                "Debug",
+                "--target",
+                "OpenGL_OIT_Linked_list"
+            ],
+            "options": { "cwd": "${workspaceFolder}" },
+            "group": "build",
+            "problemMatcher": "$msCompile"
+        },
+        {
+            "label": "Build: MSVC 2026 (OIT Stochastic)",
+            "type": "shell",
+            "command": "cmake",
+            "args": [
+                "--build",
+                "${workspaceFolder}/out/build/x64-msvc-2026",
+                "--config",
+                "Debug",
+                "--target",
+                "OpenGL_OIT_Stochastic_Transparency"
+            ],
+            "options": { "cwd": "${workspaceFolder}" },
+            "group": "build",
+            "problemMatcher": "$msCompile"
+        },
+        {
+            "label": "Build: MSVC 2026 (Nanite)",
+            "type": "shell",
+            "command": "cmake",
+            "args": [
+                "--build",
+                "${workspaceFolder}/out/build/x64-msvc-2026",
                 "--config",
                 "Debug",
                 "--target",
                 "OpenGL_NaniteInUE5.5.4"
             ],
-            "options": {
-                "cwd": "${workspaceFolder}"
-            },
+            "options": { "cwd": "${workspaceFolder}" },
             "group": "build",
             "problemMatcher": "$msCompile"
         }

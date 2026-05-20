@@ -246,7 +246,7 @@ OpenGL_NaniteInUE5.5.4/
 
 ### 8.1 环境要求
 - **操作系统**：Windows 10 / 11 (x64)
-- **IDE / 编译器**：Visual Studio 2022 (MSVC v143) 或 CMake 3.10+
+- **IDE / 编译器**：Visual Studio 2022 / 2026 (MSVC v143 / v145) 或 CMake 3.10+
 - **显卡支持**：支持 **OpenGL 4.5** 及以上、包含扩展 `GL_ARB_gpu_shader_int64` 与 `GL_NV_shader_atomic_int64` 的 NVIDIA / AMD 独立显卡。
 
 ### 8.2 构建步骤

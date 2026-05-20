@@ -1,6 +1,6 @@
 # OpenGLInstance
 
-OpenGL 4.x 图形学 Demo 集合（完善中）。每个子项目为 **独立可执行程序**，围绕同一主题（抗锯齿、顺序无关透明、渲染路径、PBR、Nanite 等）提供可运行示例与中文文档。
+OpenGL 4.x 图形学 Demo 集合（完善中）。每个子项目为 **独立可执行程序**，围绕同一主题（抗锯齿、渲染路径、顺序无关透明、PBR、Nanite 等）提供可运行示例与中文文档。
 
 **仓库地址：** [https://github.com/HalCG/OpenGLInstance](https://github.com/HalCG/OpenGLInstance)
 
@@ -10,21 +10,21 @@ OpenGL 4.x 图形学 Demo 集合（完善中）。每个子项目为 **独立可
 
 | 子项目 | 主题 | 运行时切换 / 要点 | 文档入口 |
 |--------|------|-------------------|----------|
+| [OpenGL_PBR](OpenGL_PBR/) | PBR 渲染 & IBL 预计算 | Cook-Torrance、Split-Sum 离屏预计算、HDR | [README](OpenGL_PBR/README.md) · [原理与架构](OpenGL_PBR/docs/PBR_原理与架构.md) · [Shader 与实现](OpenGL_PBR/docs/PBR_Shader与关键实现.md) |
 | [OpenGL_Anti_Aliasing](OpenGL_Anti_Aliasing/) | 抗锯齿 | `1`～`4`：None / MSAA / FXAA / TAA | [README](OpenGL_Anti_Aliasing/README.md) · [技术大纲](OpenGL_Anti_Aliasing/docs/README.md) |
+| [OpenGL_Rendering_Paths](OpenGL_Rendering_Paths/) | 渲染路径 | `1`～`3`：Forward / Deferred / Forward+ | [README](OpenGL_Rendering_Paths/README.md) · [技术大纲](OpenGL_Rendering_Paths/docs/README.md) |
+| [OpenGL_OIT_Linked_list](OpenGL_OIT_Linked_list/) | OIT · 链表 | SSBO + 原子操作，逐像素收集透明片元 | [README](OpenGL_OIT_Linked_list/README.md) · [技术大纲](OpenGL_OIT_Linked_list/docs/README.md) |
 | [OpenGL_OIT_Depth_Peeling](OpenGL_OIT_Depth_Peeling/) | OIT · 深度剥离 | 多 Pass 逐层剥离 | [README](OpenGL_OIT_Depth_Peeling/README.md) · [技术大纲](OpenGL_OIT_Depth_Peeling/docs/README.md) · [OIT_MD 笔记](OpenGL_OIT_Depth_Peeling/OIT_MD/) |
 | [OpenGL_OIT_Stochastic_Transparency](OpenGL_OIT_Stochastic_Transparency/) | OIT · 随机透明 | 单 Pass 随机 discard + 累积 | [README](OpenGL_OIT_Stochastic_Transparency/README.md) · [技术大纲](OpenGL_OIT_Stochastic_Transparency/docs/README.md) |
-| [OpenGL_OIT_Linked_list](OpenGL_OIT_Linked_list/) | OIT · 链表 | SSBO + 原子操作，逐像素收集透明片元 | [README](OpenGL_OIT_Linked_list/README.md) · [技术大纲](OpenGL_OIT_Linked_list/docs/README.md) |
-| [OpenGL_Rendering_Paths](OpenGL_Rendering_Paths/) | 渲染路径 | `1`～`3`：Forward / Deferred / Forward+ | [README](OpenGL_Rendering_Paths/README.md) · [技术大纲](OpenGL_Rendering_Paths/docs/README.md) |
-| [OpenGL_PBR](OpenGL_PBR/) | PBR 渲染 & IBL 预计算 | Cook-Torrance、Split-Sum 离屏预计算、HDR | [README](OpenGL_PBR/README.md) · [原理与架构](OpenGL_PBR/docs/PBR_原理与架构.md) · [Shader 与实现](OpenGL_PBR/docs/PBR_Shader与关键实现.md) |
 | [OpenGL_NaniteInUE5.5.4](OpenGL_NaniteInUE5.5.4/) | Nanite 风格虚拟几何 | GPU Driven / SW·HW 光栅 | [README](OpenGL_NaniteInUE5.5.4/README.md) · [文档目录](OpenGL_NaniteInUE5.5.4/doc/README.md) |
 
 ### 按主题选读
 
-- **锯齿 / MSAA / FXAA / TAA** → `OpenGL_Anti_Aliasing`
-- **透明、与绘制顺序无关** → `OpenGL_OIT_*` 子项目横向对比
-- **多光源 / Forward vs Deferred vs Forward+** → `OpenGL_Rendering_Paths`
-- **物理渲染 / IBL** → `OpenGL_PBR`
 - **PBR 入门** → [docs/PBR_Beginner_Guide.md](docs/PBR_Beginner_Guide.md)
+- **物理渲染 / IBL** → `OpenGL_PBR`
+- **多光源 / Forward vs Deferred vs Forward+** → `OpenGL_Rendering_Paths`
+- **锯齿 / MSAA / FXAA / TAA** → `OpenGL_Anti_Aliasing`
+- **透明、与绘制顺序无关** → `OpenGL_OIT_*` 三个子项目横向对比
 - **虚拟几何 / Nanite** → `OpenGL_NaniteInUE5.5.4`
 
 ---
@@ -32,11 +32,11 @@ OpenGL 4.x 图形学 Demo 集合（完善中）。每个子项目为 **独立可
 ## 环境要求
 
 - **系统：** Windows x64
-- **工具链：** Visual Studio 2022（MSVC）+ CMake ≥ 3.10
+- **工具链：** Visual Studio 2026（MSVC）+ CMake ≥ 3.10
 - **依赖：** 位于 `modules/`（GLFW、GLAD、Assimp 等，由 `cmake/OpenGLWorkspaceDependencies.cmake` 统一查找）
 - **OpenGL：** 核心 4.3+～4.6（各子项目要求略有不同）
 
-当前工程**仅维护** `x64-msvc-2022` 一套构建预设。
+当前工程**仅维护** `x64-msvc-2026` 一套构建预设。
 
 ---
 
@@ -46,19 +46,19 @@ OpenGL 4.x 图形学 Demo 集合（完善中）。每个子项目为 **独立可
 git clone https://github.com/HalCG/OpenGLInstance.git
 cd OpenGLInstance
 
-cmake --preset x64-msvc-2022
-cmake --build out/build/x64-msvc-2022 --config Debug
+cmake --preset x64-msvc-2026
+cmake --build out/build/x64-msvc-2026 --config Debug
 ```
 
 只构建某一个 Demo：
 
 ```bash
-cmake --build out/build/x64-msvc-2022 --config Debug --target OpenGL_Anti_Aliasing
-cmake --build out/build/x64-msvc-2022 --config Debug --target OpenGL_OIT_Depth_Peeling
-cmake --build out/build/x64-msvc-2022 --config Debug --target OpenGL_OIT_Stochastic_Transparency
+cmake --build out/build/x64-msvc-2026 --config Debug --target OpenGL_PBR
+cmake --build out/build/x64-msvc-2026 --config Debug --target OpenGL_Rendering_Paths
+cmake --build out/build/x64-msvc-2026 --config Debug --target OpenGL_Anti_Aliasing
 ```
 
-VS Code：`.vscode/tasks.json` 的 **CMake: Configure MSVC 2022** 与各 **Build: MSVC 2022 (...)**；调试用 `.vscode/launch.json`。
+VS Code / Cursor：`.vscode/tasks.json` 的 **CMake: Configure MSVC 2026** 与各 **Build: MSVC 2026 (...)**；调试用 `.vscode/launch.json`（含 PBR / Nanite 等）。
 
 ---
 
@@ -90,19 +90,17 @@ POST_BUILD 会将 `resources/` 与 Assimp 等运行时 DLL 拷贝到 exe 旁。*
 ```
 OpenGLInstance/
 ├── CMakeLists.txt              # 根 CMake，add_subdirectory 各 Demo
-├── CMakePresets.json           # 仅 x64-msvc-2022
+├── CMakePresets.json           # 仅 x64-msvc-2026
 ├── cmake/                      # 共享依赖查找、run/ 输出、资源与 DLL 部署
 ├── modules/                    # 第三方库（GLFW、Assimp、GLAD 等）
 ├── run/                        # Demo 可执行文件（gitignore，构建后生成）
 ├── out/build/                  # CMake 中间产物（gitignore）
-├── .vscode/                    # MSVC 2022 构建与调试
+├── .vscode/                    # MSVC 2026 构建与调试
 ├── docs/                       # 仓库级入门文档
-├── OpenGL_Anti_Aliasing/
-├── OpenGL_OIT_Depth_Peeling/
-├── OpenGL_OIT_Stochastic_Transparency/
-├── OpenGL_OIT_Linked_list/
-├── OpenGL_Rendering_Paths/
 ├── OpenGL_PBR/
+├── OpenGL_Anti_Aliasing/
+├── OpenGL_Rendering_Paths/
+├── OpenGL_OIT_*/
 └── OpenGL_NaniteInUE5.5.4/
 ```
 
@@ -122,7 +120,7 @@ OpenGL_<Name>/
 
 ## 设计约定
 
-- **单 exe、可切换：** 对比类 Demo 尽量在一个程序内切换模式，便于公平对比性能。
+- **单 exe、可切换：** 对比类 Demo 尽量在一个程序内切换模式（如 AA 四种模式、三条渲染路径），便于公平对比性能。
 - **分 Pass 计时：** 使用 `GL_TIME_ELAPSED` query；拖拽相机时通常关闭 GPU 计时以减少干扰。
 - **事件驱动主循环：** 静止时 `glfwWaitEvents`；有输入或模式切换时再渲染，降低空转开销。
 - **资源归属：** Demo 自带 `resources/`，构建后由 `ogl_ws_deploy_static_resources()` 拷贝到 `run/` 下 exe 旁；Assimp 等 DLL 由 `ogl_ws_link_assimp()` 自动部署。
@@ -132,4 +130,11 @@ OpenGL_<Name>/
 ## 文档阅读建议
 
 1. 先打开对应子项目的 **README** 与 **docs/README（技术大纲）** 建立概念。
-2. 再按专题文档深入源码与实验记录。
+2. PBR / Nanite 等再跟专题文档（`docs/` 或 `doc/`）按模块读源码。
+3. 运行 Demo，对照面板 / 窗口标题中的 Pass 耗时做实验记录。
+
+---
+
+## License
+
+各子项目代码与文档以仓库现状为准；`modules/` 内第三方库遵循其各自许可证。

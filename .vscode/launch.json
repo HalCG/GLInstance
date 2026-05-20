@@ -8,40 +8,7 @@
             "program": "${workspaceFolder}/run/Debug/OpenGL_Anti_Aliasing/OpenGL_Anti_Aliasing.exe",
             "args": [],
             "cwd": "${workspaceFolder}/run/Debug/OpenGL_Anti_Aliasing",
-            "preLaunchTask": "Build: MSVC 2022 (Anti-Aliasing)",
-            "stopAtEntry": false,
-            "console": "integratedTerminal"
-        },
-        {
-            "name": "OpenGL_OIT_Depth_Peeling",
-            "type": "cppvsdbg",
-            "request": "launch",
-            "program": "${workspaceFolder}/run/Debug/OpenGL_OIT_Depth_Peeling/OpenGL_OIT_Depth_Peeling.exe",
-            "args": [],
-            "cwd": "${workspaceFolder}/run/Debug/OpenGL_OIT_Depth_Peeling",
-            "preLaunchTask": "Build: MSVC 2022 (OIT Depth Peeling)",
-            "stopAtEntry": false,
-            "console": "integratedTerminal"
-        },
-        {
-            "name": "OpenGL_OIT_Stochastic_Transparency",
-            "type": "cppvsdbg",
-            "request": "launch",
-            "program": "${workspaceFolder}/run/Debug/OpenGL_OIT_Stochastic_Transparency/OpenGL_OIT_Stochastic_Transparency.exe",
-            "args": [],
-            "cwd": "${workspaceFolder}/run/Debug/OpenGL_OIT_Stochastic_Transparency",
-            "preLaunchTask": "Build: MSVC 2022 (OIT Stochastic)",
-            "stopAtEntry": false,
-            "console": "integratedTerminal"
-        },
-        {
-            "name": "OpenGL_OIT_Linked_list",
-            "type": "cppvsdbg",
-            "request": "launch",
-            "program": "${workspaceFolder}/run/Debug/OpenGL_OIT_Linked_list/OpenGL_OIT_Linked_list.exe",
-            "args": [],
-            "cwd": "${workspaceFolder}/run/Debug/OpenGL_OIT_Linked_list",
-            "preLaunchTask": "Build: MSVC 2022 (OIT Linked List)",
+            "preLaunchTask": "Build: MSVC 2026 (Anti-Aliasing)",
             "stopAtEntry": false,
             "console": "integratedTerminal"
         },
@@ -52,7 +19,7 @@
             "program": "${workspaceFolder}/run/Debug/OpenGL_Rendering_Paths/OpenGL_Rendering_Paths.exe",
             "args": [],
             "cwd": "${workspaceFolder}/run/Debug/OpenGL_Rendering_Paths",
-            "preLaunchTask": "Build: MSVC 2022 (Rendering Paths)",
+            "preLaunchTask": "Build: MSVC 2026 (Rendering Paths)",
             "stopAtEntry": false,
             "console": "integratedTerminal"
         },
@@ -63,7 +30,40 @@
             "program": "${workspaceFolder}/run/Debug/OpenGL_PBR/OpenGL_PBR.exe",
             "args": [],
             "cwd": "${workspaceFolder}/run/Debug/OpenGL_PBR",
-            "preLaunchTask": "Build: MSVC 2022 (PBR)",
+            "preLaunchTask": "Build: MSVC 2026 (PBR)",
+            "stopAtEntry": false,
+            "console": "integratedTerminal"
+        },
+        {
+            "name": "OpenGL_OIT_Depth_Peeling",
+            "type": "cppvsdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/run/Debug/OpenGL_OIT_Depth_Peeling/OpenGL_OIT_Depth_Peeling.exe",
+            "args": [],
+            "cwd": "${workspaceFolder}/run/Debug/OpenGL_OIT_Depth_Peeling",
+            "preLaunchTask": "Build: MSVC 2026 (OIT Depth Peeling)",
+            "stopAtEntry": false,
+            "console": "integratedTerminal"
+        },
+        {
+            "name": "OpenGL_OIT_Linked_list",
+            "type": "cppvsdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/run/Debug/OpenGL_OIT_Linked_list/OpenGL_OIT_Linked_list.exe",
+            "args": [],
+            "cwd": "${workspaceFolder}/run/Debug/OpenGL_OIT_Linked_list",
+            "preLaunchTask": "Build: MSVC 2026 (OIT Linked List)",
+            "stopAtEntry": false,
+            "console": "integratedTerminal"
+        },
+        {
+            "name": "OpenGL_OIT_Stochastic_Transparency",
+            "type": "cppvsdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/run/Debug/OpenGL_OIT_Stochastic_Transparency/OpenGL_OIT_Stochastic_Transparency.exe",
+            "args": [],
+            "cwd": "${workspaceFolder}/run/Debug/OpenGL_OIT_Stochastic_Transparency",
+            "preLaunchTask": "Build: MSVC 2026 (OIT Stochastic)",
             "stopAtEntry": false,
             "console": "integratedTerminal"
         },
@@ -74,7 +74,7 @@
             "program": "${workspaceFolder}/run/Debug/OpenGL_NaniteInUE5.5.4/OpenGL_NaniteInUE5.5.4.exe",
             "args": [],
             "cwd": "${workspaceFolder}/run/Debug/OpenGL_NaniteInUE5.5.4",
-            "preLaunchTask": "Build: MSVC 2022 (Nanite)",
+            "preLaunchTask": "Build: MSVC 2026 (Nanite)",
             "stopAtEntry": false,
             "console": "integratedTerminal"
         }

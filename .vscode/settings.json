@@ -1,6 +1,6 @@
 {
-    "cmake.configurePreset": "x64-msvc-2022",
-    "cmake.buildPreset": "x64-msvc-2022-debug",
+    "cmake.configurePreset": "x64-msvc-2026",
+    "cmake.buildPreset": "x64-msvc-2026-debug",
     "cmake.debugConfig": {
         "type": "cppvsdbg",
         "request": "launch",
