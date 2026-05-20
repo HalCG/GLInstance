@@ -499,8 +499,8 @@ GitHub 目录：[https://github.com/HalCG/OpenGLInstance/tree/main/OpenGL_Render
 ### 构建与运行（简）
 
 ```bash
-cmake --preset x64-msvc-2022
-cmake --build out/build/x64-msvc-2022 --config Debug --target OpenGL_Rendering_Paths
+cmake --preset x64-msvc-2026
+cmake --build out/build/x64-msvc-2026 --config Debug --target OpenGL_Rendering_Paths
 ```
 
 可执行文件：`run/Debug/OpenGL_Rendering_Paths/OpenGL_Rendering_Paths.exe`（需在 exe 同目录运行，`resources/` 由 CMake 部署）。
@@ -1161,8 +1161,8 @@ OpenGL 状态机没有任何显式的面向对象上下文，所有操作作用�
 ```bash
 git clone https://github.com/HalCG/OpenGLInstance.git
 cd OpenGLInstance
-cmake --preset x64-msvc-2022
-cmake --build out/build/x64-msvc-2022 --config Debug --target OpenGL_Rendering_Paths
+cmake --preset x64-msvc-2026
+cmake --build out/build/x64-msvc-2026 --config Debug --target OpenGL_Rendering_Paths
 ```
 
 可执行文件：`run/Debug/OpenGL_Rendering_Paths/OpenGL_Rendering_Paths.exe`  

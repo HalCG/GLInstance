@@ -56,7 +56,7 @@ OpenGL_NaniteInUE5.5.4/
 
 ## 编译与运行
 
-- **IDE**：Visual Studio 2022（工具集 v143 / VS 17）
+- **IDE**：Visual Studio 2026（工具集 v145 / VS 18）
 - **配置**：`Debug | x64` 或 `Release | x64`
 - **输出**：`x64/Debug/Nanite.exe`（或 `x64/Release/`）
 - **工作目录**：调试时设为 `$(OutDir)`（与 exe 同目录，可直接加载 `glew32.dll` 与 `Res/`）

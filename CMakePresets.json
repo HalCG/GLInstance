@@ -2,9 +2,9 @@
     "version": 3,
     "configurePresets": [
         {
-            "name": "windows-msvc-2022-base",
+            "name": "windows-msvc-2026-base",
             "hidden": true,
-            "generator": "Visual Studio 17 2022",
+            "generator": "Visual Studio 18 2026",
             "architecture": "x64",
             "binaryDir": "${sourceDir}/out/build/${presetName}",
             "installDir": "${sourceDir}/out/install/${presetName}",
@@ -15,22 +15,22 @@
             }
         },
         {
-            "name": "x64-msvc-2022",
-            "displayName": "x64 MSVC 2022",
-            "inherits": "windows-msvc-2022-base"
+            "name": "x64-msvc-2026",
+            "displayName": "x64 MSVC 2026",
+            "inherits": "windows-msvc-2026-base"
         }
     ],
     "buildPresets": [
         {
-            "name": "x64-msvc-2022-debug",
-            "displayName": "x64 MSVC 2022 Debug",
-            "configurePreset": "x64-msvc-2022",
+            "name": "x64-msvc-2026-debug",
+            "displayName": "x64 MSVC 2026 Debug",
+            "configurePreset": "x64-msvc-2026",
             "configuration": "Debug"
         },
         {
-            "name": "x64-msvc-2022-release",
-            "displayName": "x64 MSVC 2022 Release",
-            "configurePreset": "x64-msvc-2022",
+            "name": "x64-msvc-2026-release",
+            "displayName": "x64 MSVC 2026 Release",
+            "configurePreset": "x64-msvc-2026",
             "configuration": "Release"
         }
     ]
