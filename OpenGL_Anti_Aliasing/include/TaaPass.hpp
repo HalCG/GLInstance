@@ -21,8 +21,6 @@ public:
     GLuint outputTexture() const { return history_[currentIndex_]; } // 混合结果，供 blit 到屏幕
 
 private:
-    void swapHistory();
-
     GLuint history_[2] = {0, 0};
     GLuint fbo_ = 0;
     GLuint shader_ = 0;

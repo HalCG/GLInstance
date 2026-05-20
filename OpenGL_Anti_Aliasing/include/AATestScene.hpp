@@ -20,7 +20,6 @@ public:
     void shutdown();
 
     void drawOpaque(Shader &shader) const;
-    void drawLines(Shader &lineShader) const;
 
 private:
     std::unique_ptr<Model> helmet_;

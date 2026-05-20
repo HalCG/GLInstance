@@ -16,11 +16,10 @@ struct FrameCamera {
     glm::mat4 view;
     glm::mat4 projection;              // 可能含 jitter（仅 Scene Pass 光栅化）
     glm::mat4 viewProjection;          // projection * view（可能 jittered）
-    glm::mat4 unjitteredViewProjection = glm::mat4(1.0f); // TAA 重投影 / history 用
-    glm::mat4 invUnjitteredViewProjection = glm::mat4(1.0f);
-    glm::mat4 invViewProjection = glm::mat4(1.0f); // 兼容旧字段；TAA 应使用 invUnjittered*
+    glm::mat4 unjitteredViewProjection = glm::mat4(1.0f);    // 无 jitter 的 VP：TAA 重投影 / 存 prev
+    glm::mat4 invUnjitteredViewProjection = glm::mat4(1.0f); // 同上的逆矩阵
     glm::vec3 eye;
-    glm::vec2 jitterNdc = glm::vec2(0.0f);
+    glm::vec2 jitterNdc = glm::vec2(0.0f); // 本帧子像素抖动（仅 TAA 非零）
 };
 
 // 每帧性能数据（fps/minFps/avgFrameMs 为 1s 窗统计）

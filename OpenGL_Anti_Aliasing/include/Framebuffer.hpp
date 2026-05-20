@@ -17,8 +17,6 @@ public:
     GLuint fbo() const { return fbo_; }
     GLuint colorTexture() const { return color_; }
     GLuint depthTexture() const { return depth_; }
-    int width() const { return width_; }
-    int height() const { return height_; }
     void blitColorTo(GLuint drawFbo, int dstW, int dstH) const; // 复制颜色到目标 FBO
 
 private:
@@ -38,12 +36,7 @@ public:
 
     void bind() const;
     void unbind() const;
-    void resolveColorToDefault(int width, int height) const; // MSAA resolve 到默认 framebuffer
-    void resolveColorTo(GLuint drawFbo, int dstW, int dstH) const; // MSAA resolve 到指定 FBO（对比用）
-
-    int samples() const { return samples_; }
-    int width() const { return width_; }
-    int height() const { return height_; }
+    void resolveColorTo(GLuint drawFbo, int dstW, int dstH) const; // MSAA resolve 到指定 FBO
 
 private:
     GLuint fbo_ = 0;

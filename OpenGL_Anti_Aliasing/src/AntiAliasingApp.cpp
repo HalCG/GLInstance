@@ -7,8 +7,6 @@
 #include <glm/common.hpp>
 #include <glm/trigonometric.hpp>
 #include <algorithm>
-#include <iostream>
-#include <sstream>
 
 #include "imgui.h"
 #include "imgui_impl_glfw.h"
@@ -18,20 +16,7 @@
 AntiAliasingApp *AntiAliasingApp::s_instance_ = nullptr;
 
 namespace {
-const char *modeName(AAMode mode) {
-    switch (mode) {
-    case AAMode::None:
-        return "None";
-    case AAMode::MSAA:
-        return "MSAA";
-    case AAMode::FXAA:
-        return "FXAA";
-    case AAMode::TAA:
-        return "TAA";
-    }
-    return "Unknown";
-}
-
+// 将请求的 MSAA 采样数钳到驱动支持的 [1, GL_MAX_SAMPLES]
 int clampMsaaSamples(int requested) {
     GLint maxSamples = 4;
     glGetIntegerv(GL_MAX_SAMPLES, &maxSamples);
@@ -62,8 +47,8 @@ bool AntiAliasingApp::init() {
     lastFrameTime_ = glfwGetTime();
 
     resizeTargets();
+    setMode(currentMode_); // 创建默认策略（MSAA）并 onEnter
     glViewport(0, 0, static_cast<GLsizei>(width_), static_cast<GLsizei>(height_));
-    cachedOverlayText_ = buildOverlayText();
     return true;
 }
 
@@ -126,12 +111,40 @@ void AntiAliasingApp::resizeTargets() {
     msaaFbo_.resize(renderW_, renderH_, samples);
     postProcess_.resize(renderW_, renderH_);
     taaPass_.resize(renderW_, renderH_);
+    // 分辨率变化后 history 无效，下一帧按无历史处理
     taaPass_.resetHistory();
     hasPrevViewProj_ = false;
 }
 
-void AntiAliasingApp::markCameraDirty() {
-    cameraDirty_ = true;
+// 组装本帧策略上下文（指针借用，不转移所有权）
+AaFrameContext AntiAliasingApp::makeFrameContext() {
+    AaFrameContext ctx;
+    ctx.scene = &scene_;
+    ctx.sceneRenderer = &sceneRenderer_;
+    ctx.sceneFbo = &singleFbo_;
+    ctx.resolveFbo = &resolveFbo_;
+    ctx.msaaFbo = &msaaFbo_;
+    ctx.postProcess = &postProcess_;
+    ctx.taaPass = &taaPass_;
+    ctx.renderW = renderW_;
+    ctx.renderH = renderH_;
+    ctx.prevViewProj = prevViewProj_;
+    ctx.hasPrevViewProj = hasPrevViewProj_;
+    ctx.cameraDragging = camera_.isDragging();
+    return ctx;
+}
+
+// 切 AA 模式：换策略对象，并让新策略 onEnter（清 TAA history 等）
+void AntiAliasingApp::setMode(AAMode mode) {
+    currentMode_ = mode;
+    technique_ = createAaTechnique(mode);
+    AaFrameContext ctx = makeFrameContext();
+    technique_->onEnter(ctx);
+    hasPrevViewProj_ = false;
+    if (mode == AAMode::MSAA) {
+        // 切到 MSAA 时按当前采样预设重建多重采样 FBO
+        resizeTargets();
+    }
 }
 
 FrameCamera AntiAliasingApp::buildCamera(glm::vec2 jitterNdc) const {
@@ -142,41 +155,23 @@ FrameCamera AntiAliasingApp::buildCamera(glm::vec2 jitterNdc) const {
         static_cast<float>(width_ > 0 ? width_ : 1) / static_cast<float>(height_ > 0 ? height_ : 1);
     const glm::mat4 baseProj = glm::perspective(glm::radians(AppConfig::kFovDegrees), aspect, AppConfig::kNearPlane,
                                                 AppConfig::kFarPlane);
+    // 无 jitter 的 VP：TAA 重投影 / 存 prevViewProj_ 必须用这套，否则 history 会漂
     camera.unjitteredViewProjection = baseProj * camera.view;
     camera.invUnjitteredViewProjection = glm::inverse(camera.unjitteredViewProjection);
 
     camera.projection = baseProj;
     if (currentMode_ == AAMode::TAA) {
+        // 把 NDC 子像素偏移加到投影矩阵（仅影响本帧光栅化）
         camera.projection[2][0] += jitterNdc.x * 2.0f;
         camera.projection[2][1] += jitterNdc.y * 2.0f;
     }
     camera.viewProjection = camera.projection * camera.view;
-    camera.invViewProjection = glm::inverse(camera.viewProjection);
     camera.jitterNdc = jitterNdc;
     return camera;
 }
 
-void AntiAliasingApp::renderScenePass(const FrameCamera &camera, bool useMsaa) {
-    glViewport(0, 0, renderW_, renderH_);
-    if (useMsaa) {
-        glEnable(GL_MULTISAMPLE);
-        msaaFbo_.bind();
-    } else {
-        glDisable(GL_MULTISAMPLE);
-        singleFbo_.bind();
-    }
-    glClearColor(0.08f, 0.09f, 0.12f, 1.0f);
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    sceneRenderer_.render(scene_, camera);
-    if (useMsaa) {
-        msaaFbo_.unbind();
-    } else {
-        singleFbo_.unbind();
-    }
-}
-
+// Wipe 左侧：同一机位、无 jitter、无 AA，写入 baselineFbo_
 void AntiAliasingApp::renderBaselineToBaseline(const FrameCamera &camera) {
-    // 强制无 jitter 的基线（用 unjittered 相机再画一遍更干净；此处 camera 已是无 jitter 时最简单）
     FrameCamera baselineCam = camera;
     baselineCam.projection = glm::perspective(
         glm::radians(AppConfig::kFovDegrees),
@@ -195,44 +190,8 @@ void AntiAliasingApp::renderBaselineToBaseline(const FrameCamera &camera) {
     singleFbo_.blitColorTo(baselineFbo_.fbo(), renderW_, renderH_);
 }
 
-void AntiAliasingApp::renderAaToResolve(const FrameCamera &camera) {
-    switch (currentMode_) {
-    case AAMode::None:
-        renderScenePass(camera, false);
-        singleFbo_.blitColorTo(resolveFbo_.fbo(), renderW_, renderH_);
-        break;
-    case AAMode::MSAA:
-        renderScenePass(camera, true);
-        msaaFbo_.resolveColorTo(resolveFbo_.fbo(), renderW_, renderH_);
-        break;
-    case AAMode::FXAA:
-        renderScenePass(camera, false);
-        resolveFbo_.bind();
-        glViewport(0, 0, renderW_, renderH_);
-        glDisable(GL_DEPTH_TEST);
-        postProcess_.applyFxaa(singleFbo_.colorTexture());
-        glEnable(GL_DEPTH_TEST);
-        resolveFbo_.unbind();
-        break;
-    case AAMode::TAA: {
-        renderScenePass(camera, false);
-        const float blend =
-            camera_.isDragging() ? AppConfig::kTaaBlendDragging : AppConfig::kTaaBlendSettled;
-        taaPass_.apply(singleFbo_.colorTexture(), singleFbo_.depthTexture(), camera, prevViewProj_,
-                       hasPrevViewProj_, blend);
-        resolveFbo_.bind();
-        glViewport(0, 0, renderW_, renderH_);
-        glDisable(GL_DEPTH_TEST);
-        postProcess_.blitTexture(taaPass_.outputTexture());
-        glEnable(GL_DEPTH_TEST);
-        resolveFbo_.unbind();
-        break;
-    }
-    }
-}
-
 void AntiAliasingApp::renderFrame() {
-    if (width_ == 0 || height_ == 0) {
+    if (width_ == 0 || height_ == 0 || !technique_) {
         return;
     }
 
@@ -241,30 +200,28 @@ void AntiAliasingApp::renderFrame() {
     lastFrameTime_ = now;
     if (autoOrbit_ && !camera_.isDragging()) {
         camera_.yaw += 18.0f * dt;
-        markCameraDirty();
     }
 
     perf_.beginFrame();
+    // 拖拽时关掉 GPU timer，减轻查询开销
     const bool measureGpu = !camera_.isDragging();
     perf_.scenePass.setEnabled(measureGpu);
     perf_.postPass.setEnabled(measureGpu);
 
-    glm::vec2 jitter(0.0f);
-    if (currentMode_ == AAMode::TAA) {
-        jitter = taaPass_.nextJitter(renderW_, renderH_);
-    }
+    // --- Scene：策略产出 resolveFbo（可选先画 Wipe 基线）---
+    AaFrameContext ctx = makeFrameContext();
+    const glm::vec2 jitter = technique_->beginFrameJitter(ctx);
     const FrameCamera camera = buildCamera(jitter);
 
     perf_.scenePass.begin();
     const bool doWipe = wipeCompare_ && currentMode_ != AAMode::None;
     if (doWipe) {
         renderBaselineToBaseline(camera);
-        renderAaToResolve(camera);
-    } else {
-        renderAaToResolve(camera);
     }
+    technique_->renderToResolve(camera, ctx);
     perf_.frameStats().scenePassMs = perf_.scenePass.endMs();
 
+    // --- Present：Wipe 拼左右，或直接 blit resolve 到默认帧缓冲 ---
     perf_.postPass.begin();
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
     glViewport(0, 0, static_cast<GLsizei>(width_), static_cast<GLsizei>(height_));
@@ -274,12 +231,12 @@ void AntiAliasingApp::renderFrame() {
     if (doWipe) {
         postProcess_.applyWipe(baselineFbo_.colorTexture(), resolveFbo_.colorTexture(), wipeAmount_);
     } else {
-        // 统一用硬件 blit 出屏，避免后处理程序异常时整屏黑
         resolveFbo_.blitColorToDefault(static_cast<int>(width_), static_cast<int>(height_));
     }
-    postProcess_.resize(renderW_, renderH_);
+    postProcess_.resize(renderW_, renderH_); // 恢复内部分辨率，供下帧 FXAA/TAA 使用
     perf_.frameStats().postPassMs = perf_.postPass.endMs();
 
+    // 供下一帧 TAA 重投影
     prevViewProj_ = camera.unjitteredViewProjection;
     hasPrevViewProj_ = true;
     perf_.endFrame();
@@ -298,29 +255,16 @@ void AntiAliasingApp::renderFrame() {
         ImGui::Text("Anti-Aliasing Mode (1-4):");
         int modeIdx = static_cast<int>(currentMode_);
         if (ImGui::RadioButton("None", modeIdx == 0)) {
-            currentMode_ = AAMode::None;
-            taaPass_.resetHistory();
-            hasPrevViewProj_ = false;
-            markCameraDirty();
+            setMode(AAMode::None);
         }
         if (ImGui::RadioButton("MSAA", modeIdx == 1)) {
-            currentMode_ = AAMode::MSAA;
-            taaPass_.resetHistory();
-            hasPrevViewProj_ = false;
-            resizeTargets();
-            markCameraDirty();
+            setMode(AAMode::MSAA);
         }
         if (ImGui::RadioButton("FXAA", modeIdx == 2)) {
-            currentMode_ = AAMode::FXAA;
-            taaPass_.resetHistory();
-            hasPrevViewProj_ = false;
-            markCameraDirty();
+            setMode(AAMode::FXAA);
         }
         if (ImGui::RadioButton("TAA", modeIdx == 3)) {
-            currentMode_ = AAMode::TAA;
-            taaPass_.resetHistory();
-            hasPrevViewProj_ = false;
-            markCameraDirty();
+            setMode(AAMode::TAA);
         }
 
         if (currentMode_ == AAMode::MSAA) {
@@ -328,13 +272,11 @@ void AntiAliasingApp::renderFrame() {
             if (ImGui::Button("2x") && msaaPresetIndex_ != 0) {
                 msaaPresetIndex_ = 0;
                 resizeTargets();
-                markCameraDirty();
             }
             ImGui::SameLine();
             if (ImGui::Button("4x") && msaaPresetIndex_ != 1) {
                 msaaPresetIndex_ = 1;
                 resizeTargets();
-                markCameraDirty();
             }
             ImGui::SameLine();
             ImGui::Text("(%dx)", clampMsaaSamples(AppConfig::kMsaaSamplesPresets[msaaPresetIndex_]));
@@ -343,15 +285,12 @@ void AntiAliasingApp::renderFrame() {
             if (ImGui::Button("Reset TAA History")) {
                 taaPass_.resetHistory();
                 hasPrevViewProj_ = false;
-                markCameraDirty();
             }
         }
 
         ImGui::Separator();
         ImGui::Text("同机位对比:");
-        if (ImGui::Checkbox("Wipe：左 None / 右 当前AA（同位置）", &wipeCompare_)) {
-            markCameraDirty();
-        }
+        ImGui::Checkbox("Wipe：左 None / 右 当前AA（同位置）", &wipeCompare_);
         if (wipeCompare_) {
             ImGui::SliderFloat("分割线", &wipeAmount_, 0.05f, 0.95f, "%.2f");
             ImGui::TextWrapped("对准头盔轮廓或通风口边缘拖动，看锯齿差异。");
@@ -363,12 +302,10 @@ void AntiAliasingApp::renderFrame() {
         if (ImGui::Combo("Render Scale", &scaleIdx, scaleLabels, 3)) {
             renderScale_ = scales[scaleIdx];
             resizeTargets();
-            markCameraDirty();
         }
         ImGui::Checkbox("Auto Orbit (可选)", &autoOrbit_);
         if (ImGui::Checkbox("VSync", &vsyncEnabled_)) {
             glfwSwapInterval(vsyncEnabled_ ? 1 : 0);
-            markCameraDirty();
         }
 
         ImGui::Separator();
@@ -386,27 +323,13 @@ void AntiAliasingApp::renderFrame() {
 
     ImGui::Render();
     ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
-
-    if (!camera_.isDragging() && ++titleUpdateCounter_ % 15 == 0) {
-        cachedOverlayText_ = buildOverlayText();
-        updateWindowTitle();
-    }
 }
 
 void AntiAliasingApp::run() {
-    int frameCounter = 0;
     while (!glfwWindowShouldClose(window_)) {
         glfwPollEvents();
         renderFrame();
         glfwSwapBuffers(window_);
-        cameraDirty_ = false;
-
-        if (++frameCounter % 120 == 0) {
-            const FrameStats stats = perf_.latest();
-            std::cout << "mode," << modeName(currentMode_) << ",scale," << renderScale_ << ",wipe," << wipeCompare_
-                      << ",msaa," << (currentMode_ == AAMode::MSAA ? msaaFbo_.samples() : 0) << ",fps," << stats.fps
-                      << ",scene_ms," << stats.scenePassMs << ",post_ms," << stats.postPassMs << std::endl;
-        }
     }
 }
 
@@ -415,6 +338,7 @@ void AntiAliasingApp::shutdown() {
     ImGui_ImplGlfw_Shutdown();
     ImGui::DestroyContext();
 
+    technique_.reset();
     taaPass_.shutdown();
     postProcess_.shutdown();
     sceneRenderer_.shutdown();
@@ -440,25 +364,6 @@ int AntiAliasingApp::nextMsaaPreset(int delta) const {
     return idx;
 }
 
-std::string AntiAliasingApp::buildOverlayText() const {
-    const FrameStats stats = perf_.latest();
-    std::ostringstream oss;
-    oss << modeName(currentMode_);
-    if (currentMode_ == AAMode::MSAA) {
-        oss << " x" << msaaFbo_.samples();
-    }
-    oss << " | scale=" << static_cast<int>(renderScale_ * 100.0f) << "% | 1sFPS=" << static_cast<int>(stats.fps)
-        << " | min=" << static_cast<int>(stats.minFps) << " | avg=" << stats.avgFrameMs << "ms"
-        << " | scene=" << stats.scenePassMs << "ms post=" << stats.postPassMs << "ms";
-    return oss.str();
-}
-
-void AntiAliasingApp::updateWindowTitle() {
-    if (window_) {
-        glfwSetWindowTitle(window_, cachedOverlayText_.c_str());
-    }
-}
-
 void AntiAliasingApp::framebufferSizeCallback(GLFWwindow * /*window*/, int width, int height) {
     if (width <= 0 || height <= 0) {
         return;
@@ -467,7 +372,6 @@ void AntiAliasingApp::framebufferSizeCallback(GLFWwindow * /*window*/, int width
         s_instance_->width_ = static_cast<unsigned int>(width);
         s_instance_->height_ = static_cast<unsigned int>(height);
         s_instance_->resizeTargets();
-        s_instance_->markCameraDirty();
     }
     glViewport(0, 0, width, height);
 }
@@ -497,11 +401,8 @@ void AntiAliasingApp::mouseButtonCallback(GLFWwindow *window, int button, int ac
         double y = 0.0;
         glfwGetCursorPos(window, &x, &y);
         s_instance_->camera_.beginDrag(mode, x, y);
-        s_instance_->markCameraDirty();
     } else if (action == GLFW_RELEASE) {
         s_instance_->camera_.endDrag();
-        s_instance_->cachedOverlayText_ = s_instance_->buildOverlayText();
-        s_instance_->updateWindowTitle();
     }
 }
 
@@ -510,7 +411,6 @@ void AntiAliasingApp::cursorPosCallback(GLFWwindow * /*window*/, double xpos, do
         return;
     }
     if (s_instance_->camera_.applyCursorDelta(xpos, ypos, s_instance_->width_, s_instance_->height_)) {
-        s_instance_->markCameraDirty();
     }
 }
 
@@ -522,7 +422,6 @@ void AntiAliasingApp::scrollCallback(GLFWwindow * /*window*/, double /*xoffset*/
         return;
     }
     s_instance_->camera_.applyScroll(yoffset);
-    s_instance_->markCameraDirty();
 }
 
 void AntiAliasingApp::keyCallback(GLFWwindow *window, int key, int scancode, int action, int mods) {
@@ -535,7 +434,6 @@ void AntiAliasingApp::keyCallback(GLFWwindow *window, int key, int scancode, int
         return;
     }
 
-    s_instance_->markCameraDirty();
 
     switch (key) {
     case GLFW_KEY_ESCAPE:
@@ -543,28 +441,19 @@ void AntiAliasingApp::keyCallback(GLFWwindow *window, int key, int scancode, int
         break;
     case GLFW_KEY_1:
     case GLFW_KEY_F1:
-        s_instance_->currentMode_ = AAMode::None;
-        s_instance_->taaPass_.resetHistory();
-        s_instance_->hasPrevViewProj_ = false;
+        s_instance_->setMode(AAMode::None);
         break;
     case GLFW_KEY_2:
     case GLFW_KEY_F2:
-        s_instance_->currentMode_ = AAMode::MSAA;
-        s_instance_->taaPass_.resetHistory();
-        s_instance_->hasPrevViewProj_ = false;
-        s_instance_->resizeTargets();
+        s_instance_->setMode(AAMode::MSAA);
         break;
     case GLFW_KEY_3:
     case GLFW_KEY_F3:
-        s_instance_->currentMode_ = AAMode::FXAA;
-        s_instance_->taaPass_.resetHistory();
-        s_instance_->hasPrevViewProj_ = false;
+        s_instance_->setMode(AAMode::FXAA);
         break;
     case GLFW_KEY_4:
     case GLFW_KEY_F4:
-        s_instance_->currentMode_ = AAMode::TAA;
-        s_instance_->taaPass_.resetHistory();
-        s_instance_->hasPrevViewProj_ = false;
+        s_instance_->setMode(AAMode::TAA);
         break;
     case GLFW_KEY_LEFT_BRACKET: {
         const int idx = s_instance_->nextMsaaPreset(-1);

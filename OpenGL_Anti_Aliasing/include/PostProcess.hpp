@@ -14,7 +14,6 @@ public:
     void applyFxaa(GLuint colorTexture) const;
     // 左 None / 右 AA，uWipe 为分割位置 [0,1]
     void applyWipe(GLuint leftTexture, GLuint rightTexture, float wipe) const;
-    void resolveMsaaToScreen(GLuint msaaFbo, int width, int height) const;
 
 private:
     void drawFullscreen() const;

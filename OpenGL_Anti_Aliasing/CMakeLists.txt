@@ -8,6 +8,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 add_executable(OpenGL_Anti_Aliasing
     main.cpp
     src/AntiAliasingApp.cpp
+    src/AaTechnique.cpp
     src/AATestScene.cpp
     src/SceneRenderer.cpp
     src/Framebuffer.cpp
