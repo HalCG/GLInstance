@@ -34,16 +34,48 @@
             "cacheVariables": {
                 "CMAKE_BUILD_TYPE": "Release"
             }
+        },
+        {
+            "name": "windows-msvc-2026-base",
+            "hidden": true,
+            "generator": "Visual Studio 18 2026",
+            "architecture": "x64",
+            "binaryDir": "${sourceDir}/out/build/${presetName}",
+            "installDir": "${sourceDir}/out/install/${presetName}",
+            "condition": {
+                "type": "equals",
+                "lhs": "${hostSystemName}",
+                "rhs": "Windows"
+            }
+        },
+        {
+            "name": "x64-msvc-2026",
+            "displayName": "x64 MSVC 2026",
+            "inherits": "windows-msvc-2026-base"
         }
     ],
     "buildPresets": [
         {
             "name": "x64-clang-debug",
+            "displayName": "x64 Clang Debug",
             "configurePreset": "x64-clang-debug"
         },
         {
             "name": "x64-clang-release",
+            "displayName": "x64 Clang Release",
             "configurePreset": "x64-clang-release"
+        },
+        {
+            "name": "x64-msvc-2026-debug",
+            "displayName": "x64 MSVC 2026 Debug",
+            "configurePreset": "x64-msvc-2026",
+            "configuration": "Debug"
+        },
+        {
+            "name": "x64-msvc-2026-release",
+            "displayName": "x64 MSVC 2026 Release",
+            "configurePreset": "x64-msvc-2026",
+            "configuration": "Release"
         }
     ]
 }

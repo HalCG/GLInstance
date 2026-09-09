@@ -1,15 +1,15 @@
 {
-    "cmake.configurePreset": "x64-clang-debug",
-    "cmake.buildPreset": "x64-clang-debug",
+    "cmake.configurePreset": "x64-msvc-2026",
+    "cmake.buildPreset": "x64-msvc-2026",
     "cmake.debugConfig": {
-        "type": "lldb",
+        "type": "cppvsdbg",
         "request": "launch",
         "cwd": "${command:cmake.launchTargetDirectory}",
         "terminal": "integrated"
     },
     "cmake.copyCompileCommands": "${workspaceFolder}/compile_commands.json",
     "clangd.arguments": [
-        "--compile-commands-dir=${workspaceFolder}/out/build/x64-clang-debug"
+        "--compile-commands-dir=${workspaceFolder}"
     ],
-    "C_Cpp.default.compileCommands": "${workspaceFolder}/out/build/x64-clang-debug/compile_commands.json"
+    "C_Cpp.default.compileCommands": "${workspaceFolder}/compile_commands.json"
 }

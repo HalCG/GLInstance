@@ -2,6 +2,54 @@
     "version": "0.2.0",
     "configurations": [
         {
+            "name": "MSVC 2026: Launch Active CMake Target (cppvsdbg)",
+            "type": "cppvsdbg",
+            "request": "launch",
+            "program": "${command:cmake.launchTargetPath}",
+            "cwd": "${command:cmake.launchTargetDirectory}",
+            "console": "integratedTerminal"
+        },
+        {
+            "name": "MSVC 2026: Anti-Aliasing Demo",
+            "type": "cppvsdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/out/build/x64-msvc-2026/OpenGL_Anti_Aliasing/Debug/OpenGL_Anti_Aliasing.exe",
+            "cwd": "${workspaceFolder}/out/build/x64-msvc-2026/OpenGL_Anti_Aliasing/Debug",
+            "console": "integratedTerminal"
+        },
+        {
+            "name": "MSVC 2026: Depth Peeling Demo",
+            "type": "cppvsdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/out/build/x64-msvc-2026/OpenGL_OIT_Depth_Peeling/Debug/OpenGL_OIT_Depth_Peeling.exe",
+            "cwd": "${workspaceFolder}/out/build/x64-msvc-2026/OpenGL_OIT_Depth_Peeling/Debug",
+            "console": "integratedTerminal"
+        },
+        {
+            "name": "MSVC 2026: Stochastic Transparency Demo",
+            "type": "cppvsdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/out/build/x64-msvc-2026/OpenGL_OIT_Stochastic_Transparency/Debug/OpenGL_OIT_Stochastic_Transparency.exe",
+            "cwd": "${workspaceFolder}/out/build/x64-msvc-2026/OpenGL_OIT_Stochastic_Transparency/Debug",
+            "console": "integratedTerminal"
+        },
+        {
+            "name": "MSVC 2026: Rendering Paths Demo",
+            "type": "cppvsdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/out/build/x64-msvc-2026/OpenGL_Rendering_Paths/Debug/OpenGL_Rendering_Paths.exe",
+            "cwd": "${workspaceFolder}/out/build/x64-msvc-2026/OpenGL_Rendering_Paths/Debug",
+            "console": "integratedTerminal"
+        },
+        {
+            "name": "MSVC 2026: Linked List OIT Demo",
+            "type": "cppvsdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/out/build/x64-msvc-2026/OpenGL_OIT_Linked_list/Debug/OpenGL_OIT_Linked_list.exe",
+            "cwd": "${workspaceFolder}/out/build/x64-msvc-2026/OpenGL_OIT_Linked_list/Debug",
+            "console": "integratedTerminal"
+        },
+        {
             "name": "LLDB: Stochastic Transparency",
             "type": "lldb",
             "request": "launch",
@@ -35,6 +83,15 @@
             "program": "${workspaceFolder}/out/build/x64-clang-debug/OpenGL_Anti_Aliasing/OpenGL_Anti_Aliasing.exe",
             "cwd": "${workspaceFolder}/out/build/x64-clang-debug/OpenGL_Anti_Aliasing",
             "preLaunchTask": "Build: Clang Debug (Anti-Aliasing)",
+            "terminal": "integrated"
+        },
+        {
+            "name": "LLDB: Linked List OIT Demo",
+            "type": "lldb",
+            "request": "launch",
+            "program": "${workspaceFolder}/out/build/x64-clang-debug/OpenGL_OIT_Linked_list/OpenGL_OIT_Linked_list.exe",
+            "cwd": "${workspaceFolder}/out/build/x64-clang-debug/OpenGL_OIT_Linked_list",
+            "preLaunchTask": "Build: Clang Debug (Linked List)",
             "terminal": "integrated"
         }
     ]
