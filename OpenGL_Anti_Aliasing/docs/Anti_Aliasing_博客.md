@@ -2,6 +2,7 @@
 
 > 子项目：`OpenGL_Anti_Aliasing`  
 > 源码地址：[GitHub 仓库](https://github.com/HalCG/OpenGLInstance/tree/main/OpenGL_Anti_Aliasing)  
+> **RenderDoc 问题记录：** [RenderDoc_问题记录.md](RenderDoc_问题记录.md)  
 > 本文是一篇 **可独立阅读的技术博客**，涵盖架构设计、四种 AA 模式实现、关键代码路径，并融合近期学习与调试中的 **常见问题与解答**。  
 > 配套文档：[代码导读](Anti_Aliasing_代码导读.md)（按文件读代码）、[问答索引](Anti_Aliasing_问答索引.md)（问题快速检索）。原理对比表、观察指南见本文 [附录](#13-附录)。
 

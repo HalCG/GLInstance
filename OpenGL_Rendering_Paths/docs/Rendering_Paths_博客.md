@@ -2,7 +2,8 @@
 
 > 源码：[GitHub — OpenGL_Rendering_Paths](https://github.com/HalCG/OpenGLInstance/tree/main/OpenGL_Rendering_Paths)  
 > 仓库根：[HalCG/OpenGLInstance](https://github.com/HalCG/OpenGLInstance)  
-> 配套：[`Rendering_Paths_代码导读.md`](Rendering_Paths_代码导读.md)（零基础概念、模块地图、阅读路线）
+> 配套：[`Rendering_Paths_代码导读.md`](Rendering_Paths_代码导读.md)（零基础概念、模块地图、阅读路线）  
+> **RenderDoc 问题记录：** [`RenderDoc_问题记录.md`](RenderDoc_问题记录.md)
 
 ---
 
@@ -520,3 +521,11 @@ GitHub：[OpenGL_OIT_Linked_list](https://github.com/HalCG/OpenGLInstance/tree/m
 - **Tiled Deferred**：与 Forward+ 类似的 tile 思想用于 deferred lighting
 - **Compute-based Forward+**：GPU light culling，替代 CPU tile 构建
 - **Hybrid Rendering**：opaque deferred + transparent forward
+
+---
+
+## 附录 I：RenderDoc 问题记录
+
+本子项目开发/联调中遇到过的问题（现象、RenderDoc 定位路径、修复方式）见：
+
+- [RenderDoc_问题记录.md](RenderDoc_问题记录.md)

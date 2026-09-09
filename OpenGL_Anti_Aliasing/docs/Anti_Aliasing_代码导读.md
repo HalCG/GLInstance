@@ -4,6 +4,7 @@
 > 源码地址：[GitHub 仓库](https://github.com/HalCG/OpenGLInstance/tree/main/OpenGL_Anti_Aliasing)  
 > **设计、实现与问答全文：** [`Anti_Aliasing_博客.md`](Anti_Aliasing_博客.md)（含附录：对比表、观察指南、常见坑）  
 > **问题快速检索：** [`Anti_Aliasing_问答索引.md`](Anti_Aliasing_问答索引.md)  
+> **RenderDoc 问题记录：** [`RenderDoc_问题记录.md`](RenderDoc_问题记录.md)  
 > 建议：**先通读博客或本文第 1～4 节建立地图，再按第 9 节推荐阅读顺序打开源码。**
 
 ---

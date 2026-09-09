@@ -3,6 +3,7 @@
 > 本文档面向「对前向 / 延迟 / Forward+ 还不熟悉，但想顺着代码把逻辑走通」的读者。  
 > 源码地址：[GitHub 仓库](https://github.com/HalCG/OpenGLInstance/tree/main/OpenGL_Rendering_Paths)  
 > **设计、流程、Q&A 与实验备忘：** [`Rendering_Paths_博客.md`](Rendering_Paths_博客.md)  
+> **RenderDoc 问题记录：** [`RenderDoc_问题记录.md`](RenderDoc_问题记录.md)  
 > 建议：**先读博客或本文第 0～1 节建立概念，再读第 4～5 节看时序，最后按第 10 节顺序打开源码。**
 
 ---
@@ -630,8 +631,9 @@ cmake --build out/build/x64-clang-debug --target OpenGL_Rendering_Paths
 |------|------|
 | **本文（代码导读）** | 零基础概念、架构、时序、模块、Shader 数据流、阅读路线 |
 | **Rendering_Paths_博客.md** | 设计流程、Q&A、对比表、预期现象、常见坑、扩展方向、OIT 关联 |
+| **RenderDoc_问题记录.md** | 开发中 RenderDoc 排查过的问题归档 |
 
-建议：**本文建立地图并跟代码 → 博客做原理备忘与实验记录 → 需要改参数时回 `AppConfig.hpp` 与对应 `.frag`**。
+建议：**本文建立地图并跟代码 → 博客做原理备忘 → 遇问题时查 RenderDoc 问题记录 → 改参数回 `AppConfig.hpp` 与 `.frag`**。
 
 ---
 

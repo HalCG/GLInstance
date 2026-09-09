@@ -2,6 +2,7 @@
 
 > 完整论述见 **[Anti_Aliasing_博客.md](Anti_Aliasing_博客.md)**（设计、实现与问答已融合）。  
 > 源码地址：[GitHub 仓库](https://github.com/HalCG/OpenGLInstance/tree/main/OpenGL_Anti_Aliasing)  
+> **RenderDoc 问题记录：** [RenderDoc_问题记录.md](RenderDoc_问题记录.md)  
 > 本文仅作 **快速检索**：问题 → 博客锚点 / 源码位置。
 
 ---

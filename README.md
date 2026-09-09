@@ -16,6 +16,17 @@ OpenGL 4.x 图形学 Demo 集合（完善中）。每个子项目为 **独立可
 | [OpenGL_OIT_Depth_Peeling](OpenGL_OIT_Depth_Peeling/) | OIT · 深度剥离 | 多 Pass 逐层剥离，兼容性好 | [上篇](OpenGL_OIT_Depth_Peeling/docs/OIT_Depth_Peeling_上篇_原理与架构.md) · [下篇](OpenGL_OIT_Depth_Peeling/docs/OIT_Depth_Peeling_下篇_Shader与关键实现.md) |
 | [OpenGL_OIT_Stochastic_Transparency](OpenGL_OIT_Stochastic_Transparency/) | OIT · 随机透明 | 单 Pass 随机 discard + 累积 | [上篇](OpenGL_OIT_Stochastic_Transparency/docs/OIT_Stochastic_Transparency_上篇_原理与架构.md) · [下篇](OpenGL_OIT_Stochastic_Transparency/docs/OIT_Stochastic_Transparency_下篇_Shader与关键实现.md) |
 
+### RenderDoc 问题记录
+
+开发过程中用 RenderDoc 排查过的问题归档（现象 / 定位 / 处理）：
+
+| 子项目 | 文档 |
+|--------|------|
+| Anti_Aliasing | [RenderDoc_问题记录.md](OpenGL_Anti_Aliasing/docs/RenderDoc_问题记录.md) |
+| Rendering_Paths | [RenderDoc_问题记录.md](OpenGL_Rendering_Paths/docs/RenderDoc_问题记录.md) |
+| OIT Linked List | [RenderDoc_问题记录.md](OpenGL_OIT_Linked_list/docs/RenderDoc_问题记录.md) |
+| OIT Depth Peeling | [RenderDoc_问题记录.md](OpenGL_OIT_Depth_Peeling/docs/RenderDoc_问题记录.md) |
+
 ### 按主题选读
 
 - **多光源 / Forward vs Deferred vs Forward+** → `OpenGL_Rendering_Paths`

@@ -1,5 +1,8 @@
 # OpenGL OIT 之 Linked List 实现（上篇）：原理、流程与缓冲区设计
 
+> 源码地址：[GitHub 仓库](https://github.com/HalCG/OpenGLInstance/tree/main/OpenGL_OIT_Linked_list)  
+> **RenderDoc 问题记录：** [RenderDoc_问题记录.md](RenderDoc_问题记录.md)
+
 ## 0. 前言
 
 在 OpenGL 渲染中，透明物体一直是一个棘手的问题。传统的 alpha 混合要求物体从远到近排序绘制，但实际场景中物体之间可能有穿插、包含关系，无法简单地按距离排序。更糟糕的是，随着视角旋转，物体的远近关系会动态变化，每帧都要重新排序——这在 CPU 侧代价高昂且容易出错。

@@ -1,6 +1,7 @@
 # OpenGL OIT 之 Depth Peeling 实现（上篇）：原理与架构
 
-> 源码地址：[GitHub 仓库](https://github.com/HalCG/OpenGLInstance/tree/main/OpenGL_OIT_Depth_Peeling)
+> 源码地址：[GitHub 仓库](https://github.com/HalCG/OpenGLInstance/tree/main/OpenGL_OIT_Depth_Peeling)  
+> **RenderDoc 问题记录：** [RenderDoc_问题记录.md](RenderDoc_问题记录.md)
 
 ## 0. 前言
 
