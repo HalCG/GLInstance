@@ -41,7 +41,9 @@ private:
 
     RenderPath currentPath_ = RenderPath::Forward; // 1/2/3 切换 Forward / Deferred / Forward+
     bool showGBufferDebug_ = false;                // 仅 Deferred 路径下 G 键有效
+    bool enableHDR_ = true;                        // H 键切换 HDR Tone Mapping & Gamma 校正
     VtkTrackballCamera camera_;
+
     bool cameraDirty_ = true;                    // 事件驱动渲染：为 true 才 render+swap
     int lightPresetIndex_ = 2;
     int titleUpdateCounter_ = 0;

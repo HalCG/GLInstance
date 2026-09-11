@@ -15,15 +15,24 @@ uniform sampler2D texture_depth;
 uniform vec2 u_ScreenSize;
 
 void main() {
+  // 采样上一层保存的 Depth 纹理值 frontDepth
   vec2 uv = gl_FragCoord.xy / u_ScreenSize;
   float frontDepth = texture(texture_depth, uv).r;
 
-  // 与上一层深度比较，更近的片段丢弃
+  // 【Depth Peeling 核心剥离条件】：
+  // 将当前片源的深度 gl_FragCoord.z 与上一层剥离出的深度 frontDepth 进行比较。
+  // 如果当前片源深度 <= frontDepth，说明该片源在之前的 Render Pass 中已经被处理过（属于更近或同一层），
+  // 必须直接 discard 丢弃！
+  // ⚠️ 硬件级副作用：此处显式使用了 `discard` 指令，会导致 GPU 的 Early-Z (前置深度测试) 优化被强制关闭。
+  // 片元必须完整执行完 Fragment Shader 后，才能进入 ROP 阶段接受后续的固定管线深度测试。
+  // 剩下的片源（gl_FragCoord.z > frontDepth）随后通过 OpenGL 硬件 Z-Test，
+  // 就会保留下所有剩余片源中“最靠近上一层”的那个片源，成功剥离出下一层！
   if (gl_FragCoord.z <= frontDepth) {
     discard;
   }
 
   vec3 lightColor = vec3(1.0);
+
 
   float ambientStrength = k.x;
   vec3 ambient = ambientStrength * lightColor;

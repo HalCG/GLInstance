@@ -145,9 +145,11 @@ void AntiAliasingApp::renderFrame() {
     const FrameCamera camera = buildCamera(jitter);
 
     perf_.scenePass.begin();
-    // Scene Pass：MSAA 写入 multisample FBO，其余模式写入 singleFbo_
+    // Scene Pass：绑定离屏 FBO。
+    // - 状态机原理：调用 fbo.bind()（即 glBindFramebuffer(GL_FRAMEBUFFER, fboID > 0)）后，
+    //   后续所有的 glClear 和 sceneRenderer_.render 都会自动重定向绘制到离屏纹理中，而不是屏幕。
     if (currentMode_ == AAMode::MSAA) {
-        glEnable(GL_MULTISAMPLE);
+        glEnable(GL_MULTISAMPLE); // 关键点1：启用硬件多重采样光栅化
         msaaFbo_.bind();
     } else {
         glDisable(GL_MULTISAMPLE);
@@ -158,6 +160,8 @@ void AntiAliasingApp::renderFrame() {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     sceneRenderer_.render(scene_, camera);
 
+    // 解绑 FBO：在底层执行 glBindFramebuffer(GL_FRAMEBUFFER, 0)。
+    // 在 OpenGL 中 0 号 FBO 代表默认屏幕窗口。解绑后，后续画图命令（如 drawFullscreen）将自动画在屏幕上。
     if (currentMode_ == AAMode::MSAA) {
         msaaFbo_.unbind();
     } else {
@@ -166,18 +170,27 @@ void AntiAliasingApp::renderFrame() {
     perf_.frameStats().scenePassMs = perf_.scenePass.endMs();
 
     perf_.postPass.begin();
-    // Post Pass：按 currentMode_ 选择 blit / MSAA resolve / FXAA / TAA 输出路径
+    // Post Pass：按 currentMode_ 衔接后处理抗锯齿与出屏。
+    // 【核心衔接桥梁】：Scene Pass 渲染好的 3D 画面保存在了离屏纹理中，
+    // 后处理直接获取其纹理 ID（如 singleFbo_.colorTexture()）作为输入参数传给抗锯齿算法。
+    // 【Shader 绑定时机】：按需/延迟绑定（在各处理函数体内通过 glUseProgram 绑定）。
     switch (currentMode_) {
     case AAMode::None:
+        // 不绑定后处理 Shader。基于 Scene Shader 渲染出的离屏 FBO，直接用硬件 glBlitFramebuffer 拷贝到屏幕。
         singleFbo_.blitColorToDefault(static_cast<int>(width_), static_cast<int>(height_));
         break;
     case AAMode::MSAA:
+        // 不绑定后处理 Shader。源为多采样 FBO，直接通过 glBlitFramebuffer 触发显卡硬件 Resolve 并拷贝到屏幕。
         msaaFbo_.resolveColorToDefault(static_cast<int>(width_), static_cast<int>(height_));
         break;
     case AAMode::FXAA:
+        // 传递单采样颜色纹理 ID 给 FXAA。进入函数后会 glUseProgram(fxaaShader_)，通过全屏 Quad 触发 fxaa.frag 单帧后处理。
         postProcess_.applyFxaa(singleFbo_.colorTexture());
         break;
     case AAMode::TAA:
+        // 传递单采样颜色纹理与深度纹理 ID 给 TAA。函数内依次执行：
+        // 1. glUseProgram(taaShader_) 进行跨帧历史重投影与混合，写入 TAA 离屏 FBO；
+        // 2. glUseProgram(blitShader_) 调用 blitTexture 将 TAA 结果画到屏幕上。
         taaPass_.apply(singleFbo_.colorTexture(), singleFbo_.depthTexture(), camera, prevViewProj_,
                        hasPrevViewProj_);
         postProcess_.blitTexture(taaPass_.outputTexture());
@@ -238,6 +251,8 @@ void AntiAliasingApp::shutdown() {
     s_instance_ = nullptr;
 }
 
+// 切换 MSAA 采样倍数预设索引（按 '[' 键 delta=-1，按 ']' 键 delta=+1）
+// 内部做边界 Clamp 保护，确保索引不会越界（0 <= idx < kMsaaPresetCount）
 int AntiAliasingApp::nextMsaaPreset(int delta) const {
     int idx = msaaPresetIndex_ + delta;
     if (idx < 0) {

@@ -17,6 +17,8 @@ public:
     void render(const Scene &scene, LightManager &lights, const FrameCamera &camera, int width, int height,
                 PerfStats &stats); // cullPass → shadingPass
 
+
+
 private:
     std::unique_ptr<Shader> shader_;
 };

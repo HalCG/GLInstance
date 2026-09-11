@@ -29,6 +29,7 @@ OpenGL 4.x 图形学 Demo 集合（完善中）。每个子项目为 **独立可
 
 ### 按主题选读
 
+- **通用知识点与 API/缓冲状态辨析** → [OpenGL_通用知识点汇总.md](docs/OpenGL_通用知识点汇总.md)
 - **多光源 / Forward vs Deferred vs Forward+** → `OpenGL_Rendering_Paths`
 - **锯齿 / MSAA / 后处理 AA / TAA** → `OpenGL_Anti_Aliasing`
 - **透明物体、与绘制顺序无关** → `OpenGL_OIT_*` 三个子项目横向对比

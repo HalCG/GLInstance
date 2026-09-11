@@ -10,6 +10,10 @@ const float kQuadVerts[] = {
 };
 
 // Halton 低差异序列，用于 TAA 子像素抖动采样
+// 【Halton 低差异序列 generator】：
+// 用于 TAA (Temporal Anti-Aliasing) 帧间微小子像素抖动 (Subpixel Jitter)。
+// 通过在投影矩阵中引入以像素为单位的微小子像素偏移 (范围在 [-0.5, 0.5] 像素)，
+// 使得静态场景在多帧积累下采样到物体边缘的不同位置，利用时间维度的采样弥补空间分辨率的不足。
 float halton(int index, int base) {
     float f = 1.0f;
     float r = 0.0f;
@@ -24,8 +28,10 @@ float halton(int index, int base) {
 } // namespace
 
 bool TaaPass::init() {
+    // 编译 TAA 着色器：fullscreen.vert + taa.frag
     shader_ = Shader(AppConfig::shaderPath("fullscreen.vert").c_str(), AppConfig::shaderPath("taa.frag").c_str()).ID;
 
+    // 创建全屏 Quad VAO/VBO
     glGenVertexArrays(1, &quadVao_);
     glGenBuffers(1, &quadVbo_);
     glBindVertexArray(quadVao_);
@@ -76,6 +82,10 @@ void TaaPass::shutdown() {
     }
 }
 
+// 分配双缓冲历史帧纹理 (history_[0] 和 history_[1])
+// 【Ping-Pong 双缓冲设计】：
+// TAA 需要“读取上一帧融合结果”并“写入当前帧混合结果”。使用两个 RGBA16F 纹理交替作为 Read 与 Write 目标，
+// 避免在同一个纹理上既读又写引发 OpenGL 读写冲突。
 void TaaPass::resize(int width, int height) {
     if (width == width_ && height == height_ && history_[0]) {
         return;
@@ -118,6 +128,7 @@ void TaaPass::resetHistory() {
     frameIndex_ = 0;
 }
 
+// 生成连续帧的 Halton(2, 3) 采样子像素偏移
 glm::vec2 TaaPass::nextJitter(int width, int height) {
     const float jx = halton((frameIndex_ % 16) + 1, 2) - 0.5f;
     const float jy = halton((frameIndex_ % 16) + 1, 3) - 0.5f;
@@ -125,9 +136,16 @@ glm::vec2 TaaPass::nextJitter(int width, int height) {
     return glm::vec2(jx / static_cast<float>(width), jy / static_cast<float>(height));
 }
 
+// 【TAA 融合主流程 Execution】：
+// 状态机步骤：
+// 1. 设置 writeIndex 写入当前混合结果，readIndex 采样上一帧历史结果。
+// 2. 将 history_[writeIndex] 挂载为当前 FBO 的 COLOR_ATTACHMENT0。
+// 3. 关闭深度测试 `glDisable(GL_DEPTH_TEST)`，激活 taa.frag 着色器。
+// 4. 绑定纹理槽：0->currentColor, 1->currentDepth, 2->history_[readIndex]。
+// 5. 传入逆视图投影矩阵 uInvViewProj 和上一帧 ViewProj 矩阵 uPrevViewProj。
+// 6. 绘制全屏 Quad 完成时间融合，交换 currentIndex_ 索引。
 void TaaPass::apply(GLuint currentColor, GLuint currentDepth, const FrameCamera &camera, const glm::mat4 &prevViewProj,
                     bool hasHistory) {
-    // 双缓冲 history：writeIndex 写入本帧结果，readIndex 供 shader 重投影采样
     const int writeIndex = 1 - currentIndex_;
     const int readIndex = currentIndex_;
 
@@ -161,3 +179,4 @@ void TaaPass::apply(GLuint currentColor, GLuint currentDepth, const FrameCamera 
     currentIndex_ = writeIndex;
     validHistory_ = hasHistory;
 }
+

@@ -10,26 +10,32 @@
 
 RenderingPathsApp *RenderingPathsApp::s_instance_ = nullptr;
 
-namespace {
-const char *pathName(RenderPath path) {
-    switch (path) {
-    case RenderPath::Forward:
-        return "Forward";
-    case RenderPath::Deferred:
-        return "Deferred";
-    case RenderPath::ForwardPlus:
-        return "Forward+";
+namespace
+{
+    const char *pathName(RenderPath path)
+    {
+        switch (path)
+        {
+        case RenderPath::Forward:
+            return "Forward";
+        case RenderPath::Deferred:
+            return "Deferred";
+        case RenderPath::ForwardPlus:
+            return "Forward+";
+        }
+        return "Unknown";
     }
-    return "Unknown";
-}
 } // namespace
 
-bool RenderingPathsApp::init() {
+bool RenderingPathsApp::init()
+{
     s_instance_ = this;
-    if (!initWindow()) {
+    if (!initWindow())
+    {
         return false;
     }
-    if (!scene_.init()) {
+    if (!scene_.init())
+    {
         return false;
     }
 
@@ -42,7 +48,8 @@ bool RenderingPathsApp::init() {
     perf_.cullPass.init();
     perf_.shadingPass.init();
 
-    if (!forward_.init() || !deferred_.init() || !forwardPlus_.init()) {
+    if (!forward_.init() || !deferred_.init() || !forwardPlus_.init())
+    {
         return false;
     }
 
@@ -52,7 +59,8 @@ bool RenderingPathsApp::init() {
     return true;
 }
 
-bool RenderingPathsApp::initWindow() {
+bool RenderingPathsApp::initWindow()
+{
     glfwInit();
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
@@ -60,7 +68,8 @@ bool RenderingPathsApp::initWindow() {
 
     window_ = glfwCreateWindow(static_cast<int>(width_), static_cast<int>(height_), AppConfig::kWindowTitle, nullptr,
                                nullptr);
-    if (!window_) {
+    if (!window_)
+    {
         glfwTerminate();
         return false;
     }
@@ -72,7 +81,8 @@ bool RenderingPathsApp::initWindow() {
     glfwSetCursorPosCallback(window_, cursorPosCallback);
     glfwSetScrollCallback(window_, scrollCallback);
 
-    if (!gladLoadGLLoader(reinterpret_cast<GLADloadproc>(glfwGetProcAddress))) {
+    if (!gladLoadGLLoader(reinterpret_cast<GLADloadproc>(glfwGetProcAddress)))
+    {
         return false;
     }
 
@@ -81,13 +91,15 @@ bool RenderingPathsApp::initWindow() {
     return true;
 }
 
-void RenderingPathsApp::markCameraDirty() {
+void RenderingPathsApp::markCameraDirty()
+{
     // 相机、路径切换、光源 preset、GBuffer debug 等统一置 dirty
     cameraDirty_ = true;
 }
 
 // 组装 view + perspective（无 jitter）
-FrameCamera RenderingPathsApp::buildCamera() const {
+FrameCamera RenderingPathsApp::buildCamera() const
+{
     FrameCamera camera;
     camera.eye = camera_.eye();
     camera.view = camera_.viewMatrix();
@@ -98,8 +110,10 @@ FrameCamera RenderingPathsApp::buildCamera() const {
     return camera;
 }
 
-void RenderingPathsApp::renderFrame() {
-    if (width_ == 0 || height_ == 0) {
+void RenderingPathsApp::renderFrame()
+{
+    if (width_ == 0 || height_ == 0)
+    {
         return;
     }
 
@@ -114,13 +128,14 @@ void RenderingPathsApp::renderFrame() {
     const FrameCamera camera = buildCamera();
 
     // 按 currentPath_ 分发到三条渲染管线（Forward / Deferred / Forward+）
-    switch (currentPath_) {
+    switch (currentPath_)
+    {
     case RenderPath::Forward:
         forward_.render(scene_, lights_, camera, static_cast<int>(width_), static_cast<int>(height_), perf_);
         break;
     case RenderPath::Deferred:
         deferred_.render(scene_, lights_, camera, static_cast<int>(width_), static_cast<int>(height_), perf_,
-                         showGBufferDebug_);
+                         showGBufferDebug_, enableHDR_);
         break;
     case RenderPath::ForwardPlus:
         forwardPlus_.render(scene_, lights_, camera, static_cast<int>(width_), static_cast<int>(height_), perf_);
@@ -128,29 +143,37 @@ void RenderingPathsApp::renderFrame() {
     }
 
     perf_.endFrame();
-    if (!camera_.isDragging() && ++titleUpdateCounter_ % 15 == 0) {
+    if (!camera_.isDragging() && ++titleUpdateCounter_ % 15 == 0)
+    {
         cachedOverlayText_ = buildOverlayText();
         updateWindowTitle();
     }
 }
 
-void RenderingPathsApp::run() {
+void RenderingPathsApp::run()
+{
     int frameCounter = 0;
-    while (!glfwWindowShouldClose(window_)) {
+    while (!glfwWindowShouldClose(window_))
+    {
         // 空闲时 waitEvents 阻塞；有输入或 dirty 时 pollEvents 并渲染一帧
         const bool active = cameraDirty_ || camera_.isDragging();
-        if (active) {
+        if (active)
+        {
             glfwPollEvents();
-        } else {
+        }
+        else
+        {
             glfwWaitEvents();
         }
 
-        if (cameraDirty_) {
+        if (cameraDirty_)
+        {
             renderFrame();
             glfwSwapBuffers(window_);
             cameraDirty_ = false;
 
-            if (++frameCounter % 120 == 0) {
+            if (++frameCounter % 120 == 0)
+            {
                 const FrameStats stats = perf_.latest();
                 std::cout << "path," << pathName(currentPath_) << ",lights," << lights_.activeCount() << ",fps,"
                           << stats.fps << ",frame_ms," << stats.totalFrameMs << ",forward_ms," << stats.forwardPassMs
@@ -161,7 +184,8 @@ void RenderingPathsApp::run() {
     }
 }
 
-void RenderingPathsApp::shutdown() {
+void RenderingPathsApp::shutdown()
+{
     forwardPlus_.shutdown();
     deferred_.shutdown();
     forward_.shutdown();
@@ -176,48 +200,64 @@ void RenderingPathsApp::shutdown() {
     s_instance_ = nullptr;
 }
 
-int RenderingPathsApp::nextLightPreset(int delta) const {
+int RenderingPathsApp::nextLightPreset(int delta) const
+{
     int idx = lightPresetIndex_ + delta;
-    if (idx < 0) {
+    if (idx < 0)
+    {
         idx = 0;
     }
-    if (idx >= AppConfig::kLightPresetCount) {
+    if (idx >= AppConfig::kLightPresetCount)
+    {
         idx = AppConfig::kLightPresetCount - 1;
     }
     return idx;
 }
 
-std::string RenderingPathsApp::buildOverlayText() const {
+std::string RenderingPathsApp::buildOverlayText() const
+{
     const FrameStats stats = perf_.latest();
     std::ostringstream oss;
     oss << pathName(currentPath_) << " | lights=" << lights_.activeCount()
         << " | objects=" << scene_.objectCount() << " | FPS=" << static_cast<int>(stats.fps) << " | frame="
         << stats.totalFrameMs << "ms";
-    if (currentPath_ == RenderPath::Forward) {
+    if (currentPath_ == RenderPath::Forward)
+    {
         oss << " | forward=" << stats.forwardPassMs << "ms";
-    } else if (currentPath_ == RenderPath::Deferred) {
+    }
+    else if (currentPath_ == RenderPath::Deferred)
+    {
         oss << " | geom=" << stats.geometryPassMs << "ms light=" << stats.lightingPassMs << "ms";
-        if (showGBufferDebug_) {
+        if (showGBufferDebug_)
+        {
             oss << " | GBufferDebug";
         }
-    } else {
+    }
+    else
+    {
         oss << " | cull=" << stats.cullPassMs << "ms shade=" << stats.shadingPassMs << "ms";
     }
-    oss << " | VTK: LMB rotate, MMB pan, RMB dolly, wheel zoom, 1/2/3 path, [/] lights, G gbuffer";
+    oss << " | HDR:" << (enableHDR_ ? "ON" : "OFF");
+    oss << " | VTK: LMB rotate, MMB pan, RMB dolly, wheel zoom, 1/2/3 path, [/] lights, G gbuffer, H hdr";
     return oss.str();
 }
 
-void RenderingPathsApp::updateWindowTitle() {
-    if (window_) {
+void RenderingPathsApp::updateWindowTitle()
+{
+    if (window_)
+    {
         glfwSetWindowTitle(window_, cachedOverlayText_.c_str());
     }
 }
 
-void RenderingPathsApp::framebufferSizeCallback(GLFWwindow * /*window*/, int width, int height) {
-    if (width <= 0 || height <= 0) {
+void RenderingPathsApp::framebufferSizeCallback(GLFWwindow * /*window*/, int width, int height)
+{
+    if (width <= 0 || height <= 0)
+    {
         return;
     }
-    if (s_instance_) {
+    if (s_instance_)
+    {
         s_instance_->width_ = static_cast<unsigned int>(width);
         s_instance_->height_ = static_cast<unsigned int>(height);
         s_instance_->deferred_.resize(width, height);
@@ -226,47 +266,64 @@ void RenderingPathsApp::framebufferSizeCallback(GLFWwindow * /*window*/, int wid
     glViewport(0, 0, width, height);
 }
 
-void RenderingPathsApp::mouseButtonCallback(GLFWwindow *window, int button, int action, int mods) {
+void RenderingPathsApp::mouseButtonCallback(GLFWwindow *window, int button, int action, int mods)
+{
     (void)mods;
-    if (!s_instance_) {
+    if (!s_instance_)
+    {
         return;
     }
 
     CameraDragMode mode = CameraDragMode::None;
-    if (button == GLFW_MOUSE_BUTTON_LEFT) {
+    if (button == GLFW_MOUSE_BUTTON_LEFT)
+    {
         mode = CameraDragMode::Rotate;
-    } else if (button == GLFW_MOUSE_BUTTON_MIDDLE) {
+    }
+    else if (button == GLFW_MOUSE_BUTTON_MIDDLE)
+    {
         mode = CameraDragMode::Pan;
-    } else if (button == GLFW_MOUSE_BUTTON_RIGHT) {
+    }
+    else if (button == GLFW_MOUSE_BUTTON_RIGHT)
+    {
         mode = CameraDragMode::Dolly;
-    } else {
+    }
+    else
+    {
         return;
     }
 
-    if (action == GLFW_PRESS) {
+    if (action == GLFW_PRESS)
+    {
         double x = 0.0;
         double y = 0.0;
         glfwGetCursorPos(window, &x, &y);
         s_instance_->camera_.beginDrag(mode, x, y);
         s_instance_->markCameraDirty();
-    } else if (action == GLFW_RELEASE) {
+    }
+    else if (action == GLFW_RELEASE)
+    {
         s_instance_->camera_.endDrag();
         s_instance_->cachedOverlayText_ = s_instance_->buildOverlayText();
         s_instance_->updateWindowTitle();
     }
 }
 
-void RenderingPathsApp::cursorPosCallback(GLFWwindow * /*window*/, double xpos, double ypos) {
-    if (!s_instance_) {
+void RenderingPathsApp::cursorPosCallback(GLFWwindow * /*window*/, double xpos, double ypos)
+{
+    if (!s_instance_)
+    {
         return;
     }
-    if (s_instance_->camera_.applyCursorDelta(xpos, ypos, s_instance_->width_, s_instance_->height_)) {
+    if (s_instance_->camera_.applyCursorDelta(xpos, ypos, s_instance_->width_, s_instance_->height_))
+    {
         s_instance_->markCameraDirty();
     }
 }
 
-void RenderingPathsApp::scrollCallback(GLFWwindow * /*window*/, double /*xoffset*/, double yoffset) {
-    if (!s_instance_) {
+void RenderingPathsApp::scrollCallback(GLFWwindow * /*window*/, double /*xoffset*/, double yoffset)
+{
+    if (!s_instance_)
+    {
         return;
     }
 
@@ -274,17 +331,20 @@ void RenderingPathsApp::scrollCallback(GLFWwindow * /*window*/, double /*xoffset
     s_instance_->markCameraDirty();
 }
 
-void RenderingPathsApp::keyCallback(GLFWwindow *window, int key, int scancode, int action, int mods) {
+void RenderingPathsApp::keyCallback(GLFWwindow *window, int key, int scancode, int action, int mods)
+{
     (void)scancode;
     (void)mods;
-    if (action != GLFW_PRESS || !s_instance_) {
+    if (action != GLFW_PRESS || !s_instance_)
+    {
         return;
     }
 
     s_instance_->markCameraDirty();
 
     // 1/2/3 切换渲染路径；G 仅在 Deferred 下切换 GBuffer 可视化
-    switch (key) {
+    switch (key)
+    {
     case GLFW_KEY_ESCAPE:
         glfwSetWindowShouldClose(window, true);
         break;
@@ -302,26 +362,34 @@ void RenderingPathsApp::keyCallback(GLFWwindow *window, int key, int scancode, i
         s_instance_->currentPath_ = RenderPath::ForwardPlus;
         s_instance_->showGBufferDebug_ = false;
         break;
-    case GLFW_KEY_LEFT_BRACKET: {
+    case GLFW_KEY_LEFT_BRACKET:
+    {
         const int idx = s_instance_->nextLightPreset(-1);
-        if (idx != s_instance_->lightPresetIndex_) {
+        if (idx != s_instance_->lightPresetIndex_)
+        {
             s_instance_->lightPresetIndex_ = idx;
             s_instance_->lights_.regenerate(AppConfig::kLightCountPresets[idx]);
         }
         break;
     }
-    case GLFW_KEY_RIGHT_BRACKET: {
+    case GLFW_KEY_RIGHT_BRACKET:
+    {
         const int idx = s_instance_->nextLightPreset(1);
-        if (idx != s_instance_->lightPresetIndex_) {
+        if (idx != s_instance_->lightPresetIndex_)
+        {
             s_instance_->lightPresetIndex_ = idx;
             s_instance_->lights_.regenerate(AppConfig::kLightCountPresets[idx]);
         }
         break;
     }
     case GLFW_KEY_G:
-        if (s_instance_->currentPath_ == RenderPath::Deferred) {
+        if (s_instance_->currentPath_ == RenderPath::Deferred)
+        {
             s_instance_->showGBufferDebug_ = !s_instance_->showGBufferDebug_;
         }
+        break;
+    case GLFW_KEY_H:
+        s_instance_->enableHDR_ = !s_instance_->enableHDR_;
         break;
     default:
         break;

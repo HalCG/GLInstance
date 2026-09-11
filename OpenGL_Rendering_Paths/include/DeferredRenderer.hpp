@@ -16,7 +16,8 @@ public:
     void shutdown();
     void resize(int width, int height); // 按窗口尺寸重建 GBuffer 附件
     void render(const Scene &scene, LightManager &lights, const FrameCamera &camera, int width, int height,
-                PerfStats &stats, bool showGBufferDebug); // showGBufferDebug 时跳过 lighting，直出 GBuffer 可视化
+                PerfStats &stats, bool showGBufferDebug, bool enableHDR = true); // showGBufferDebug 时跳过 lighting，直出 GBuffer 可视化
+
 
     GLuint albedoTexture() const { return gAlbedo_; }
 
