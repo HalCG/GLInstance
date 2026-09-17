@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 780 520" font-family="Segoe UI, Microsoft YaHei, sans-serif">
+  <rect width="780" height="520" fill="#fafafa"/>
+  <text x="390" y="28" text-anchor="middle" font-size="17" font-weight="600" fill="#1a5fb4">BVH node GPU layout: FPackedHierarchyNode</text>
+  <text x="390" y="48" text-anchor="middle" font-size="11" fill="#555">NodeAndClusterCull.glsl L54-59; BVH.mData[NodeIndex]</text>
+
+  <rect x="40" y="70" width="700" height="320" rx="8" fill="#fff" stroke="#1a5fb4" stroke-width="2"/>
+  <text x="390" y="95" text-anchor="middle" font-size="13" font-weight="600" fill="#333">BVH.mData[nodeIndex] - 4 child slots j=0,1,2,3</text>
+
+  <rect x="60" y="115" width="155" height="250" rx="4" fill="#f0f6ff" stroke="#1a5fb4"/>
+  <text x="137" y="135" text-anchor="middle" font-size="11" font-weight="600">child j=0</text>
+  <text x="70" y="158" font-size="9" fill="#333">LODBounds[j] uvec4</text>
+  <text x="70" y="175" font-size="9" fill="#666">bounds sphere vec4</text>
+  <text x="70" y="198" font-size="9" fill="#333">Misc0[j] uvec4</text>
+  <text x="70" y="215" font-size="9" fill="#666">BoxCenter + half2 LOD</text>
+  <text x="70" y="255" font-size="9" fill="#333">Misc1[j] uvec4</text>
+  <text x="70" y="272" font-size="9" fill="#666">BoxExtent + ChildStartRef</text>
+  <text x="70" y="295" font-size="9" fill="#333">Misc2[j] uint</text>
+  <text x="70" y="312" font-size="9" fill="#666">NumChildren, bLeaf, bEnabled</text>
+
+  <rect x="225" y="115" width="155" height="250" rx="4" fill="#f8f9fa" stroke="#ccc"/>
+  <text x="302" y="135" text-anchor="middle" font-size="11" font-weight="600">child j=1</text>
+  <text x="235" y="170" font-size="10" fill="#888">same layout</text>
+  <rect x="390" y="115" width="155" height="250" rx="4" fill="#f8f9fa" stroke="#ccc"/>
+  <text x="467" y="135" text-anchor="middle" font-size="11" font-weight="600">child j=2</text>
+  <text x="400" y="170" font-size="10" fill="#888">same layout</text>
+  <rect x="555" y="115" width="155" height="250" rx="4" fill="#f8f9fa" stroke="#ccc"/>
+  <text x="632" y="135" text-anchor="middle" font-size="11" font-weight="600">child j=3</text>
+  <text x="565" y="170" font-size="10" fill="#888">same layout</text>
+
+  <rect x="40" y="405" width="700" height="95" rx="8" fill="#fff8e6" stroke="#e5a50a"/>
+  <text x="390" y="428" text-anchor="middle" font-size="12" font-weight="600" fill="#333">Unpacked: FHierarchyNodeSlice</text>
+  <text x="55" y="450" font-size="10" fill="#1a5fb4">internal: ChildStartReference = child BVH node ID</text>
+  <text x="55" y="468" font-size="10" fill="#c01c28">leaf: ChildStartReference = packed (pageIndex, clusterStart)</text>
+  <text x="55" y="486" font-size="10" fill="#333">see 03_child_start_reference.svg</text>
+
+  <text x="390" y="512" text-anchor="middle" font-size="9" fill="#888">01_bvh_packed_node.svg</text>
+</svg>

@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 420" font-family="Segoe UI, Microsoft YaHei, sans-serif">
+  <defs>
+    <marker id="ar" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+      <path d="M0,0 L6,3 L0,6 Z" fill="#666"/>
+    </marker>
+  </defs>
+  <rect width="800" height="420" fill="#fafafa"/>
+  <text x="400" y="28" text-anchor="middle" font-size="17" font-weight="600" fill="#222">BVH &#8594; NaniteMesh &#20840;&#27969;&#31243;</text>
+
+  <rect x="30" y="55" width="110" height="50" rx="5" fill="#eee" stroke="#888"/>
+  <text x="85" y="85" text-anchor="middle" font-size="10">mitsuba.bvh</text>
+
+  <line x1="140" y1="80" x2="175" y2="80" stroke="#666" stroke-width="2" marker-end="url(#ar)"/>
+
+  <rect x="180" y="55" width="130" height="50" rx="5" fill="#f0f6ff" stroke="#1a5fb4"/>
+  <text x="245" y="75" text-anchor="middle" font-size="9" font-weight="600">Pass 2 BVH</text>
+  <text x="245" y="92" text-anchor="middle" font-size="8">NodeAndClusterCull</text>
+
+  <line x1="310" y1="80" x2="345" y2="80" stroke="#666" stroke-width="2" marker-end="url(#ar)"/>
+
+  <rect x="350" y="55" width="150" height="50" rx="5" fill="#fff8e6" stroke="#e5a50a"/>
+  <text x="425" y="75" text-anchor="middle" font-size="9" font-weight="600">Batches[1024+]</text>
+  <text x="425" y="92" text-anchor="middle" font-size="8">(page, cluster) x N</text>
+
+  <line x1="500" y1="80" x2="535" y2="80" stroke="#666" stroke-width="2" marker-end="url(#ar)"/>
+
+  <rect x="540" y="55" width="110" height="50" rx="5" fill="#fff5f5" stroke="#c01c28"/>
+  <text x="595" y="85" text-anchor="middle" font-size="10">Pass 3 ClusterCull</text>
+
+  <line x1="650" y1="80" x2="685" y2="80" stroke="#666" stroke-width="2" marker-end="url(#ar)"/>
+
+  <rect x="690" y="55" width="90" height="50" rx="5" fill="#f0fff4" stroke="#2ec27e"/>
+  <text x="735" y="85" text-anchor="middle" font-size="9">Pass 4 Draw</text>
+
+  <rect x="30" y="140" width="110" height="50" rx="5" fill="#eee" stroke="#888"/>
+  <text x="85" y="162" text-anchor="middle" font-size="9">mitsuba.</text>
+  <text x="85" y="178" text-anchor="middle" font-size="9">nanitemesh</text>
+
+  <line x1="85" y1="190" x2="85" y2="230" stroke="#c01c28" stroke-width="2" stroke-dasharray="5,3"/>
+  <line x1="85" y1="230" x2="595" y2="230" stroke="#c01c28" stroke-width="2" stroke-dasharray="5,3" marker-end="url(#ar)"/>
+  <text x="340" y="225" font-size="9" fill="#c01c28">GetClusterInfo(page,cluster) &#35835;&#21462;</text>
+
+  <rect x="40" y="260" width="720" height="130" rx="8" fill="#fff" stroke="#ccc"/>
+  <text x="400" y="285" text-anchor="middle" font-size="12" font-weight="600" fill="#333">&#25968;&#25454;&#20998;&#24037;</text>
+  <text x="60" y="310" font-size="10" fill="#1a5fb4">BVH: &#8220;&#22320;&#22270;&#8221; &#8212; &#21738;&#20123; Cluster &#20540;&#24471;&#30475;&#65292;&#22320;&#22336;&#26159; (page, cluster)</text>
+  <text x="60" y="330" font-size="10" fill="#c01c28">NaniteMesh: &#8220;&#36164;&#26009;&#24211;&#8221; &#8212; &#25353;&#22320;&#22336;&#21462;&#21253;&#22260;&#29699;&#12289;LOD&#12289;&#39030;&#28857;&#12289;&#32034;&#24341;</text>
+  <text x="60" y="355" font-size="10" fill="#333">SSBO: sBVH (binding 1 Pass2) | sNaniteMesh (binding 1 Pass3/4)</text>
+  <text x="60" y="375" font-size="10" fill="#666">C++: scene.cpp &#21152;&#36733; Res/mitsuba.bvh &#19982; Res/mitsuba.nanitemesh</text>
+
+  <text x="400" y="408" text-anchor="middle" font-size="9" fill="#888">07_pipeline_flow.svg</text>
+</svg>

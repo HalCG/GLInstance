@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 500" font-family="Segoe UI, Microsoft YaHei, sans-serif">
+  <rect width="720" height="500" fill="#fafafa"/>
+  <text x="360" y="28" text-anchor="middle" font-size="17" font-weight="600" fill="#c01c28">NaniteMesh.mData[] &#19977;&#23618;&#22320;&#22336;</text>
+  <text x="360" y="48" text-anchor="middle" font-size="11" fill="#555">uint[] &#25968;&#32452;; &#25991;&#20214;&#20559;&#31227;&#24120;&#29992;&#23383;&#33410;&#65292;&#35835;&#21462;&#26102; /4</text>
+
+  <rect x="60" y="75" width="600" height="55" rx="6" fill="#fff5f5" stroke="#c01c28" stroke-width="2"/>
+  <text x="360" y="98" text-anchor="middle" font-size="12" font-weight="600" fill="#c01c28">Layer 1 &#20840;&#23616;&#39029;&#30446;&#24405;</text>
+  <text x="360" y="118" text-anchor="middle" font-size="10" fill="#333">[0]=pageCount; [1+pageIndex]=&#39029;&#36215;&#22987;&#23383;&#33410;&#20559;&#31227;</text>
+
+  <text x="360" y="150" text-anchor="middle" font-size="16" fill="#888">&#8595;</text>
+
+  <rect x="60" y="160" width="600" height="55" rx="6" fill="#fff8e6" stroke="#e5a50a" stroke-width="2"/>
+  <text x="360" y="183" text-anchor="middle" font-size="12" font-weight="600" fill="#e5a50a">Layer 2 &#21333;&#39029; Page</text>
+  <text x="360" y="203" text-anchor="middle" font-size="10" fill="#333">[pageBase]=clusterCount; [pageBase+1+i]=cluster i &#25968;&#25454;&#21306;&#23383;&#33410;&#20559;&#31227;</text>
+
+  <text x="360" y="235" text-anchor="middle" font-size="16" fill="#888">&#8595;</text>
+
+  <rect x="60" y="245" width="600" height="55" rx="6" fill="#f0f6ff" stroke="#1a5fb4" stroke-width="2"/>
+  <text x="360" y="268" text-anchor="middle" font-size="12" font-weight="600" fill="#1a5fb4">Layer 3 &#21333;&#20010; Cluster</text>
+  <text x="360" y="288" text-anchor="middle" font-size="10" fill="#333">&#22836;+7: &#32034;&#24341;&#25968;/&#21253;&#22260;&#29699;/LOD/&#39030;&#28857;float3/&#32034;&#24341;&#27969;</text>
+
+  <rect x="40" y="320" width="640" height="155" rx="8" fill="#fff" stroke="#ccc"/>
+  <text x="360" y="345" text-anchor="middle" font-size="12" font-weight="600" fill="#333">GetClusterInfo &#23450;&#20301;&#20844;&#24335;</text>
+  <text x="55" y="370" font-size="10" fill="#c01c28" font-family="monospace">pageBase = mData[1+pageIndex] / 4</text>
+  <text x="55" y="390" font-size="10" fill="#e5a50a" font-family="monospace">clusterBase = pageBase + 1 + clusterCountOnPage</text>
+  <text x="55" y="410" font-size="10" fill="#333" font-family="monospace">            + mData[pageBase+1+clusterIndex] / 4</text>
+  <text x="55" y="435" font-size="10" fill="#666">&#20837;&#21475;: (pageIndex, clusterIndex) &#25104;&#23545;&#20351;&#29992;&#65292;&#26469;&#33258; BVH &#26641;&#21494;&#25110; Pass3 &#20505;&#36873;&#21015;&#34920;</text>
+  <text x="55" y="455" font-size="10" fill="#666">&#35814;&#32454;: 05_nanitemesh_page.svg, 06_nanitemesh_cluster.svg</text>
+
+  <text x="360" y="488" text-anchor="middle" font-size="9" fill="#888">04_nanitemesh_layers.svg</text>
+</svg>

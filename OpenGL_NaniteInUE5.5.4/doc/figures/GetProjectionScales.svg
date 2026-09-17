@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 920 720" font-family="Segoe UI, Microsoft YaHei, sans-serif">
+  <defs>
+    <marker id="arrowBlue" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+      <path d="M0,0 L6,3 L0,6 Z" fill="#1a5fb4"/>
+    </marker>
+  </defs>
+  <rect width="920" height="720" fill="#fafafa"/>
+  <text x="460" y="28" text-anchor="middle" font-size="18" font-weight="600" fill="#222">GetProjectionScales geometry (ClusterCull.glsl)</text>
+  <text x="460" y="48" text-anchor="middle" font-size="12" fill="#555">Camera at origin; ViewDirectionWS = depth axis; bounds sphere (Center, Radius)</text>
+
+  <rect x="20" y="65" width="420" height="300" rx="8" fill="#fff" stroke="#ccc"/>
+  <text x="230" y="88" text-anchor="middle" font-size="14" font-weight="600" fill="#333">A - Side view (along view axis)</text>
+
+  <circle cx="70" cy="250" r="8" fill="#333"/>
+  <text x="70" y="275" text-anchor="middle" font-size="11" fill="#333">Camera O</text>
+  <text x="70" y="290" text-anchor="middle" font-size="10" fill="#666">(origin)</text>
+
+  <line x1="78" y1="250" x2="380" y2="250" stroke="#1a5fb4" stroke-width="2" marker-end="url(#arrowBlue)"/>
+  <text x="390" y="254" font-size="11" fill="#1a5fb4">ViewDirection</text>
+
+  <line x1="130" y1="170" x2="130" y2="330" stroke="#888" stroke-width="1.5" stroke-dasharray="6,4"/>
+  <text x="130" y="345" text-anchor="middle" font-size="10" fill="#666">ZNear</text>
+
+  <circle cx="280" cy="250" r="55" fill="#e8f4fc" stroke="#1a5fb4" stroke-width="2"/>
+  <circle cx="280" cy="250" r="3" fill="#c01c28"/>
+  <text x="280" y="240" text-anchor="middle" font-size="11" fill="#c01c28">Center C</text>
+
+  <line x1="70" y1="310" x2="280" y2="310" stroke="#1a5fb4" stroke-width="1.5"/>
+  <text x="175" y="325" text-anchor="middle" font-size="12" fill="#1a5fb4">Z = dot(ViewDir, C)</text>
+  <text x="175" y="340" text-anchor="middle" font-size="10" fill="#666">depth along view axis</text>
+
+  <line x1="280" y1="250" x2="335" y2="250" stroke="#c01c28" stroke-width="1.5"/>
+  <text x="310" y="242" text-anchor="middle" font-size="11" fill="#c01c28">R</text>
+
+  <line x1="225" y1="165" x2="225" y2="335" stroke="#2ec27e" stroke-width="1" stroke-dasharray="4,3"/>
+  <text x="210" y="160" text-anchor="end" font-size="10" fill="#2ec27e">Z-R</text>
+  <line x1="335" y1="165" x2="335" y2="335" stroke="#2ec27e" stroke-width="1" stroke-dasharray="4,3"/>
+  <text x="350" y="160" font-size="10" fill="#2ec27e">Z+R</text>
+  <text x="280" y="360" text-anchor="middle" font-size="10" fill="#2ec27e">MinZ = max(Z-R, ZNear); MaxZ = max(Z+R, ZNear)</text>
+
+  <line x1="70" y1="250" x2="250" y2="198" stroke="#e5a50a" stroke-width="1.2" stroke-dasharray="5,3"/>
+  <line x1="70" y1="250" x2="250" y2="302" stroke="#e5a50a" stroke-width="1.2" stroke-dasharray="5,3"/>
+  <text x="155" y="188" font-size="10" fill="#e5a50a">tangent cone</text>
+  <text x="155" y="200" font-size="10" fill="#e5a50a">(angular extent)</text>
+
+  <text x="200" y="268" text-anchor="middle" font-size="10" fill="#333">|C|^2 = dot(C,C)</text>
+
+  <rect x="460" y="65" width="440" height="300" rx="8" fill="#fff" stroke="#ccc"/>
+  <text x="680" y="88" text-anchor="middle" font-size="14" font-weight="600" fill="#333">B - Top view (perpendicular to view)</text>
+
+  <circle cx="560" cy="220" r="8" fill="#333"/>
+  <text x="560" y="245" text-anchor="middle" font-size="11">Camera O</text>
+
+  <line x1="568" y1="220" x2="820" y2="220" stroke="#1a5fb4" stroke-width="2" marker-end="url(#arrowBlue)"/>
+  <text x="830" y="224" font-size="10" fill="#1a5fb4">view</text>
+
+  <circle cx="720" cy="220" r="3" fill="#c01c28"/>
+  <text x="720" y="205" text-anchor="middle" font-size="11" fill="#c01c28">C</text>
+
+  <line x1="560" y1="220" x2="560" y2="120" stroke="#888" stroke-width="1" stroke-dasharray="4,3"/>
+  <line x1="560" y1="120" x2="720" y2="120" stroke="#c01c28" stroke-width="1.5"/>
+  <line x1="720" y1="120" x2="720" y2="220" stroke="#c01c28" stroke-width="1.5" stroke-dasharray="4,2"/>
+  <text x="640" y="112" text-anchor="middle" font-size="12" fill="#c01c28">X = sqrt(|C|^2 - Z^2)</text>
+  <text x="640" y="128" text-anchor="middle" font-size="10" fill="#666">perpendicular distance to view axis</text>
+
+  <ellipse cx="720" cy="220" rx="55" ry="55" fill="#e8f4fc" stroke="#1a5fb4" stroke-width="2" opacity="0.9"/>
+  <text x="720" y="290" text-anchor="middle" font-size="10" fill="#666">sphere cross-section (radius R)</text>
+  <text x="680" y="330" text-anchor="middle" font-size="11" fill="#333">Pythagoras: |C|^2 = X^2 + Z^2</text>
+  <text x="680" y="348" text-anchor="middle" font-size="10" fill="#1a5fb4">step-by-step: GetProjectionScales/00_overview.svg</text>
+
+  <rect x="20" y="385" width="880" height="155" rx="8" fill="#fff" stroke="#ccc"/>
+  <text x="460" y="408" text-anchor="middle" font-size="14" font-weight="600" fill="#333">C - Code mapping</text>
+
+  <rect x="40" y="425" width="200" height="95" rx="6" fill="#f0f6ff" stroke="#1a5fb4"/>
+  <text x="140" y="445" text-anchor="middle" font-size="11" font-weight="600" fill="#1a5fb4">Decompose</text>
+  <text x="50" y="465" font-size="10" fill="#333">DistToClusterSq = dot(C,C)</text>
+  <text x="50" y="482" font-size="10" fill="#333">Z = dot(ViewDir, C)</text>
+  <text x="50" y="499" font-size="10" fill="#333">X = sqrt(max(0, |C|^2-Z^2))</text>
+
+  <rect x="260" y="425" width="200" height="95" rx="6" fill="#fff5f5" stroke="#c01c28"/>
+  <text x="360" y="445" text-anchor="middle" font-size="11" font-weight="600" fill="#c01c28">Sphere</text>
+  <text x="270" y="465" font-size="10" fill="#333">DistToT = sqrt(|C|^2 - R^2)</text>
+  <text x="270" y="482" font-size="10" fill="#333">Ty, By ~ tangent sin/cos</text>
+  <text x="270" y="499" font-size="10" fill="#333">(conservative screen angle)</text>
+
+  <rect x="480" y="425" width="200" height="95" rx="6" fill="#f0fff4" stroke="#2ec27e"/>
+  <text x="580" y="445" text-anchor="middle" font-size="11" font-weight="600" fill="#2ec27e">Clip</text>
+  <text x="490" y="465" font-size="10" fill="#333">MinZ, MaxZ</text>
+  <text x="490" y="482" font-size="10" fill="#333">near plane ZNear=10</text>
+  <text x="490" y="499" font-size="10" fill="#333">if Z+R &lt;= ZNear return (0,0)</text>
+
+  <rect x="700" y="425" width="180" height="95" rx="6" fill="#fff8e6" stroke="#e5a50a"/>
+  <text x="790" y="445" text-anchor="middle" font-size="11" font-weight="600" fill="#e5a50a">Output</text>
+  <text x="710" y="468" font-size="10" fill="#333">minScale = MinZ * Ty</text>
+  <text x="710" y="485" font-size="10" fill="#333">maxScale = MaxZ * By</text>
+  <text x="710" y="502" font-size="10" fill="#333">Pass3 uses .x for LOD</text>
+
+  <rect x="20" y="555" width="880" height="145" rx="8" fill="#fff" stroke="#ccc"/>
+  <text x="460" y="578" text-anchor="middle" font-size="14" font-weight="600" fill="#333">D - LOD decision (Pass 3)</text>
+
+  <text x="40" y="605" font-size="12" fill="#333">1. Farther or smaller sphere -&gt; projectionScales.x (minScale) gets smaller</text>
+  <text x="40" y="628" font-size="12" fill="#333">2. threshold = mLODError * LODScale (world error to pixels)</text>
+  <text x="40" y="651" font-size="12" fill="#333">3. if minScale &gt; threshold -&gt; error visible on screen -&gt; draw cluster</text>
+  <text x="40" y="678" font-size="11" fill="#666">Intuition: tiny on screen -&gt; skip; large on screen -&gt; draw</text>
+
+  <text x="460" y="695" text-anchor="middle" font-size="10" fill="#888">doc/figures/GetProjectionScales.svg</text>
+</svg>

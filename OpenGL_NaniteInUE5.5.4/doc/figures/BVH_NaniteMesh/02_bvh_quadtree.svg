@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 520" font-family="Segoe UI, Microsoft YaHei, sans-serif">
+  <rect width="720" height="520" fill="#fafafa"/>
+  <text x="360" y="28" text-anchor="middle" font-size="17" font-weight="600" fill="#1a5fb4">BVH &#22235;&#21449;&#26641;&#36941;&#21382;</text>
+  <text x="360" y="48" text-anchor="middle" font-size="11" fill="#555">Pass 2 &#215;;4 Ping-Pong &#23618;; for(j=0;j&lt;4;j++)</text>
+
+  <rect x="280" y="70" width="160" height="50" rx="6" fill="#1a5fb4"/>
+  <text x="360" y="100" text-anchor="middle" font-size="12" fill="#fff" font-weight="600">Root Node</text>
+
+  <line x1="320" y1="120" x2="180" y2="170" stroke="#888" stroke-width="2"/>
+  <line x1="360" y1="120" x2="360" y2="170" stroke="#888" stroke-width="2"/>
+  <line x1="400" y1="120" x2="540" y2="170" stroke="#888" stroke-width="2"/>
+
+  <rect x="120" y="170" width="120" height="44" rx="5" fill="#e8f4fc" stroke="#1a5fb4"/>
+  <text x="180" y="197" text-anchor="middle" font-size="10" fill="#333">&#38750;&#21494; #12</text>
+  <rect x="300" y="170" width="120" height="44" rx="5" fill="#e8f4fc" stroke="#1a5fb4"/>
+  <text x="360" y="197" text-anchor="middle" font-size="10" fill="#333">&#38750;&#21494; #48</text>
+  <rect x="480" y="170" width="120" height="44" rx="5" fill="#ffe8e8" stroke="#c01c28"/>
+  <text x="540" y="192" text-anchor="middle" font-size="10" fill="#c01c28">&#26641;&#21494;</text>
+  <text x="540" y="206" text-anchor="middle" font-size="9" fill="#c01c28">NumChildren=N</text>
+
+  <line x1="540" y1="214" x2="540" y2="250" stroke="#c01c28" stroke-width="2" stroke-dasharray="4,3"/>
+
+  <rect x="420" y="250" width="240" height="70" rx="6" fill="#fff5f5" stroke="#c01c28"/>
+  <text x="540" y="275" text-anchor="middle" font-size="10" fill="#333">&#20889;&#20837; Batches[1024+]</text>
+  <text x="540" y="292" text-anchor="middle" font-size="9" fill="#c01c28">(page, cluster0)...(page, clusterN-1)</text>
+  <text x="540" y="308" text-anchor="middle" font-size="9" fill="#666">&#19981;&#26159;&#27599;&#21494;&#22266;&#23450; 4 &#20010; Cluster</text>
+
+  <rect x="40" y="340" width="640" height="155" rx="8" fill="#fff" stroke="#ccc"/>
+  <text x="360" y="365" text-anchor="middle" font-size="12" font-weight="600" fill="#333">&#26641;&#21494; vs &#38750;&#21494;</text>
+  <text x="55" y="390" font-size="10" fill="#1a5fb4">&#38750;&#21494; + LOD&#36890;&#36807;: ChildStartReference &#8594; &#23376;&#33410;&#28857; ID &#8594; &#19979;&#19968;&#23618;&#26632;</text>
+  <text x="55" y="410" font-size="10" fill="#c01c28">&#26641;&#21494; + LOD&#36890;&#36807;: &#25353; NumChildren &#23637;&#24320; N &#20010; (page, cluster) &#20505;&#36873;</text>
+  <text x="55" y="430" font-size="10" fill="#333">Batches[0..1023] = &#24403;&#21069;&#23618; BVH &#33410;&#28857; ID &#21015;&#34920;</text>
+  <text x="55" y="450" font-size="10" fill="#333">Batches[1024..] = &#20505;&#36873; Cluster (page, cluster) &#20132;&#38169;&#23384;&#20648;</text>
+  <text x="55" y="475" font-size="10" fill="#e5a50a">&#26131;&#28151;&#65306; 4 &#23376;&#27133; &#8800; 4 Cluster/&#39029; &#8800; 4 &#27425; Ping-Pong &#30340;&#21807;&#19968;&#21547;&#20041;</text>
+
+  <text x="360" y="512" text-anchor="middle" font-size="9" fill="#888">02_bvh_quadtree.svg</text>
+</svg>

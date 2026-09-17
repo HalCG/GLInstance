@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 200" font-family="Segoe UI, Microsoft YaHei, sans-serif">
+  <rect width="720" height="200" fill="#fafafa"/>
+  <text x="360" y="60" text-anchor="middle" font-size="16" font-weight="600" fill="#333">&#24050;&#31227;&#21160;</text>
+  <text x="360" y="90" text-anchor="middle" font-size="13" fill="#1a5fb4">doc/figures/GetProjectionScales/01_decompose_Z_X.svg</text>
+  <text x="360" y="120" text-anchor="middle" font-size="12" fill="#555">&#23436;&#25972;&#20998;&#27493;&#22270;&#35831;&#20174; 00_overview.svg &#24320;&#22987;</text>
+  <text x="360" y="150" text-anchor="middle" font-size="11" fill="#888">GetProjectionScales/00_overview.svg</text>
+</svg>

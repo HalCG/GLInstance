@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 820 560" font-family="Segoe UI, Microsoft YaHei, sans-serif">
+  <rect width="820" height="560" fill="#fafafa"/>
+  <text x="410" y="32" text-anchor="middle" font-size="18" font-weight="600" fill="#222">BVH + NaniteMesh &#25968;&#25454;&#32467;&#26500;&#24635;&#35266;</text>
+  <text x="410" y="54" text-anchor="middle" font-size="12" fill="#555">mitsuba.bvh (sBVH) &#19982; mitsuba.nanitemesh (sNaniteMesh)</text>
+
+  <rect x="40" y="80" width="340" height="200" rx="8" fill="#f0f6ff" stroke="#1a5fb4" stroke-width="2"/>
+  <text x="210" y="108" text-anchor="middle" font-size="14" font-weight="600" fill="#1a5fb4">sBVH &#65288;mitsuba.bvh&#65289;</text>
+  <text x="60" y="135" font-size="11" fill="#333">&#22270;&#65306;&#22235;&#21449; BVH &#65288;&#27599;&#33410;&#28857; 4 &#23376;&#27133;&#65289;</text>
+  <text x="60" y="155" font-size="11" fill="#333">&#38382;&#65306;&#21738;&#29255;&#21306;&#22495; LOD &#24050;&#32463;&#22815;&#32454;&#65311;</text>
+  <text x="60" y="175" font-size="11" fill="#333">Pass 2: NodeAndClusterCull.glsl</text>
+  <text x="60" y="195" font-size="11" fill="#333">&#36755;&#20986;: (pageIndex, clusterIndex) &#20505;&#36873;</text>
+  <text x="60" y="220" font-size="10" fill="#666">&#8594; 01_bvh_packed_node.svg</text>
+  <text x="60" y="238" font-size="10" fill="#666">&#8594; 02_bvh_quadtree.svg</text>
+  <text x="60" y="256" font-size="10" fill="#666">&#8594; 03_child_start_reference.svg</text>
+
+  <rect x="440" y="80" width="340" height="200" rx="8" fill="#fff5f5" stroke="#c01c28" stroke-width="2"/>
+  <text x="610" y="108" text-anchor="middle" font-size="14" font-weight="600" fill="#c01c28">sNaniteMesh &#65288;mitsuba.nanitemesh&#65289;</text>
+  <text x="460" y="135" font-size="11" fill="#333">&#22270;&#65306;&#20998;&#39029;&#20108;&#36827;&#21046;&#27969; mData[]</text>
+  <text x="460" y="155" font-size="11" fill="#333">&#38382;&#65306;&#30495;&#23454;&#19977;&#35282;&#24418;&#22312;&#21738;&#65311;</text>
+  <text x="460" y="175" font-size="11" fill="#333">Pass 3/4: ClusterCull / HWRasterizeVS</text>
+  <text x="460" y="195" font-size="11" fill="#333">&#36755;&#20986;: &#21253;&#22260;&#29699;&#12289;LOD&#12289;&#39030;&#28857;&#12289;&#32034;&#24341;</text>
+  <text x="460" y="220" font-size="10" fill="#666">&#8594; 04_nanitemesh_layers.svg</text>
+  <text x="460" y="238" font-size="10" fill="#666">&#8594; 05_nanitemesh_page.svg</text>
+  <text x="460" y="256" font-size="10" fill="#666">&#8594; 06_nanitemesh_cluster.svg</text>
+
+  <text x="410" y="310" text-anchor="middle" font-size="20" fill="#888">&#8595; &#8595; &#8595;</text>
+
+  <rect x="120" y="330" width="580" height="200" rx="8" fill="#fff" stroke="#2ec27e" stroke-width="2"/>
+  <text x="410" y="358" text-anchor="middle" font-size="14" font-weight="600" fill="#2ec27e">GPU &#31649;&#32447;&#27969;&#21521;</text>
+  <text x="140" y="385" font-size="11" fill="#333">Pass 2 BVH &#36941;&#21382; &#8594; &#26641;&#21494;&#20889;&#20837; Batches[1024+] = (page, cluster)</text>
+  <text x="140" y="408" font-size="11" fill="#333">Pass 3 GetClusterInfo(page, cluster) &#8594; &#22312; NaniteMesh &#37324;&#25214;&#21040;&#35813; Cluster</text>
+  <text x="140" y="431" font-size="11" fill="#333">Pass 4 HWRasterizeVS &#8594; &#35835;&#39030;&#28857;/&#32034;&#24341;&#24182;&#25552;&#20132;&#21040; VisBuffer</text>
+  <text x="140" y="460" font-size="10" fill="#1a5fb4">&#20851;&#38190;&#65306; BVH &#21482;&#32473;&#22320;&#22336; (pageIndex, clusterIndex)&#65292;&#19981;&#23384;&#19977;&#35282;&#24418;</text>
+  <text x="140" y="478" font-size="10" fill="#c01c28">&#20851;&#38190;&#65306; NaniteMesh &#19981;&#20570;&#36941;&#21382;&#65292;&#21482;&#25353;&#22320;&#22336;&#30452;&#25509;&#35835;</text>
+  <text x="140" y="500" font-size="10" fill="#666">&#23436;&#25972;&#27969;&#31243;: 07_pipeline_flow.svg</text>
+
+  <text x="410" y="545" text-anchor="middle" font-size="10" fill="#888">doc/figures/BVH_NaniteMesh/00_overview.svg</text>
+</svg>

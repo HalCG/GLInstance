@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 520" font-family="Segoe UI, Microsoft YaHei, sans-serif">
+  <defs>
+    <marker id="arrowBlue" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+      <path d="M0,0 L6,3 L0,6 Z" fill="#1a5fb4"/>
+    </marker>
+  </defs>
+  <rect width="720" height="520" fill="#fafafa"/>
+  <text x="360" y="28" text-anchor="middle" font-size="17" font-weight="600" fill="#2ec27e">Step 4 / 5 &#8212; &#28145;&#24230;&#33539;&#22260; MinZ / MaxZ</text>
+  <text x="360" y="48" text-anchor="middle" font-size="11" fill="#555">L169-170: &#29699;&#22312;&#35270;&#32447;&#26041;&#21521;&#19978;&#30340;&#36817;/&#36828;&#31471;&#65292;&#24182;&#22841;&#21040; ZNear</text>
+
+  <circle cx="80" cy="280" r="8" fill="#333"/>
+  <text x="80" y="300" text-anchor="middle" font-size="10">O</text>
+  <line x1="88" y1="280" x2="620" y2="280" stroke="#1a5fb4" stroke-width="2" marker-end="url(#arrowBlue)"/>
+  <text x="630" y="284" font-size="10" fill="#1a5fb4">Z &#28145;&#24230;&#36724;</text>
+
+  <line x1="160" y1="120" x2="160" y2="400" stroke="#888" stroke-width="2" stroke-dasharray="6,4"/>
+  <text x="160" y="415" text-anchor="middle" font-size="11" fill="#888">ZNear = 10</text>
+
+  <circle cx="380" cy="280" r="65" fill="#e8f4fc" stroke="#1a5fb4" stroke-width="2"/>
+  <circle cx="380" cy="280" r="3" fill="#c01c28"/>
+
+  <line x1="315" y1="280" x2="445" y2="280" stroke="#2ec27e" stroke-width="4"/>
+  <text x="380" y="268" text-anchor="middle" font-size="12" font-weight="600" fill="#2ec27e">Z &#65288;&#29699;&#24515;&#28145;&#24230;&#65289;</text>
+
+  <line x1="315" y1="120" x2="315" y2="400" stroke="#2ec27e" stroke-width="1.5" stroke-dasharray="4,3"/>
+  <text x="300" y="110" text-anchor="end" font-size="11" fill="#2ec27e">Z - R</text>
+  <text x="300" y="395" text-anchor="end" font-size="11" fill="#2ec27e">Z + R</text>
+
+  <line x1="315" y1="150" x2="315" y2="170" stroke="#813d9c" stroke-width="3"/>
+  <text x="270" y="165" font-size="11" fill="#813d9c">MinZ</text>
+  <line x1="445" y1="350" x2="445" y2="370" stroke="#813d9c" stroke-width="3"/>
+  <text x="460" y="365" font-size="11" fill="#813d9c">MaxZ</text>
+
+  <rect x="40" y="430" width="640" height="72" rx="8" fill="#f0fff4" stroke="#2ec27e"/>
+  <text x="360" y="452" text-anchor="middle" font-size="12" font-weight="600" fill="#333">&#20195;&#30721;</text>
+  <text x="55" y="472" font-size="10" fill="#2ec27e">MinZ = max(Z - Radius, ZNear);</text>
+  <text x="55" y="488" font-size="10" fill="#2ec27e">MaxZ = max(Z + Radius, ZNear);</text>
+  <text x="380" y="472" font-size="10" fill="#666">&#19981;&#33021;&#27604; ZNear &#36817;&#65292;&#36991;&#20813;&#36817;&#35009;&#38754;&#22855;&#28857;</text>
+
+  <text x="360" y="512" text-anchor="middle" font-size="9" fill="#888">04_minz_maxz.svg</text>
+</svg>

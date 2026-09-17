@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 480" font-family="Segoe UI, Microsoft YaHei, sans-serif">
+  <rect width="720" height="480" fill="#fafafa"/>
+  <text x="360" y="28" text-anchor="middle" font-size="17" font-weight="600" fill="#c01c28">ChildStartReference &#25171;&#21253;&#65288;&#26641;&#21494;&#65289;</text>
+  <text x="360" y="48" text-anchor="middle" font-size="11" fill="#555">NodeAndClusterCull.glsl L211-216</text>
+
+  <rect x="80" y="80" width="560" height="70" rx="6" fill="#333"/>
+  <text x="120" y="110" font-size="11" fill="#888" font-family="monospace">31 ... 8</text>
+  <text x="280" y="110" font-size="11" fill="#1a5fb4" font-family="monospace">bit 8+</text>
+  <text x="520" y="110" font-size="11" fill="#c01c28" font-family="monospace">7 ... 0</text>
+  <text x="120" y="132" font-size="10" fill="#fff">pageIndex (&#39640;&#20301;)</text>
+  <text x="520" y="132" font-size="10" fill="#fff">clusterStart (&#20302; 8 bit)</text>
+
+  <rect x="80" y="170" width="560" height="100" rx="8" fill="#fff" stroke="#ccc"/>
+  <text x="360" y="195" text-anchor="middle" font-size="12" font-weight="600" fill="#333">&#20195;&#30721;</text>
+  <text x="100" y="220" font-size="10" fill="#1a5fb4" font-family="monospace">pageIndex = ChildStartReference &gt;&gt; 8;</text>
+  <text x="100" y="240" font-size="10" fill="#c01c28" font-family="monospace">clusterStart = ChildStartReference &amp; 0xFFu;</text>
+  <text x="100" y="260" font-size="10" fill="#333" font-family="monospace">clusterIndex = clusterStart + index;  // index=0..NumChildren-1</text>
+
+  <rect x="80" y="290" width="560" height="150" rx="8" fill="#fff5f5" stroke="#c01c28"/>
+  <text x="360" y="315" text-anchor="middle" font-size="12" font-weight="600" fill="#333">&#20363;&#65306; ChildStartReference = 0x00000108</text>
+  <text x="100" y="340" font-size="11" fill="#1a5fb4">pageIndex = 0x00000108 &gt;&gt; 8 = 1</text>
+  <text x="100" y="360" font-size="11" fill="#c01c28">clusterStart = 0x08 = 8</text>
+  <text x="100" y="380" font-size="11" fill="#333">NumChildren = 2 &#8594; &#20889;&#20837; (1,8) &#21644; (1,9)</text>
+  <text x="100" y="405" font-size="10" fill="#666">&#26641;&#21494;&#21482;&#32473;&#36215;&#22987;&#22320;&#22336; + &#20010;&#25968;&#65292;&#19981;&#23384;&#39030;&#28857;&#25968;&#25454;</text>
+  <text x="100" y="425" font-size="10" fill="#e5a50a">&#38750;&#21494;&#26102;&#21516;&#19968;&#23383;&#27573; = &#23376; BVH &#33410;&#28857;&#32534;&#21495;&#65288;&#19982; page/cluster &#26080;&#20851;&#65289;</text>
+
+  <text x="360" y="468" text-anchor="middle" font-size="9" fill="#888">03_child_start_reference.svg</text>
+</svg>

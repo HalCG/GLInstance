@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 520" font-family="Segoe UI, Microsoft YaHei, sans-serif">
+  <rect width="720" height="520" fill="#fafafa"/>
+  <text x="360" y="28" text-anchor="middle" font-size="17" font-weight="600" fill="#813d9c">Step 5 / 5 &#8212; &#36755;&#20986; minScale / maxScale</text>
+  <text x="360" y="48" text-anchor="middle" font-size="11" fill="#555">L174-177: &#21487;&#35265;&#24615;&#26816;&#26597; + &#36820;&#22238; vec2</text>
+
+  <rect x="60" y="80" width="280" height="120" rx="8" fill="#f0fff4" stroke="#2ec27e"/>
+  <text x="200" y="105" text-anchor="middle" font-size="12" font-weight="600" fill="#2ec27e">&#28145;&#24230; (Step 4)</text>
+  <text x="80" y="130" font-size="11" fill="#333">MinZ</text>
+  <text x="80" y="150" font-size="11" fill="#333">MaxZ</text>
+  <text x="80" y="178" font-size="10" fill="#666">&#29699;&#22312;&#35270;&#32447;&#19978;&#30340;&#33539;&#22260;</text>
+
+  <text x="360" y="145" text-anchor="middle" font-size="24" fill="#888">&#215;</text>
+
+  <rect x="380" y="80" width="280" height="120" rx="8" fill="#fff8e6" stroke="#e5a50a"/>
+  <text x="520" y="105" text-anchor="middle" font-size="12" font-weight="600" fill="#e5a50a">&#35282;&#24230; (Step 3)</text>
+  <text x="400" y="130" font-size="11" fill="#333">Ty = MinCosAngle</text>
+  <text x="400" y="150" font-size="11" fill="#333">By = MaxCosAngle</text>
+  <text x="400" y="178" font-size="10" fill="#666">&#24352;&#35282;&#38142;&#30340; cos &#33539;&#22260;</text>
+
+  <line x1="200" y1="200" x2="200" y2="240" stroke="#813d9c" stroke-width="2"/>
+  <line x1="520" y1="200" x2="520" y2="240" stroke="#813d9c" stroke-width="2"/>
+  <line x1="200" y1="240" x2="520" y2="240" stroke="#813d9c" stroke-width="2"/>
+
+  <rect x="120" y="255" width="480" height="90" rx="8" fill="#f3e8ff" stroke="#813d9c"/>
+  <text x="360" y="280" text-anchor="middle" font-size="13" font-weight="600" fill="#813d9c">&#36755;&#20986;</text>
+  <text x="360" y="305" text-anchor="middle" font-size="12" fill="#333">minScale = MinZ * Ty  &#65288;projectionScales.x&#65289;</text>
+  <text x="360" y="328" text-anchor="middle" font-size="12" fill="#333">maxScale = MaxZ * By  &#65288;projectionScales.y&#65289;</text>
+
+  <rect x="60" y="365" width="600" height="115" rx="8" fill="#fff" stroke="#ccc"/>
+  <text x="360" y="388" text-anchor="middle" font-size="12" font-weight="600" fill="#333">&#21487;&#35265;&#24615; + Pass 3 LOD</text>
+  <text x="80" y="412" font-size="10" fill="#333">if (Z + Radius &gt; ZNear) return vec2(MinZ*Ty, MaxZ*By);</text>
+  <text x="80" y="430" font-size="10" fill="#333">else return vec2(0, 0);  // &#29699;&#22312;&#36828;&#22788;&#25110;&#34987;&#36817;&#35009;&#38754;&#25377;&#20303;</text>
+  <text x="80" y="455" font-size="11" fill="#1a5fb4">Pass3: if (minScale &gt; mLODError * LODScale) &#8594; &#30011;&#36825;&#20010; Cluster</text>
+  <text x="80" y="472" font-size="10" fill="#666">minScale &#36234;&#22823; = &#23631;&#24149;&#19978;&#36234;&#22823; = &#36234;&#20540;&#24471;&#30011;</text>
+
+  <text x="360" y="512" text-anchor="middle" font-size="9" fill="#888">05_final_output.svg</text>
+</svg>
