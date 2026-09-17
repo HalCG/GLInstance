@@ -6,14 +6,6 @@
 #include <vector>
 
 namespace {
-#include "DeferredRenderer.hpp"
-
-#include "AppConfig.hpp"
-
-#include <glm/gtc/matrix_inverse.hpp>
-#include <vector>
-
-namespace {
 const float kQuadVerts[] = {
     -1.0f, -1.0f, 0.0f, 0.0f, 1.0f, -1.0f, 1.0f, 0.0f,
     1.0f,  1.0f,  1.0f, 1.0f, -1.0f, 1.0f,  0.0f, 1.0f,
