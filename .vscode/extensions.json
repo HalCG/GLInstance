@@ -1,5 +1,8 @@
 {
     "recommendations": [
-        "vadimcn.vscode-lldb"
+        "ms-vscode.cpptools",
+        "ms-vscode.cmake-tools",
+        "llvm-vs-code-extensions.vscode-clangd",
+        "llvm-vs-code-extensions.lldb-dap"
     ]
 }

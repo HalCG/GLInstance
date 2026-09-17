@@ -2,6 +2,186 @@
     "version": "2.0.0",
     "tasks": [
         {
+            "label": "CMake: Configure MSVC 2026",
+            "type": "shell",
+            "command": "cmake",
+            "args": [
+                "--preset",
+                "x64-msvc-2026"
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "group": "build",
+            "problemMatcher": []
+        },
+        {
+            "label": "Build: MSVC 2026 (All)",
+            "type": "shell",
+            "command": "cmake",
+            "args": [
+                "--build",
+                "${workspaceFolder}/out/build/x64-msvc-2026",
+                "--config",
+                "Debug"
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "problemMatcher": "$msCompile"
+        },
+        {
+            "label": "Build: MSVC 2026 (Anti-Aliasing)",
+            "type": "shell",
+            "command": "cmake",
+            "args": [
+                "--build",
+                "${workspaceFolder}/out/build/x64-msvc-2026",
+                "--config",
+                "Debug",
+                "--target",
+                "OpenGL_Anti_Aliasing"
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "group": "build",
+            "problemMatcher": "$msCompile"
+        },
+        {
+            "label": "Build: MSVC 2026 (Depth Peeling)",
+            "type": "shell",
+            "command": "cmake",
+            "args": [
+                "--build",
+                "${workspaceFolder}/out/build/x64-msvc-2026",
+                "--config",
+                "Debug",
+                "--target",
+                "OpenGL_OIT_Depth_Peeling"
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "group": "build",
+            "problemMatcher": "$msCompile"
+        },
+        {
+            "label": "Build: MSVC 2026 (Rendering Paths)",
+            "type": "shell",
+            "command": "cmake",
+            "args": [
+                "--build",
+                "${workspaceFolder}/out/build/x64-msvc-2026",
+                "--config",
+                "Debug",
+                "--target",
+                "OpenGL_Rendering_Paths"
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "group": "build",
+            "problemMatcher": "$msCompile"
+        },
+        {
+            "label": "Build: MSVC 2026 (Stochastic)",
+            "type": "shell",
+            "command": "cmake",
+            "args": [
+                "--build",
+                "${workspaceFolder}/out/build/x64-msvc-2026",
+                "--config",
+                "Debug",
+                "--target",
+                "OpenGL_OIT_Stochastic_Transparency"
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "group": "build",
+            "problemMatcher": "$msCompile"
+        },
+        {
+            "label": "Build: MSVC 2026 (Linked List)",
+            "type": "shell",
+            "command": "cmake",
+            "args": [
+                "--build",
+                "${workspaceFolder}/out/build/x64-msvc-2026",
+                "--config",
+                "Debug",
+                "--target",
+                "OpenGL_OIT_Linked_list"
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "group": "build",
+            "problemMatcher": "$msCompile"
+        },
+        {
+            "label": "Build: MSVC 2026 (Nanite)",
+            "type": "shell",
+            "command": "cmake",
+            "args": [
+                "--build",
+                "${workspaceFolder}/out/build/x64-msvc-2026",
+                "--config",
+                "Debug",
+                "--target",
+                "OpenGL_NaniteInUE5.5.4"
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "group": "build",
+            "problemMatcher": "$msCompile"
+        },
+        {
+            "label": "Run: MSVC Anti-Aliasing",
+            "type": "shell",
+            "command": "${workspaceFolder}/out/build/x64-msvc-2026/OpenGL_Anti_Aliasing/Debug/OpenGL_Anti_Aliasing.exe",
+            "options": {
+                "cwd": "${workspaceFolder}/out/build/x64-msvc-2026/OpenGL_Anti_Aliasing/Debug"
+            },
+            "dependsOn": [
+                "Build: MSVC 2026 (Anti-Aliasing)"
+            ],
+            "group": "test",
+            "problemMatcher": []
+        },
+        {
+            "label": "Run: MSVC Depth Peeling",
+            "type": "shell",
+            "command": "${workspaceFolder}/out/build/x64-msvc-2026/OpenGL_OIT_Depth_Peeling/Debug/OpenGL_OIT_Depth_Peeling.exe",
+            "options": {
+                "cwd": "${workspaceFolder}/out/build/x64-msvc-2026/OpenGL_OIT_Depth_Peeling/Debug"
+            },
+            "dependsOn": [
+                "Build: MSVC 2026 (Depth Peeling)"
+            ],
+            "group": "test",
+            "problemMatcher": []
+        },
+        {
+            "label": "Run: MSVC Rendering Paths",
+            "type": "shell",
+            "command": "${workspaceFolder}/out/build/x64-msvc-2026/OpenGL_Rendering_Paths/Debug/OpenGL_Rendering_Paths.exe",
+            "options": {
+                "cwd": "${workspaceFolder}/out/build/x64-msvc-2026/OpenGL_Rendering_Paths/Debug"
+            },
+            "dependsOn": [
+                "Build: MSVC 2026 (Rendering Paths)"
+            ],
+            "group": "test",
+            "problemMatcher": []
+        },
+        {
             "label": "CMake: Configure Clang Debug",
             "type": "shell",
             "command": "cmake",
@@ -26,21 +206,18 @@
             "options": {
                 "cwd": "${workspaceFolder}"
             },
-            "group": {
-                "kind": "build",
-                "isDefault": true
-            },
+            "group": "build",
             "problemMatcher": "$gcc"
         },
         {
-            "label": "Build: Clang Debug (Stochastic)",
+            "label": "Build: Clang Debug (Anti-Aliasing)",
             "type": "shell",
             "command": "cmake",
             "args": [
                 "--build",
                 "${workspaceFolder}/out/build/x64-clang-debug",
                 "--target",
-                "OpenGL_OIT_Stochastic_Transparency"
+                "OpenGL_Anti_Aliasing"
             ],
             "options": {
                 "cwd": "${workspaceFolder}"
@@ -81,72 +258,12 @@
             "problemMatcher": "$gcc"
         },
         {
-            "label": "Build: Clang Debug (Anti-Aliasing)",
+            "label": "Build: Clang Debug (Stochastic)",
             "type": "shell",
             "command": "cmake",
             "args": [
                 "--build",
                 "${workspaceFolder}/out/build/x64-clang-debug",
-                "--target",
-                "OpenGL_Anti_Aliasing"
-            ],
-            "options": {
-                "cwd": "${workspaceFolder}"
-            },
-            "group": "build",
-            "problemMatcher": "$gcc"
-        },
-        {
-            "label": "Build: Clang Debug (PBR)",
-            "type": "shell",
-            "command": "cmake",
-            "args": [
-                "--build",
-                "${workspaceFolder}/out/build/x64-clang-debug",
-                "--target",
-                "OpenGL_PBR"
-            ],
-            "options": {
-                "cwd": "${workspaceFolder}"
-            },
-            "group": "build",
-            "problemMatcher": "$gcc"
-        },
-        {
-            "label": "CMake: Configure MSVC 2026",
-            "type": "shell",
-            "command": "cmake",
-            "args": [
-                "--preset",
-                "x64-msvc-2026"
-            ],
-            "options": {
-                "cwd": "${workspaceFolder}"
-            },
-            "group": "build",
-            "problemMatcher": []
-        },
-        {
-            "label": "Build: MSVC 2026 (All)",
-            "type": "shell",
-            "command": "cmake",
-            "args": [
-                "--build",
-                "${workspaceFolder}/out/build/x64-msvc-2026"
-            ],
-            "options": {
-                "cwd": "${workspaceFolder}"
-            },
-            "group": "build",
-            "problemMatcher": "$msCompile"
-        },
-        {
-            "label": "Build: MSVC 2026 (Stochastic)",
-            "type": "shell",
-            "command": "cmake",
-            "args": [
-                "--build",
-                "${workspaceFolder}/out/build/x64-msvc-2026",
                 "--target",
                 "OpenGL_OIT_Stochastic_Transparency"
             ],
@@ -154,55 +271,78 @@
                 "cwd": "${workspaceFolder}"
             },
             "group": "build",
-            "problemMatcher": "$msCompile"
+            "problemMatcher": "$gcc"
         },
         {
-            "label": "Build: MSVC 2026 (Depth Peeling)",
+            "label": "Build: Clang Debug (Linked List)",
             "type": "shell",
             "command": "cmake",
             "args": [
                 "--build",
-                "${workspaceFolder}/out/build/x64-msvc-2026",
+                "${workspaceFolder}/out/build/x64-clang-debug",
                 "--target",
-                "OpenGL_OIT_Depth_Peeling"
+                "OpenGL_OIT_Linked_list"
             ],
             "options": {
                 "cwd": "${workspaceFolder}"
             },
             "group": "build",
-            "problemMatcher": "$msCompile"
+            "problemMatcher": "$gcc"
         },
         {
-            "label": "Build: MSVC 2026 (Rendering Paths)",
+            "label": "Build: Clang Debug (Nanite)",
             "type": "shell",
             "command": "cmake",
             "args": [
                 "--build",
-                "${workspaceFolder}/out/build/x64-msvc-2026",
+                "${workspaceFolder}/out/build/x64-clang-debug",
                 "--target",
-                "OpenGL_Rendering_Paths"
+                "OpenGL_NaniteInUE5.5.4"
             ],
             "options": {
                 "cwd": "${workspaceFolder}"
             },
             "group": "build",
-            "problemMatcher": "$msCompile"
+            "problemMatcher": "$gcc"
         },
         {
-            "label": "Build: MSVC 2026 (Anti-Aliasing)",
+            "label": "Run: Clang Anti-Aliasing",
             "type": "shell",
-            "command": "cmake",
-            "args": [
-                "--build",
-                "${workspaceFolder}/out/build/x64-msvc-2026",
-                "--target",
-                "OpenGL_Anti_Aliasing"
-            ],
+            "command": "${workspaceFolder}/out/build/x64-clang-debug/OpenGL_Anti_Aliasing/OpenGL_Anti_Aliasing.exe",
             "options": {
-                "cwd": "${workspaceFolder}"
+                "cwd": "${workspaceFolder}/out/build/x64-clang-debug/OpenGL_Anti_Aliasing"
             },
-            "group": "build",
-            "problemMatcher": "$msCompile"
+            "dependsOn": [
+                "Build: Clang Debug (Anti-Aliasing)"
+            ],
+            "group": "test",
+            "problemMatcher": []
+        },
+        {
+            "label": "Run: Clang Depth Peeling",
+            "type": "shell",
+            "command": "${workspaceFolder}/out/build/x64-clang-debug/OpenGL_OIT_Depth_Peeling/OpenGL_OIT_Depth_Peeling.exe",
+            "options": {
+                "cwd": "${workspaceFolder}/out/build/x64-clang-debug/OpenGL_OIT_Depth_Peeling"
+            },
+            "dependsOn": [
+                "Build: Clang Debug (Depth Peeling)"
+            ],
+            "group": "test",
+            "problemMatcher": []
+        },
+        {
+            "label": "Run: Clang Rendering Paths",
+            "type": "shell",
+            "command": "${workspaceFolder}/out/build/x64-clang-debug/OpenGL_Rendering_Paths/OpenGL_Rendering_Paths.exe",
+            "options": {
+                "cwd": "${workspaceFolder}/out/build/x64-clang-debug/OpenGL_Rendering_Paths"
+            },
+            "dependsOn": [
+                "Build: Clang Debug (Rendering Paths)"
+            ],
+            "group": "test",
+            "problemMatcher": []
         }
     ]
 }

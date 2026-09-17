@@ -15,6 +15,7 @@
             "request": "launch",
             "program": "${workspaceFolder}/out/build/x64-msvc-2026/OpenGL_Anti_Aliasing/Debug/OpenGL_Anti_Aliasing.exe",
             "cwd": "${workspaceFolder}/out/build/x64-msvc-2026/OpenGL_Anti_Aliasing/Debug",
+            "preLaunchTask": "Build: MSVC 2026 (Anti-Aliasing)",
             "console": "integratedTerminal"
         },
         {
@@ -23,6 +24,7 @@
             "request": "launch",
             "program": "${workspaceFolder}/out/build/x64-msvc-2026/OpenGL_OIT_Depth_Peeling/Debug/OpenGL_OIT_Depth_Peeling.exe",
             "cwd": "${workspaceFolder}/out/build/x64-msvc-2026/OpenGL_OIT_Depth_Peeling/Debug",
+            "preLaunchTask": "Build: MSVC 2026 (Depth Peeling)",
             "console": "integratedTerminal"
         },
         {
@@ -31,6 +33,7 @@
             "request": "launch",
             "program": "${workspaceFolder}/out/build/x64-msvc-2026/OpenGL_OIT_Stochastic_Transparency/Debug/OpenGL_OIT_Stochastic_Transparency.exe",
             "cwd": "${workspaceFolder}/out/build/x64-msvc-2026/OpenGL_OIT_Stochastic_Transparency/Debug",
+            "preLaunchTask": "Build: MSVC 2026 (Stochastic)",
             "console": "integratedTerminal"
         },
         {
@@ -39,6 +42,7 @@
             "request": "launch",
             "program": "${workspaceFolder}/out/build/x64-msvc-2026/OpenGL_Rendering_Paths/Debug/OpenGL_Rendering_Paths.exe",
             "cwd": "${workspaceFolder}/out/build/x64-msvc-2026/OpenGL_Rendering_Paths/Debug",
+            "preLaunchTask": "Build: MSVC 2026 (Rendering Paths)",
             "console": "integratedTerminal"
         },
         {
@@ -47,52 +51,64 @@
             "request": "launch",
             "program": "${workspaceFolder}/out/build/x64-msvc-2026/OpenGL_OIT_Linked_list/Debug/OpenGL_OIT_Linked_list.exe",
             "cwd": "${workspaceFolder}/out/build/x64-msvc-2026/OpenGL_OIT_Linked_list/Debug",
+            "preLaunchTask": "Build: MSVC 2026 (Linked List)",
             "console": "integratedTerminal"
         },
         {
-            "name": "LLDB: Stochastic Transparency",
-            "type": "lldb",
+            "name": "MSVC 2026: Nanite Demo",
+            "type": "cppvsdbg",
             "request": "launch",
-            "program": "${command:cmake.launchTargetPath}",
-            "cwd": "${command:cmake.launchTargetDirectory}",
-            "preLaunchTask": "Build: Clang Debug (Stochastic)",
-            "terminal": "integrated"
+            "program": "${workspaceFolder}/out/build/x64-msvc-2026/OpenGL_NaniteInUE5.5.4/Debug/OpenGL_NaniteInUE5.5.4.exe",
+            "cwd": "${workspaceFolder}/out/build/x64-msvc-2026/OpenGL_NaniteInUE5.5.4/Debug",
+            "preLaunchTask": "Build: MSVC 2026 (Nanite)",
+            "console": "integratedTerminal"
         },
         {
-            "name": "LLDB: Depth Peeling",
-            "type": "lldb",
+            "name": "Clang Debug: Launch Active CMake Target",
+            "type": "lldb-dap",
             "request": "launch",
             "program": "${command:cmake.launchTargetPath}",
-            "cwd": "${command:cmake.launchTargetDirectory}",
-            "preLaunchTask": "Build: Clang Debug (Depth Peeling)",
-            "terminal": "integrated"
+            "cwd": "${command:cmake.launchTargetDirectory}"
         },
         {
-            "name": "LLDB: Rendering Paths Demo",
-            "type": "lldb",
+            "name": "Clang Debug: Stochastic Transparency",
+            "type": "lldb-dap",
+            "request": "launch",
+            "program": "${workspaceFolder}/out/build/x64-clang-debug/OpenGL_OIT_Stochastic_Transparency/OpenGL_OIT_Stochastic_Transparency.exe",
+            "cwd": "${workspaceFolder}/out/build/x64-clang-debug/OpenGL_OIT_Stochastic_Transparency",
+            "preLaunchTask": "Build: Clang Debug (Stochastic)"
+        },
+        {
+            "name": "Clang Debug: Depth Peeling",
+            "type": "lldb-dap",
+            "request": "launch",
+            "program": "${workspaceFolder}/out/build/x64-clang-debug/OpenGL_OIT_Depth_Peeling/OpenGL_OIT_Depth_Peeling.exe",
+            "cwd": "${workspaceFolder}/out/build/x64-clang-debug/OpenGL_OIT_Depth_Peeling",
+            "preLaunchTask": "Build: Clang Debug (Depth Peeling)"
+        },
+        {
+            "name": "Clang Debug: Rendering Paths Demo",
+            "type": "lldb-dap",
             "request": "launch",
             "program": "${workspaceFolder}/out/build/x64-clang-debug/OpenGL_Rendering_Paths/OpenGL_Rendering_Paths.exe",
             "cwd": "${workspaceFolder}/out/build/x64-clang-debug/OpenGL_Rendering_Paths",
-            "preLaunchTask": "Build: Clang Debug (Rendering Paths)",
-            "terminal": "integrated"
+            "preLaunchTask": "Build: Clang Debug (Rendering Paths)"
         },
         {
-            "name": "LLDB: Anti-Aliasing Demo",
-            "type": "lldb",
+            "name": "Clang Debug: Anti-Aliasing Demo",
+            "type": "lldb-dap",
             "request": "launch",
             "program": "${workspaceFolder}/out/build/x64-clang-debug/OpenGL_Anti_Aliasing/OpenGL_Anti_Aliasing.exe",
             "cwd": "${workspaceFolder}/out/build/x64-clang-debug/OpenGL_Anti_Aliasing",
-            "preLaunchTask": "Build: Clang Debug (Anti-Aliasing)",
-            "terminal": "integrated"
+            "preLaunchTask": "Build: Clang Debug (Anti-Aliasing)"
         },
         {
-            "name": "LLDB: Linked List OIT Demo",
-            "type": "lldb",
+            "name": "Clang Debug: Linked List OIT Demo",
+            "type": "lldb-dap",
             "request": "launch",
             "program": "${workspaceFolder}/out/build/x64-clang-debug/OpenGL_OIT_Linked_list/OpenGL_OIT_Linked_list.exe",
             "cwd": "${workspaceFolder}/out/build/x64-clang-debug/OpenGL_OIT_Linked_list",
-            "preLaunchTask": "Build: Clang Debug (Linked List)",
-            "terminal": "integrated"
+            "preLaunchTask": "Build: Clang Debug (Linked List)"
         }
     ]
 }

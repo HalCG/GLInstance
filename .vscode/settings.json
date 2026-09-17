@@ -5,12 +5,9 @@
         "type": "cppvsdbg",
         "request": "launch",
         "cwd": "${command:cmake.launchTargetDirectory}",
-        "terminal": "integrated"
+        "console": "integratedTerminal"
     },
     "cmake.copyCompileCommands": "${workspaceFolder}/compile_commands.json",
-    "clangd.arguments": [
-        "--compile-commands-dir=${workspaceFolder}"
-    ],
     "C_Cpp.default.compileCommands": "${workspaceFolder}/compile_commands.json",
     "files.associations": {
         "memory": "cpp"

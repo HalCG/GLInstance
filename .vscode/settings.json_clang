@@ -2,14 +2,20 @@
     "cmake.configurePreset": "x64-clang-debug",
     "cmake.buildPreset": "x64-clang-debug",
     "cmake.debugConfig": {
-        "type": "lldb",
+        "type": "lldb-dap",
         "request": "launch",
-        "cwd": "${command:cmake.launchTargetDirectory}",
-        "terminal": "integrated"
+        "cwd": "${command:cmake.launchTargetDirectory}"
     },
     "cmake.copyCompileCommands": "${workspaceFolder}/compile_commands.json",
+    "cmake.environment": {
+        "PATH": "C:/Program Files/LLVM/bin;${env:PATH}"
+    },
+    "lldb-dap.executable-path": "C:/Program Files/LLVM/bin/lldb-dap.exe",
     "clangd.arguments": [
         "--compile-commands-dir=${workspaceFolder}/out/build/x64-clang-debug"
     ],
+    "C_Cpp.intelliSenseEngine": "disabled",
+    "C_Cpp.autocomplete": "disabled",
+    "C_Cpp.errorSquiggles": "disabled",
     "C_Cpp.default.compileCommands": "${workspaceFolder}/out/build/x64-clang-debug/compile_commands.json"
 }
