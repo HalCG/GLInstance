@@ -1,0 +1,14 @@
+# 构建产物
+out/
+compile_commands.json
+
+# IDE / 编辑器缓存
+.vs/
+**/.vs/
+.clangd
+.cache/
+
+# VS 本地输出目录
+x64/
+**/x64/Debug/
+**/x64/Release/
