@@ -75,9 +75,6 @@ bool StochasticTransparencyApp::init() {
   if (!initScene()) {
     return false;
   }
-  if (!initBuffers()) {
-    return false;
-  }
 
   glViewport(0, 0, static_cast<GLsizei>(width_),
              static_cast<GLsizei>(height_));
@@ -174,10 +171,6 @@ bool StochasticTransparencyApp::initScene() {
     std::cout << "Failed to load scene assets: " << e.what() << std::endl;
     return false;
   }
-}
-
-bool StochasticTransparencyApp::initBuffers() {
-  return true;
 }
 
 void StochasticTransparencyApp::beginFrame() {
