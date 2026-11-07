@@ -139,7 +139,14 @@ void LinkedListOITApp::shutdown() {
     ImGui_ImplGlfw_Shutdown();
     ImGui::DestroyContext();
 
+    destroyFramebuffers();
+    destroyOITBuffers();
+    if (window_) {
+        glfwDestroyWindow(window_);
+        window_ = nullptr;
+    }
     glfwTerminate();
+    s_instance_ = nullptr;
 }
 
 // ===================================================================
@@ -147,9 +154,14 @@ void LinkedListOITApp::shutdown() {
 // ===================================================================
 
 void LinkedListOITApp::framebufferSizeCallback(GLFWwindow * /*window*/, int width, int height) {
+    if (width <= 0 || height <= 0) {
+        return;
+    }
     if (s_instance_) {
-        s_instance_->width_ = width;
-        s_instance_->height_ = height;
+        s_instance_->width_ = static_cast<unsigned int>(width);
+        s_instance_->height_ = static_cast<unsigned int>(height);
+        // 头指针纹理 / SSBO / opaque FBO 均按分辨率分配，必须重建
+        s_instance_->resizeGpuResources();
     }
     glViewport(0, 0, width, height);
 }
@@ -164,8 +176,6 @@ void LinkedListOITApp::processInput(GLFWwindow *window) {
         if (s_instance_)
             s_instance_->viewRotate_ -= 1.0f;
     }
-    if (s_instance_)
-        printf("view_rotate:%f\n", s_instance_->viewRotate_);
 }
 
 // ===================================================================
@@ -177,7 +187,7 @@ bool LinkedListOITApp::initWindow() {
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3); // OIT Linked List 需要 SSBO 和 Image Load/Store 支持 (OpenGL 4.3+)
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-    glfwWindowHint(GLFW_SAMPLES, 4);
+    // 离屏 opaque/OIT FBO 非 MSAA；不请求窗口 MSAA，避免误导
 
     window_ = glfwCreateWindow(width_, height_, AppConfig::kWindowTitle, nullptr, nullptr);
     if (!window_) {
@@ -197,7 +207,6 @@ bool LinkedListOITApp::initWindow() {
     // 默认开启深度测试，设置 LEQUAL 比较函数
     glEnable(GL_DEPTH_TEST);
     glDepthFunc(GL_LEQUAL);
-    glEnable(GL_MULTISAMPLE);
 
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
@@ -222,9 +231,6 @@ bool LinkedListOITApp::initShaders() {
     compositeShader_ = std::make_unique<Shader>(
         AppConfig::resourcePath("composite.vert").c_str(),
         AppConfig::resourcePath("composite.frag").c_str());
-    quadShader_ = std::make_unique<Shader>(
-        AppConfig::resourcePath("quad.vert").c_str(),
-        AppConfig::resourcePath("quad.frag").c_str());
     return true;
 }
 
@@ -237,6 +243,56 @@ bool LinkedListOITApp::initScene() {
     textureWindowB_ = std::make_unique<Texture>(AppConfig::resourcePath("models/quad/window-b.png"));
     textureSpot_ = std::make_unique<Texture>(AppConfig::resourcePath("models/spot/spot.png"));
     return true;
+}
+
+void LinkedListOITApp::destroyOITBuffers() {
+    if (clearBuf_ != 0) {
+        glDeleteBuffers(1, &clearBuf_);
+        clearBuf_ = 0;
+    }
+    if (headPtrTexture_ != 0) {
+        glDeleteTextures(1, &headPtrTexture_);
+        headPtrTexture_ = 0;
+    }
+    if (linkedListBuffer_ != 0) {
+        glDeleteBuffers(1, &linkedListBuffer_);
+        linkedListBuffer_ = 0;
+    }
+    if (atomicBuffer_ != 0) {
+        glDeleteBuffers(1, &atomicBuffer_);
+        atomicBuffer_ = 0;
+    }
+    maxNodes_ = 0;
+}
+
+void LinkedListOITApp::destroyFramebuffers() {
+    if (oitRenderFBO_ != 0) {
+        glDeleteFramebuffers(1, &oitRenderFBO_);
+        oitRenderFBO_ = 0;
+    }
+    if (opaqueFBO_ != 0) {
+        glDeleteFramebuffers(1, &opaqueFBO_);
+        opaqueFBO_ = 0;
+    }
+    if (oitTexture_ != 0) {
+        glDeleteTextures(1, &oitTexture_);
+        oitTexture_ = 0;
+    }
+    if (opaqueDepthTexture_ != 0) {
+        glDeleteTextures(1, &opaqueDepthTexture_);
+        opaqueDepthTexture_ = 0;
+    }
+    if (opaqueTexture_ != 0) {
+        glDeleteTextures(1, &opaqueTexture_);
+        opaqueTexture_ = 0;
+    }
+}
+
+void LinkedListOITApp::resizeGpuResources() {
+    destroyFramebuffers();
+    destroyOITBuffers();
+    initOITBuffers();
+    initFramebuffers();
 }
 
 bool LinkedListOITApp::initOITBuffers() {
@@ -317,6 +373,7 @@ bool LinkedListOITApp::initFramebuffers() {
     glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, opaqueTexture_, 0);
     glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, opaqueDepthTexture_, 0);
 
+    // draw buffer 只能指定颜色附件；深度由 DEPTH_ATTACHMENT 挂载
     GLenum drawBuffers[] = {GL_COLOR_ATTACHMENT0};
     glDrawBuffers(1, drawBuffers);
 
@@ -375,15 +432,14 @@ void LinkedListOITApp::renderOpaquePass() {
     glDepthMask(GL_TRUE); // 写入深度到 opaqueDepthTexture
 
     blinnPhongShader_->use();
-    blinnPhongShader_->setVec3("cameraPos", cameraPos_);
+    blinnPhongShader_->setVec3("cameraPos", orbitEye());
     blinnPhongShader_->setVec3("lightPos", lightPos_);
     blinnPhongShader_->setVec3("k", k_);
 
     glm::mat4 model = modelMatrix({0.0f, 0.0f, 0.0f}, 0.5f);
 
-    glm::mat4 view = glm::lookAt(
-        2.0f * glm::vec3(glm::sin(glm::radians(viewRotate_)), 0.0f, glm::cos(glm::radians(viewRotate_))),
-        glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+    glm::mat4 view = glm::lookAt(orbitEye(), glm::vec3(0.0f, 0.0f, 0.0f),
+                                 glm::vec3(0.0f, 1.0f, 0.0f));
 
     glm::mat4 projection = glm::perspective(
         glm::radians(AppConfig::kFovDegrees), (float)(width_) / (float)(height_),
@@ -393,8 +449,9 @@ void LinkedListOITApp::renderOpaquePass() {
     blinnPhongShader_->setMat4("view", view);
     blinnPhongShader_->setMat4("projection", projection);
 
+    // 与 blinnPhong.frag / oitRender.frag 的 uniform sampler2D texture_diffuse 对齐
     spot_->Draw(*blinnPhongShader_, opaqueFBO_,
-                {{"diffuse_texture", textureSpot_->id}}, {}, GL_TRIANGLES, {true, true});
+                {{"texture_diffuse", textureSpot_->id}}, {}, GL_TRIANGLES, {true, true});
 }
 
 void LinkedListOITApp::renderTransparentPass() {
@@ -432,14 +489,16 @@ void LinkedListOITApp::renderTransparentPass() {
     glBindBuffer(GL_PIXEL_UNPACK_BUFFER, 0);
 
     oitRenderShader_->use();
-    oitRenderShader_->setVec3("cameraPos", cameraPos_);
+    oitRenderShader_->setVec3("cameraPos", orbitEye());
     oitRenderShader_->setVec3("lightPos", lightPos_);
     oitRenderShader_->setVec3("k", k_);
     oitRenderShader_->setUint("MaxNodes", maxNodes_);
+    oitRenderShader_->setVec2("uResolution",
+                              glm::vec2(static_cast<float>(width_),
+                                        static_cast<float>(height_)));
 
-    glm::mat4 view = glm::lookAt(
-        2.0f * glm::vec3(glm::sin(glm::radians(viewRotate_)), 0.0f, glm::cos(glm::radians(viewRotate_))),
-        glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+    glm::mat4 view = glm::lookAt(orbitEye(), glm::vec3(0.0f, 0.0f, 0.0f),
+                                 glm::vec3(0.0f, 1.0f, 0.0f));
 
     glm::mat4 projection = glm::perspective(
         glm::radians(AppConfig::kFovDegrees), (float)(width_) / (float)(height_),
@@ -452,21 +511,24 @@ void LinkedListOITApp::renderTransparentPass() {
     glm::mat4 model = modelMatrix({-0.5f, 0.0f, 0.8f}, 0.5f);
     oitRenderShader_->setMat4("model", model);
     quad_->Draw(*oitRenderShader_, oitRenderFBO_,
-                {{"diffuse_texture", textureWindowR_->id}, {"texture_depth", opaqueDepthTexture_}},
+                {{"texture_diffuse", textureWindowR_->id},
+                 {"texture_depth", opaqueDepthTexture_}},
                 {}, GL_TRIANGLES, {true, false});
 
     // 绿色透明方块
     model = modelMatrix({0.2f, -0.5f, -1.0f}, 0.5f);
     oitRenderShader_->setMat4("model", model);
     quad_->Draw(*oitRenderShader_, oitRenderFBO_,
-                {{"diffuse_texture", textureWindowG_->id}, {"texture_depth", opaqueDepthTexture_}},
+                {{"texture_diffuse", textureWindowG_->id},
+                 {"texture_depth", opaqueDepthTexture_}},
                 {}, GL_TRIANGLES, {false, false});
 
     // 蓝色透明方块
     model = modelMatrix({0.2f, 0.0f, -0.5f}, 0.5f);
     oitRenderShader_->setMat4("model", model);
     quad_->Draw(*oitRenderShader_, oitRenderFBO_,
-                {{"diffuse_texture", textureWindowB_->id}, {"texture_depth", opaqueDepthTexture_}},
+                {{"texture_diffuse", textureWindowB_->id},
+                 {"texture_depth", opaqueDepthTexture_}},
                 {}, GL_TRIANGLES, {false, false});
 }
 
@@ -510,4 +572,9 @@ glm::mat4 LinkedListOITApp::modelMatrix(const glm::vec3 &translation, float scal
     model = glm::translate(model, translation);
     model = glm::scale(model, glm::vec3(scale));
     return model;
+}
+
+glm::vec3 LinkedListOITApp::orbitEye() const {
+    return 2.0f * glm::vec3(glm::sin(glm::radians(viewRotate_)), 0.0f,
+                            glm::cos(glm::radians(viewRotate_)));
 }

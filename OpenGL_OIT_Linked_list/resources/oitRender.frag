@@ -24,6 +24,7 @@ uniform uint MaxNodes;
 
 uniform sampler2D texture_diffuse;
 uniform sampler2D texture_depth; // 来自 Pass 1 的不透明物体深度图
+uniform vec2 uResolution;        // 当前视口宽高，用于屏幕 UV
 
 // 链表节点内存布局 (std430 保证 C++ 与 GLSL 布局精确匹配)
 struct NodeType {
@@ -46,7 +47,7 @@ layout(binding = 0, std430) buffer linkedLists {
 void main() {
   // 1. 深度裁切逻辑 (手动 Early Z)
   // 计算当前 Fragment 在屏幕 0.0 ~ 1.0 的 UV 坐标
-  vec2 uv = gl_FragCoord.xy / vec2(800.0, 600.0); // 屏幕宽高
+  vec2 uv = gl_FragCoord.xy / uResolution;
   float opaqueDepth = texture(texture_depth, uv).r;
 
   // 如果当前透明片段的深度 gl_FragCoord.z 大于不透明物体的深度，说明被不透明物体挡住，直接丢弃

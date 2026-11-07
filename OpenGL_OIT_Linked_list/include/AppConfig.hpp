@@ -10,17 +10,13 @@ constexpr unsigned int kInitialWidth = 800;
 constexpr unsigned int kInitialHeight = 600;
 
 constexpr const char *kResourceRoot = "resources/";
-constexpr const char *kWindowTitle = "LearnOpenGL";
+constexpr const char *kWindowTitle = "OpenGL OIT - Linked List";
 
 constexpr float kFovDegrees = 90.0f;
 constexpr float kNearPlane = 0.1f;
 constexpr float kFarPlane = 100.0f;
 constexpr float kInitialOrbitAngle = 227.0f;
 
-static const glm::vec3 &cameraPosition() {
-    static const glm::vec3 v(0.0f, 0.0f, 2.0f);
-    return v;
-}
 static const glm::vec3 &lightPosition() {
     static const glm::vec3 v(2.0f, 2.0f, 0.0f);
     return v;
@@ -28,10 +24,6 @@ static const glm::vec3 &lightPosition() {
 /** k.x=环境光, k.y=漫反射, k.z=高光 */
 static const glm::vec3 &materialCoeffs() {
     static const glm::vec3 v(0.4f, 0.4f, 0.2f);
-    return v;
-}
-static const glm::vec3 &backgroundColor() {
-    static const glm::vec3 v(0.2f, 0.3f, 0.3f);
     return v;
 }
 

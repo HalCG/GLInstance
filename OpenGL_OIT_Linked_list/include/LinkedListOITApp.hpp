@@ -35,12 +35,17 @@ private:
     bool initScene();
     bool initOITBuffers();
     bool initFramebuffers();
+    void destroyOITBuffers();
+    void destroyFramebuffers();
+    void resizeGpuResources(); // 窗口尺寸变化时重建 FBO / SSBO / headPtr
 
     void renderOpaquePass();
     void renderTransparentPass();
     void renderCompositePass();
 
     glm::mat4 modelMatrix(const glm::vec3 &translation, float scale = 0.5f) const;
+    // 与 lookAt 同一套轨道眼点
+    glm::vec3 orbitEye() const;
 
     // ---- GLFW 窗口 ----
     GLFWwindow *window_ = nullptr;
@@ -49,7 +54,6 @@ private:
     unsigned int height_ = AppConfig::kInitialHeight;
 
     // ---- 场景参数 ----
-    glm::vec3 cameraPos_ = AppConfig::cameraPosition();
     glm::vec3 lightPos_ = AppConfig::lightPosition();
     glm::vec3 k_ = AppConfig::materialCoeffs();
     float viewRotate_ = AppConfig::kInitialOrbitAngle;
@@ -58,7 +62,6 @@ private:
     std::unique_ptr<Shader> blinnPhongShader_;
     std::unique_ptr<Shader> oitRenderShader_;
     std::unique_ptr<Shader> compositeShader_;
-    std::unique_ptr<Shader> quadShader_;
 
     // ---- 模型 ----
     std::unique_ptr<Model> quad_;
@@ -87,7 +90,6 @@ private:
     // ---- 静态实例指针（用于 GLFW 回调） ----
     bool autoRotate_ = true;
     glm::vec3 bgColor_ = glm::vec3(0.2f, 0.3f, 0.3f);
-    float alphaMultiplier_ = 1.0f;
 
     static LinkedListOITApp *s_instance_;
 };
