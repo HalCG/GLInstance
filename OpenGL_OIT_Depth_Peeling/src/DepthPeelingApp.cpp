@@ -17,12 +17,17 @@ DepthPeelingApp *DepthPeelingApp::s_instance_ = nullptr;
 void DepthPeelingApp::framebufferSizeCallback(GLFWwindow * /*window*/,
                                               int width, int height)
 {
+  if (width <= 0 || height <= 0) {
+    return;
+  }
   if (s_instance_)
   {
     s_instance_->width_ = static_cast<unsigned int>(width);
     s_instance_->height_ = static_cast<unsigned int>(height);
     s_instance_->camera_.setAspectFromViewport(
         s_instance_->width_, s_instance_->height_);
+    // 离屏 peel/accum FBO 按新分辨率重建，避免拉伸/深度 UV 错位
+    s_instance_->initFramebuffers();
     glViewport(0, 0, width, height);
   }
 }
@@ -87,7 +92,7 @@ bool DepthPeelingApp::initWindow()
   glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
   glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
   glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-  glfwWindowHint(GLFW_SAMPLES, 4);
+  // Depth Peeling 画到非 MSAA 离屏 FBO，不请求窗口 MSAA，避免误导
 
   window_ = glfwCreateWindow(static_cast<int>(width_),
                              static_cast<int>(height_),
@@ -115,8 +120,6 @@ bool DepthPeelingApp::initWindow()
   // 使用 GL_LEQUAL (<=)：在 depth_peeling_render.frag 中先通过 `if (gl_FragCoord.z <= frontDepth) discard;` 手动丢弃上一层及之前的所有旧片元；
   // 过滤后的片元进硬件 Z-Test 时，使用 GL_LEQUAL 能确保浮点深度相等或最近的当前层片元顺利通过测试并写入，防止 Z-Fighting 丢片。
   glDepthFunc(GL_LEQUAL);
-  // 开启 MSAA：配合 GLFW 4x 采样点 (GLFW_SAMPLES=4)，对多边形边缘与半透明片元做多重采样抗锯齿平滑。
-  glEnable(GL_MULTISAMPLE);
 
   camera_.orbitAngleDeg = AppConfig::kInitialOrbitAngle;
   camera_.setAspectFromViewport(width_, height_);
@@ -137,9 +140,6 @@ bool DepthPeelingApp::initWindow()
 bool DepthPeelingApp::initShaders()
 {
   const std::string root = AppConfig::kResourceRoot;
-  shaderInit_ = std::make_unique<Shader>(
-      (root + "depth_peeling_init.vert").c_str(),
-      (root + "depth_peeling_init.frag").c_str());
   shaderPeel_ = std::make_unique<Shader>(
       (root + "depth_peeling_render.vert").c_str(),
       (root + "depth_peeling_render.frag").c_str());
@@ -149,8 +149,6 @@ bool DepthPeelingApp::initShaders()
   shaderFinal_ = std::make_unique<Shader>(
       (root + "depth_peeling_final.vert").c_str(),
       (root + "depth_peeling_final.frag").c_str());
-  shaderQuad_ = std::make_unique<Shader>((root + "quad.vert").c_str(),
-                                         (root + "quad.frag").c_str());
   return true;
 }
 
@@ -174,23 +172,6 @@ bool DepthPeelingApp::initFramebuffers()
 
   fboAccum_.create(w, h, "Accumulation (FBO_0)");
   fboPeel_.create(w, h, "Peel layer (FBO_1)");
-
-  texOitColor_.createColorHDR(w, h);
-  glGenFramebuffers(1, &fboOit_);
-  glBindFramebuffer(GL_FRAMEBUFFER, fboOit_);
-  glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D,
-                         texOitColor_.id, 0);
-  glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D,
-                         fboAccum_.depth.id, 0);
-  const GLenum bufs[] = {GL_COLOR_ATTACHMENT0, GL_DEPTH_ATTACHMENT};
-  glDrawBuffers(2, bufs);
-  if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
-  {
-    std::cout << "ERROR::FRAMEBUFFER:: OIT framebuffer is not complete!"
-              << std::endl;
-  }
-  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-  glBindFramebuffer(GL_FRAMEBUFFER, 0);
   return true;
 }
 
@@ -262,12 +243,6 @@ void DepthPeelingApp::shutdown()
     glDeleteQueries(1, &queryId_);
     queryId_ = 0;
   }
-  if (fboOit_ != 0)
-  {
-    glDeleteFramebuffers(1, &fboOit_);
-    fboOit_ = 0;
-  }
-  texOitColor_.destroy();
   fboAccum_.destroy();
   fboPeel_.destroy();
   if (window_)
@@ -346,7 +321,8 @@ void DepthPeelingApp::drawSceneLayer(Shader &shader, GLuint targetFbo,
   const GLuint inputDepth = depthTexture(inputDepthIndex);
 
   shader.use();
-  shader.setVec3("cameraPos", cameraPos_);
+  // 与轨道 view 同一眼点，避免相机转动后高光仍按固定位置算
+  shader.setVec3("cameraPos", camera_.eye());
   shader.setVec3("lightPos", lightPos_);
   shader.setVec3("k", lightCoeffs_);
   shader.setVec2("u_ScreenSize",

@@ -67,8 +67,9 @@ public:
     glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D,
                            depth.id, 0);
 
-    const GLenum bufs[] = {GL_COLOR_ATTACHMENT0, GL_DEPTH_ATTACHMENT};
-    glDrawBuffers(2, bufs);
+    // draw buffer 只能指定颜色附件；深度由 DEPTH_ATTACHMENT 挂载，不参与 glDrawBuffers
+    const GLenum bufs[] = {GL_COLOR_ATTACHMENT0};
+    glDrawBuffers(1, bufs);
 
     if (glCheckFramebufferStatus(GL_FRAMEBUFFER) !=
         GL_FRAMEBUFFER_COMPLETE) {

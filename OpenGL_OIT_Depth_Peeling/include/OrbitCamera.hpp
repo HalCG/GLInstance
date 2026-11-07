@@ -14,12 +14,15 @@ public:
   float nearPlane = 0.1f;
   float farPlane = 100.0f;
 
-  glm::mat4 view() const {
+  // 与 view() 使用同一套轨道眼点，供光照 specular 等使用
+  glm::vec3 eye() const {
     const float rad = glm::radians(orbitAngleDeg);
-    const glm::vec3 eye(
-        orbitRadius * glm::sin(rad), 0.0f,
-        orbitRadius * glm::cos(rad));
-    return glm::lookAt(eye, glm::vec3(0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+    return glm::vec3(orbitRadius * glm::sin(rad), 0.0f,
+                     orbitRadius * glm::cos(rad));
+  }
+
+  glm::mat4 view() const {
+    return glm::lookAt(eye(), glm::vec3(0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
   }
 
   glm::mat4 projection() const {

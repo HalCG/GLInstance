@@ -55,15 +55,12 @@ private:
   unsigned int height_ = AppConfig::kInitialHeight;
 
   OrbitCamera camera_;
-  glm::vec3 cameraPos_ = AppConfig::cameraPosition();
   glm::vec3 lightPos_ = AppConfig::lightPosition();
   glm::vec3 lightCoeffs_ = AppConfig::materialCoeffs();
 
-  std::unique_ptr<Shader> shaderInit_;
   std::unique_ptr<Shader> shaderPeel_;
   std::unique_ptr<Shader> shaderBlend_;
   std::unique_ptr<Shader> shaderFinal_;
-  std::unique_ptr<Shader> shaderQuad_;
 
   std::unique_ptr<Model> modelQuad_;
   std::unique_ptr<Model> modelSpot_;
@@ -74,10 +71,6 @@ private:
 
   GlFramebuffer fboAccum_;
   GlFramebuffer fboPeel_;
-
-  /** 原 main 中的 oitRenderFBO（与 fboAccum_ 共享深度纹理，仅初始化） */
-  GLuint fboOit_ = 0;
-  GlTexture2D texOitColor_;
 
   GLuint queryId_ = 0;
 
