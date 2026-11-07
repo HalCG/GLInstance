@@ -173,6 +173,8 @@ void DeferredRenderer::render(const Scene &scene, LightManager &lights, const Fr
     geometryShader_->use();
     geometryShader_->setMat4("view", camera.view);
     geometryShader_->setMat4("projection", camera.projection);
+    // 与 Forward / Forward+ 同一材质系数，避免切路径时观感差异混入「管线差异」
+    geometryShader_->setVec3("uMaterialK", AppConfig::materialCoeffs());
     scene.drawFloor(*geometryShader_);
     scene.drawSpotMeshes(*geometryShader_);
     // 切回默认屏幕帧缓冲区（0）

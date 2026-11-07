@@ -121,24 +121,6 @@ class Shader
     {
         glUniform1i(getLocation(name), value);
     }
-    void setUint(const std::string &name, int value) const
-    {
-        glUniform1ui(getLocation(name), value);
-    }
-    // ------------------------------------------------------------------------
-    void setFloat(const std::string &name, float value) const
-    {
-        glUniform1f(getLocation(name), value);
-    }
-    // ------------------------------------------------------------------------
-    void setVec2(const std::string &name, const glm::vec2 &value) const
-    {
-        glUniform2fv(getLocation(name), 1, &value[0]);
-    }
-    void setVec2(const std::string &name, float x, float y) const
-    {
-        glUniform2f(getLocation(name), x, y);
-    }
     // ------------------------------------------------------------------------
     void setVec3(const std::string &name, const glm::vec3 &value) const
     {
@@ -147,20 +129,6 @@ class Shader
     void setVec3(const std::string &name, float x, float y, float z) const
     {
         glUniform3f(getLocation(name), x, y, z);
-    }
-    // ------------------------------------------------------------------------
-    void setVec4(const std::string &name, const glm::vec4 &value) const
-    {
-        glUniform4fv(getLocation(name), 1, &value[0]);
-    }
-    void setVec4(const std::string &name, float x, float y, float z, float w) const
-    {
-        glUniform4f(getLocation(name), x, y, z, w);
-    }
-    // ------------------------------------------------------------------------
-    void setMat2(const std::string &name, const glm::mat2 &mat) const
-    {
-        glUniformMatrix2fv(getLocation(name), 1, GL_FALSE, &mat[0][0]);
     }
     // ------------------------------------------------------------------------
     void setMat3(const std::string &name, const glm::mat3 &mat) const

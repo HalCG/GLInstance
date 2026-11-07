@@ -21,9 +21,6 @@ public:
     void drawSpotMeshes(Shader &shader) const; // 绘制头盔实例（方法名保留以兼容各 Renderer）
     void drawFloor(Shader &shader) const;
 
-    const std::vector<SceneObject> &objects() const { return objects_; }
-    int objectCount() const { return static_cast<int>(objects_.size()) + 1; }
-
 private:
     std::unique_ptr<Model> heroModel_;
     mutable Mesh floor_;

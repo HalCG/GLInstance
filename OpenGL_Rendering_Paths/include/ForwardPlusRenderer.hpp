@@ -15,7 +15,7 @@ public:
     bool init();    // 加载 mesh.vert + forward_plus.frag
     void shutdown();
     void render(const Scene &scene, LightManager &lights, const FrameCamera &camera, int width, int height,
-                PerfStats &stats); // cullPass → shadingPass
+                PerfStats &stats, bool enableHDR = true); // cullPass → shadingPass
 
 
 

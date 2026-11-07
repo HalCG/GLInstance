@@ -17,7 +17,7 @@ void ForwardPlusRenderer::shutdown() {
 // 核心思想：将屏幕划分为 16x16 像素的网格（Tiles），在光照着色之前对每个 Tile 进行光源求交剔除（Light Culling）。
 // 复杂度：从全量遍历 O(Objects × Lights) 降为按 Tile 精确循环 O(Objects × Lights_per_Tile)。
 void ForwardPlusRenderer::render(const Scene &scene, LightManager &lights, const FrameCamera &camera, int width,
-                                 int height, PerfStats &stats) {
+                                 int height, PerfStats &stats, bool enableHDR) {
     // =========================================================================
     // 阶段 1：光源剔除（Light Culling）
     // CPU 侧对全屏 16x16 Tile 构建视锥体（Frustum），剔除不在该 Tile 影响范围内的点光源，
@@ -50,6 +50,7 @@ void ForwardPlusRenderer::render(const Scene &scene, LightManager &lights, const
     shader_->setInt("uTilesY", lights.tilesY());
     shader_->setInt("uTileSize", AppConfig::kTileSize);
     shader_->setInt("uMaxLightsPerTile", AppConfig::kMaxLightsPerTile);
+    shader_->setBool("uEnableHDR", enableHDR);
 
     // 绘制场景几何体：在 forward_plus.frag 中根据 gl_FragCoord 计算 Tile 坐标并只循环本 Tile 影响的光源
     scene.drawFloor(*shader_);

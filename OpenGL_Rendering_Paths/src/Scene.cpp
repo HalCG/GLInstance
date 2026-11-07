@@ -1,6 +1,7 @@
 #include "Scene.hpp"
 
 #include <glad/glad.h>
+#include <glm/gtc/matrix_inverse.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <stb_image.h>
 
@@ -186,12 +187,15 @@ void Scene::drawSpotMeshes(Shader &shader) const {
         return;
     }
     for (const SceneObject &obj : objects_) {
+        // normalMatrix 在 CPU 算好再上传，避免 mesh.vert 每顶点 inverse(transpose)
         shader.setMat4("model", obj.model);
+        shader.setMat3("normalMatrix", glm::inverseTranspose(glm::mat3(obj.model)));
         heroModel_->Draw(shader);
     }
 }
 
 void Scene::drawFloor(Shader &shader) const {
     shader.setMat4("model", glm::mat4(1.0f));
+    shader.setMat3("normalMatrix", glm::mat3(1.0f));
     floor_.Draw(shader);
 }

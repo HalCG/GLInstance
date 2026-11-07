@@ -19,7 +19,7 @@ void ForwardRenderer::shutdown() {
 // 针对场景中的每个几何体对象，光栅化后在 Fragment Shader 中循环遍历全量光源进行着色计算。
 // 复杂度：O(Objects × Lights)，在光源数量极大时性能下降明显。
 void ForwardRenderer::render(const Scene &scene, LightManager &lights, const FrameCamera &camera, int /*width*/,
-                             int /*height*/, PerfStats &stats) {
+                             int /*height*/, PerfStats &stats, bool enableHDR) {
     stats.forwardPass.begin();
 
     // 设置默认屏幕缓冲区的清屏颜色并清除颜色/深度缓冲区
@@ -44,6 +44,7 @@ void ForwardRenderer::render(const Scene &scene, LightManager &lights, const Fra
     shader_->setVec3("uCameraPos", camera.eye);
     shader_->setVec3("uMaterialK", AppConfig::materialCoeffs());
     shader_->setInt("uLightCount", lights.activeCount());
+    shader_->setBool("uEnableHDR", enableHDR);
 
     // 4. 绘制场景中的网格物体（地面 + Spot 模型）
     scene.drawFloor(*shader_);

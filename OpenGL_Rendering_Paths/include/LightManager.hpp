@@ -18,12 +18,10 @@ public:
     // 返回 CPU 剔除耗时（毫秒）。相机/光源未变时跳过重建。
     float buildForwardPlusTiles(int screenWidth, int screenHeight, const FrameCamera &camera);
 
-    void markTilesDirty() { tilesDirty_ = true; }
     void setStressLighting(bool enabled);
     bool stressLighting() const { return stressLighting_; }
 
     int activeCount() const { return activeCount_; }
-    const std::vector<GpuPointLight> &lights() const { return lights_; }
     // Forward+ 诊断：最近一次 tile 重建后的平均每格灯数 / 顶满格子占比
     float averageLightsPerTile() const { return avgLightsPerTile_; }
     float saturatedTileRatio() const { return saturatedTileRatio_; }

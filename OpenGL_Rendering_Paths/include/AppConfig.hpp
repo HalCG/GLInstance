@@ -27,7 +27,6 @@ constexpr float kHeroHelmetScale = 1.15f;
 constexpr float kSideHelmetScale = 0.78f;
 constexpr float kFloorHalfExtent = 10.0f;
 constexpr float kCameraOrbitRadius = 11.0f;
-constexpr float kCameraHeight = 5.0f;
 constexpr float kCameraTargetY = 1.0f;
 
 constexpr int kMaxLights = 512;
@@ -37,11 +36,6 @@ constexpr int kMaxLightsPerTile = 256;
 
 constexpr int kLightCountPresets[] = {32, 64, 128, 256, 512};
 constexpr int kLightPresetCount = 5;
-
-static const glm::vec3 &cameraPosition() {
-    static const glm::vec3 v(0.0f, 5.0f, 14.0f);
-    return v;
-}
 
 // Ka / Kd / Ks：降低环境与高光，避免多灯叠加过曝
 static const glm::vec3 &materialCoeffs() {

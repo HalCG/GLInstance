@@ -14,13 +14,14 @@ out vec2 vTexCoords;                       // 传递 UV 坐标
 uniform mat4 model;                        // 模型矩阵 (Local -> World)
 uniform mat4 view;                         // 视图矩阵 (World -> Camera)
 uniform mat4 projection;                   // 投影矩阵 (Camera -> Clip)
+uniform mat3 normalMatrix;                 // CPU 上传：inverseTranspose(mat3(model))
 
 void main() {
     // 1. 将顶点位置变换到世界空间
     vWorldPos = vec3(model * vec4(aPos, 1.0));
 
-    // 2. 使用法线矩阵 (Normal Matrix) 变换法线，防止模型进行非等比例缩放 (Non-uniform scale) 时法线变形
-    vNormal = mat3(transpose(inverse(model))) * aNormal;
+    // 2. 用法线矩阵变换法线（避免非均匀缩放时法线变形；不再每顶点做 inverse）
+    vNormal = normalMatrix * aNormal;
 
     // 3. 传递 UV 纹理坐标
     vTexCoords = aTexCoords;

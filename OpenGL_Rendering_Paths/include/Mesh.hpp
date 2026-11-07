@@ -5,8 +5,6 @@
 
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
-// #define STB_IMAGE_IMPLEMENTATION
-#include "stb_image.h"
 #include "Shader.hpp"
 
 #include <string>
@@ -39,43 +37,6 @@ struct Texture
     string type;
     string path;
     Texture() = default;
-
-    Texture(std::string texture_path)
-    {
-        unsigned int textureID;
-        glGenTextures(1, &textureID);
-
-        int width, height, nrComponents;
-        unsigned char *data = stbi_load(texture_path.c_str(), &width, &height, &nrComponents, 0);
-        if (data)
-        {
-            GLenum format;
-            if (nrComponents == 1)
-                format = GL_RED;
-            else if (nrComponents == 3)
-                format = GL_RGB;
-            else if (nrComponents == 4)
-                format = GL_RGBA;
-
-            glBindTexture(GL_TEXTURE_2D, textureID);
-            glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, data);
-            glGenerateMipmap(GL_TEXTURE_2D);
-
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-            stbi_image_free(data);
-        }
-        else
-        {
-            std::cout << "Texture failed to load at path: " << path << std::endl;
-            stbi_image_free(data);
-        }
-
-        this->id = textureID;
-    }
 };
 
 class Mesh
@@ -148,61 +109,6 @@ class Mesh
         glBindVertexArray(0);
 
         glActiveTexture(GL_TEXTURE0);
-    }
-
-    /**
-     * @brief 渲染模型
-     *
-     * @param shader 所使用的 shader
-     * @param framebuffer 渲染的目标 framebuffer
-     * @param inputTextures 输入的 texture2D
-     * @param inputCubeMaps 输入的 textureCubeMap
-     * @param rendermodel 渲染模式 GL_TRIANGLES\GL_TRIANGLE_STRIP
-     */
-    void Draw(Shader &shader, GLuint framebuffer, const std::vector<std::pair<std::string, GLuint>> &inputTextures,
-              const std::vector<std::pair<std::string, GLuint>> &inputCubeMaps, GLuint rendermodel,
-              std::vector<bool> clearColorDepth)
-    {
-        // 绘制网格
-        glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
-
-        if (clearColorDepth[0])
-        {
-            glClear(GL_COLOR_BUFFER_BIT);
-        }
-        if (clearColorDepth[1])
-        {
-            glClear(GL_DEPTH_BUFFER_BIT);
-        }
-
-        int texture_id = 0;
-        for (int i = 0; i < inputTextures.size(); i++)
-        {
-            shader.setInt(inputTextures[i].first.c_str(), texture_id);
-            glActiveTexture(GL_TEXTURE0 + texture_id);             // 激活 纹理单元0
-            glBindTexture(GL_TEXTURE_2D, inputTextures[i].second); // 绑定纹理，将纹理texture.id 绑定到 纹理单元0 上
-            // glUniform1i(glGetUniformLocation(shader.ID, inputTextures[i].first.c_str()),
-            // texture_id); // 将 shader 中的 texture1 绑定到 纹理单元0
-            // glUniform1i(glGetUniformLocation(shader.ID, "diffuse_texture"),
-            //             0); // 将 shader 中的 texture1 绑定到 纹理单元0
-            texture_id++;
-        }
-        for (int i = 0; i < inputCubeMaps.size(); i++)
-        {
-            shader.setInt(inputCubeMaps[i].first.c_str(), texture_id);
-            glActiveTexture(GL_TEXTURE0 + texture_id); // 激活 纹理单元0
-            glBindTexture(GL_TEXTURE_CUBE_MAP,
-                          inputCubeMaps[i].second); // 绑定纹理，将纹理texture.id 绑定到 纹理单元0 上
-            // glUniform1i(glGetUniformLocation(shader.ID, inputCubeMaps[i].first.c_str()),
-            // texture_id); // 将 shader 中的 texture1 绑定到 纹理单元0
-            texture_id++;
-        }
-
-        glBindVertexArray(VAO);
-        glDrawElements(rendermodel, static_cast<unsigned int>(indices.size()), GL_UNSIGNED_INT, 0);
-        glBindTexture(GL_TEXTURE_2D, 0);
-        glBindVertexArray(0);
-        glBindFramebuffer(GL_FRAMEBUFFER, 0);
     }
 
   private:

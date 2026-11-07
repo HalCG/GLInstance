@@ -23,6 +23,7 @@ layout(std430, binding = 0) readonly buffer LightBuffer {
 uniform vec3 uCameraPos;             // 相机世界坐标 (用于计算视角向量 viewDir)
 uniform vec3 uMaterialK;             // 材质系数 x: 环境光 Ka, y: 漫反射 Kd, z: 高光 Ks
 uniform int uLightCount;             // 场景中当前激活的点光源数量
+uniform bool uEnableHDR;             // 与 Deferred 共用：Reinhard + Gamma 开关
 uniform sampler2D texture_diffuse1;  // 漫反射纹理
 
 void main() {
@@ -65,8 +66,10 @@ void main() {
         result += (diffuse + specular) * attenuation;
     }
 
-    // Reinhard + Gamma，与 Deferred 路径观感对齐
-    result = result / (result + vec3(1.0));
-    result = pow(result, vec3(1.0 / 2.2));
+    // 与 Deferred / Forward+ 同一套后处理，便于关 HDR 时公平对比
+    if (uEnableHDR) {
+        result = result / (result + vec3(1.0));
+        result = pow(result, vec3(1.0 / 2.2));
+    }
     FragColor = vec4(result, 1.0);
 }

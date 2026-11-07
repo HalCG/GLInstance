@@ -5,8 +5,6 @@
 #include <glm/ext/matrix_clip_space.hpp>
 #include <glm/ext/matrix_transform.hpp>
 #include <glm/trigonometric.hpp>
-#include <iostream>
-#include <sstream>
 
 #include "imgui.h"
 #include "imgui_impl_glfw.h"
@@ -14,23 +12,6 @@
 #include "ImGuiCnFont.hpp"
 
 RenderingPathsApp *RenderingPathsApp::s_instance_ = nullptr;
-
-namespace
-{
-    const char *pathName(RenderPath path)
-    {
-        switch (path)
-        {
-        case RenderPath::Forward:
-            return "Forward";
-        case RenderPath::Deferred:
-            return "Deferred";
-        case RenderPath::ForwardPlus:
-            return "Forward+";
-        }
-        return "Unknown";
-    }
-} // namespace
 
 bool RenderingPathsApp::init()
 {
@@ -59,7 +40,6 @@ bool RenderingPathsApp::init()
     }
 
     deferred_.resize(static_cast<int>(width_), static_cast<int>(height_));
-    cachedOverlayText_ = buildOverlayText();
     glViewport(0, 0, static_cast<GLsizei>(width_), static_cast<GLsizei>(height_));
     return true;
 }
@@ -108,13 +88,6 @@ bool RenderingPathsApp::initWindow()
     return true;
 }
 
-void RenderingPathsApp::markCameraDirty()
-{
-    // 相机、路径切换、光源 preset、GBuffer debug 等统一置 dirty
-    cameraDirty_ = true;
-}
-
-// 组装 view + perspective（无 jitter）
 FrameCamera RenderingPathsApp::buildCamera() const
 {
     FrameCamera camera;
@@ -134,7 +107,7 @@ void RenderingPathsApp::renderFrame()
         return;
     }
 
-    const bool measureGpu = !camera_.isDragging(); // 拖拽时跳过 GPU 计时与标题刷新
+    const bool measureGpu = !camera_.isDragging();
     perf_.forwardPass.setEnabled(measureGpu);
     perf_.geometryPass.setEnabled(measureGpu);
     perf_.lightingPass.setEnabled(measureGpu);
@@ -144,24 +117,24 @@ void RenderingPathsApp::renderFrame()
     perf_.beginFrame();
     const FrameCamera camera = buildCamera();
 
-    // 按 currentPath_ 分发到三条渲染管线（Forward / Deferred / Forward+）
     switch (currentPath_)
     {
     case RenderPath::Forward:
-        forward_.render(scene_, lights_, camera, static_cast<int>(width_), static_cast<int>(height_), perf_);
+        forward_.render(scene_, lights_, camera, static_cast<int>(width_), static_cast<int>(height_), perf_,
+                        enableHDR_);
         break;
     case RenderPath::Deferred:
         deferred_.render(scene_, lights_, camera, static_cast<int>(width_), static_cast<int>(height_), perf_,
                          showGBufferDebug_, enableHDR_);
         break;
     case RenderPath::ForwardPlus:
-        forwardPlus_.render(scene_, lights_, camera, static_cast<int>(width_), static_cast<int>(height_), perf_);
+        forwardPlus_.render(scene_, lights_, camera, static_cast<int>(width_), static_cast<int>(height_), perf_,
+                            enableHDR_);
         break;
     }
 
     perf_.endFrame();
 
-    // 绘制 ImGui 控制面板
     ImGui_ImplOpenGL3_NewFrame();
     ImGui_ImplGlfw_NewFrame();
     ImGui::NewFrame();
@@ -176,15 +149,12 @@ void RenderingPathsApp::renderFrame()
         int pathIdx = static_cast<int>(currentPath_);
         if (ImGui::RadioButton("Forward (正向渲染)", pathIdx == 0)) {
             currentPath_ = RenderPath::Forward;
-            markCameraDirty();
         }
         if (ImGui::RadioButton("Deferred (延迟渲染)", pathIdx == 1)) {
             currentPath_ = RenderPath::Deferred;
-            markCameraDirty();
         }
         if (ImGui::RadioButton("Forward+ (Cluster/Tile 正向+)", pathIdx == 2)) {
             currentPath_ = RenderPath::ForwardPlus;
-            markCameraDirty();
         }
 
         ImGui::Separator();
@@ -192,18 +162,16 @@ void RenderingPathsApp::renderFrame()
         int lightCount = lights_.activeCount();
         if (ImGui::SliderInt("Light Count (光源数量)", &lightCount, 1, AppConfig::kMaxLights)) {
             lights_.regenerate(lightCount);
-            markCameraDirty();
         }
-        if (ImGui::Button("32 Lights")) { lights_.regenerate(32); markCameraDirty(); } ImGui::SameLine();
-        if (ImGui::Button("64 Lights")) { lights_.regenerate(64); markCameraDirty(); } ImGui::SameLine();
-        if (ImGui::Button("128 Lights")) { lights_.regenerate(128); markCameraDirty(); } ImGui::SameLine();
-        if (ImGui::Button("256 Lights")) { lights_.regenerate(256); markCameraDirty(); } ImGui::SameLine();
-        if (ImGui::Button("512 Lights")) { lights_.regenerate(512); markCameraDirty(); }
+        if (ImGui::Button("32 Lights")) { lights_.regenerate(32); } ImGui::SameLine();
+        if (ImGui::Button("64 Lights")) { lights_.regenerate(64); } ImGui::SameLine();
+        if (ImGui::Button("128 Lights")) { lights_.regenerate(128); } ImGui::SameLine();
+        if (ImGui::Button("256 Lights")) { lights_.regenerate(256); } ImGui::SameLine();
+        if (ImGui::Button("512 Lights")) { lights_.regenerate(512); }
 
         bool stress = lights_.stressLighting();
         if (ImGui::Checkbox("Stress Lighting (大半径/强覆盖，便于看出灯数差异)", &stress)) {
             lights_.setStressLighting(stress);
-            markCameraDirty();
         }
         ImGui::TextWrapped("提示：场景很轻时请看下方 Pass GPU ms，不要只看 FPS；"
                            "Forward+ 的 Cull 是 CPU 耗时。");
@@ -212,16 +180,11 @@ void RenderingPathsApp::renderFrame()
         ImGui::Text("Debug & Display Options (调试选项):");
         if (ImGui::Checkbox("VSync (垂直同步)", &vsyncEnabled_)) {
             glfwSwapInterval(vsyncEnabled_ ? 1 : 0);
-            markCameraDirty();
         }
         if (currentPath_ == RenderPath::Deferred) {
-            if (ImGui::Checkbox("Show G-Buffer Debug (G键)", &showGBufferDebug_)) {
-                markCameraDirty();
-            }
+            ImGui::Checkbox("Show G-Buffer Debug (G键)", &showGBufferDebug_);
         }
-        if (ImGui::Checkbox("Enable HDR Tone Mapping (H键)", &enableHDR_)) {
-            markCameraDirty();
-        }
+        ImGui::Checkbox("Enable HDR Tone Mapping (H键)", &enableHDR_);
 
         ImGui::Separator();
         ImGui::Text("Performance Stats (看 ms，别只看 FPS):");
@@ -253,42 +216,15 @@ void RenderingPathsApp::renderFrame()
 
     ImGui::Render();
     ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
-
-    if (!camera_.isDragging() && ++titleUpdateCounter_ % 15 == 0)
-    {
-        cachedOverlayText_ = buildOverlayText();
-        updateWindowTitle();
-    }
 }
 
 void RenderingPathsApp::run()
 {
-    int frameCounter = 0;
     while (!glfwWindowShouldClose(window_))
     {
-        const bool continuousRender = true;
-        const bool active = cameraDirty_ || continuousRender || camera_.isDragging();
-        if (active)
-        {
-            glfwPollEvents();
-        }
-        else
-        {
-            glfwWaitEvents();
-        }
-
+        glfwPollEvents();
         renderFrame();
         glfwSwapBuffers(window_);
-        cameraDirty_ = false;
-
-        if (++frameCounter % 120 == 0)
-        {
-            const FrameStats stats = perf_.latest();
-            std::cout << "path," << pathName(currentPath_) << ",lights," << lights_.activeCount() << ",fps,"
-                        << stats.fps << ",frame_ms," << stats.totalFrameMs << ",forward_ms," << stats.forwardPassMs
-                        << ",geom_ms," << stats.geometryPassMs << ",light_ms," << stats.lightingPassMs << ",cull_ms,"
-                        << stats.cullPassMs << ",shade_ms," << stats.shadingPassMs << std::endl;
-        }
     }
 }
 
@@ -326,42 +262,6 @@ int RenderingPathsApp::nextLightPreset(int delta) const
     return idx;
 }
 
-std::string RenderingPathsApp::buildOverlayText() const
-{
-    const FrameStats stats = perf_.latest();
-    std::ostringstream oss;
-    oss << pathName(currentPath_) << " | lights=" << lights_.activeCount()
-        << " | objects=" << scene_.objectCount() << " | 1sFPS=" << static_cast<int>(stats.fps)
-        << " | min=" << static_cast<int>(stats.minFps) << " | avg=" << stats.avgFrameMs << "ms";
-    if (currentPath_ == RenderPath::Forward)
-    {
-        oss << " | forward=" << stats.forwardPassMs << "ms";
-    }
-    else if (currentPath_ == RenderPath::Deferred)
-    {
-        oss << " | geom=" << stats.geometryPassMs << "ms light=" << stats.lightingPassMs << "ms";
-        if (showGBufferDebug_)
-        {
-            oss << " | GBufferDebug";
-        }
-    }
-    else
-    {
-        oss << " | cull=" << stats.cullPassMs << "ms shade=" << stats.shadingPassMs << "ms";
-    }
-    oss << " | HDR:" << (enableHDR_ ? "ON" : "OFF");
-    oss << " | VTK: LMB rotate, MMB pan, RMB dolly, wheel zoom, 1/2/3 path, [/] lights, G gbuffer, H hdr";
-    return oss.str();
-}
-
-void RenderingPathsApp::updateWindowTitle()
-{
-    if (window_)
-    {
-        glfwSetWindowTitle(window_, cachedOverlayText_.c_str());
-    }
-}
-
 void RenderingPathsApp::framebufferSizeCallback(GLFWwindow * /*window*/, int width, int height)
 {
     if (width <= 0 || height <= 0)
@@ -373,7 +273,6 @@ void RenderingPathsApp::framebufferSizeCallback(GLFWwindow * /*window*/, int wid
         s_instance_->width_ = static_cast<unsigned int>(width);
         s_instance_->height_ = static_cast<unsigned int>(height);
         s_instance_->deferred_.resize(width, height);
-        s_instance_->markCameraDirty();
     }
     glViewport(0, 0, width, height);
 }
@@ -413,13 +312,10 @@ void RenderingPathsApp::mouseButtonCallback(GLFWwindow *window, int button, int 
         double y = 0.0;
         glfwGetCursorPos(window, &x, &y);
         s_instance_->camera_.beginDrag(mode, x, y);
-        s_instance_->markCameraDirty();
     }
     else if (action == GLFW_RELEASE)
     {
         s_instance_->camera_.endDrag();
-        s_instance_->cachedOverlayText_ = s_instance_->buildOverlayText();
-        s_instance_->updateWindowTitle();
     }
 }
 
@@ -429,10 +325,7 @@ void RenderingPathsApp::cursorPosCallback(GLFWwindow * /*window*/, double xpos, 
     {
         return;
     }
-    if (s_instance_->camera_.applyCursorDelta(xpos, ypos, s_instance_->width_, s_instance_->height_))
-    {
-        s_instance_->markCameraDirty();
-    }
+    s_instance_->camera_.applyCursorDelta(xpos, ypos, s_instance_->width_, s_instance_->height_);
 }
 
 void RenderingPathsApp::scrollCallback(GLFWwindow * /*window*/, double /*xoffset*/, double yoffset)
@@ -443,7 +336,6 @@ void RenderingPathsApp::scrollCallback(GLFWwindow * /*window*/, double /*xoffset
     }
 
     s_instance_->camera_.applyScroll(yoffset);
-    s_instance_->markCameraDirty();
 }
 
 void RenderingPathsApp::keyCallback(GLFWwindow *window, int key, int scancode, int action, int mods)
@@ -455,9 +347,6 @@ void RenderingPathsApp::keyCallback(GLFWwindow *window, int key, int scancode, i
         return;
     }
 
-    s_instance_->markCameraDirty();
-
-    // 1/2/3 切换渲染路径；G 仅在 Deferred 下切换 GBuffer 可视化
     switch (key)
     {
     case GLFW_KEY_ESCAPE:

@@ -18,9 +18,6 @@ public:
     void render(const Scene &scene, LightManager &lights, const FrameCamera &camera, int width, int height,
                 PerfStats &stats, bool showGBufferDebug, bool enableHDR = true); // showGBufferDebug 时跳过 lighting，直出 GBuffer 可视化
 
-
-    GLuint albedoTexture() const { return gAlbedo_; }
-
 private:
     void createGBuffer(int width, int height); // 分配 albedo/normal/material/depth 四附件 FBO
     void destroyGBuffer();

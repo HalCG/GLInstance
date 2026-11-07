@@ -15,7 +15,7 @@ public:
     bool init();    // 加载 mesh.vert + forward.frag
     void shutdown();
     void render(const Scene &scene, LightManager &lights, const FrameCamera &camera, int width, int height,
-                PerfStats &stats); // 上传 SSBO → 清屏 → drawFloor + drawSpotMeshes
+                PerfStats &stats, bool enableHDR = true); // 上传 SSBO → 清屏 → drawFloor + drawSpotMeshes
 
 
 

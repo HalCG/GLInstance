@@ -46,17 +46,6 @@ class Model
             meshes[i].Draw(shader);
     }
 
-    void Draw(Shader &shader, GLuint framebuffer, std::vector<std::pair<std::string, GLuint>> inputTextures,
-              std::vector<std::pair<std::string, GLuint>> inputCubeMaps, GLuint rendermodel,
-              std::vector<bool> clearColorDepth)
-    {
-
-        for (unsigned int i = 0; i < meshes.size(); i++)
-        {
-            meshes[i].Draw(shader, framebuffer, inputTextures, inputCubeMaps, rendermodel, clearColorDepth);
-        }
-    }
-
   private:
     // 使用 Assimp 支持的扩展从文件加载模型，并将得到的网格存入 meshes 向量。
     void loadModel(string const &path)

@@ -37,6 +37,7 @@ uniform int uTilesX;                // 横向 Tile 数量
 uniform int uTilesY;                // 纵向 Tile 数量
 uniform int uTileSize;              // 单个 Tile 像素尺寸 (默认 16x16)
 uniform int uMaxLightsPerTile;      // 单个 Tile 最多容纳的光源数量上限 (默认 64)
+uniform bool uEnableHDR;            // 与 Deferred / Forward 共用：Reinhard + Gamma 开关
 uniform sampler2D texture_diffuse1; // 漫反射纹理
 
 void main() {
@@ -85,7 +86,9 @@ void main() {
         result += (diffuse + specular) * attenuation;
     }
 
-    result = result / (result + vec3(1.0));
-    result = pow(result, vec3(1.0 / 2.2));
+    if (uEnableHDR) {
+        result = result / (result + vec3(1.0));
+        result = pow(result, vec3(1.0 / 2.2));
+    }
     FragColor = vec4(result, 1.0);
 }
