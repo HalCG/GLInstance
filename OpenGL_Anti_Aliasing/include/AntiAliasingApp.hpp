@@ -15,7 +15,7 @@
 #include <GLFW/glfw3.h>
 #include <memory>
 
-// AA 对比 Demo：四种模式走 IAaTechnique；Wipe / UI / 相机仍由 App 管理
+// AA 对比 Demo：四种模式走 IAaTechnique；UI / 相机由 App 管理
 class AntiAliasingApp {
 public:
     bool init();
@@ -34,8 +34,8 @@ private:
     AaFrameContext makeFrameContext();      // 把 App 持有的资源塞进上下文给策略用
     FrameCamera buildCamera(glm::vec2 jitterNdc) const;
     void renderFrame();
+    void drawUi();                          // ImGui 控制面板（与 AA 流水线分离）
     void resizeTargets();
-    void renderBaselineToBaseline(const FrameCamera &camera); // Wipe 左侧：无 AA 基线
     int nextMsaaPreset(int delta) const;
     void computeRenderSize(int &outW, int &outH) const;
 
@@ -49,9 +49,7 @@ private:
     std::unique_ptr<IAaTechnique> technique_; // 当前 AA 策略（None/MSAA/FXAA/TAA）
     int msaaPresetIndex_ = AppConfig::kDefaultMsaaPresetIndex;
     VtkTrackballCamera camera_;
-    bool vsyncEnabled_ = false;
-    bool wipeCompare_ = true;   // 左 None / 右当前 AA 同机位对比
-    float wipeAmount_ = 0.5f;   // 分割线位置 [0,1]
+    bool vsyncEnabled_ = true;  // 默认开：关 VSync + 持续出帧会打满 GPU，整机卡死难点 UI
     float renderScale_ = 1.0f;  // 内部分辨率比例，降低可放大锯齿
     bool autoOrbit_ = false;
     double lastFrameTime_ = 0.0;
@@ -60,8 +58,7 @@ private:
 
     AATestScene scene_;
     SceneRenderer sceneRenderer_;
-    SingleSampleFbo singleFbo_;   // 场景单采样离屏（None/FXAA/TAA/基线绘制）
-    SingleSampleFbo baselineFbo_; // Wipe 左侧 None 结果
+    SingleSampleFbo sceneFbo_;    // 场景单采样离屏（None/FXAA/TAA），与 AaFrameContext::sceneFbo 同名
     SingleSampleFbo resolveFbo_;  // 当前 AA 最终颜色
     MsaaFbo msaaFbo_;
     PostProcess postProcess_;

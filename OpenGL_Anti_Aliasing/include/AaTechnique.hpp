@@ -1,29 +1,36 @@
 #ifndef AA_TECHNIQUE_HPP
 #define AA_TECHNIQUE_HPP
 
-#include "AATestScene.hpp"
-#include "Framebuffer.hpp"
-#include "PostProcess.hpp"
 #include "RenderTypes.hpp"
-#include "SceneRenderer.hpp"
-#include "TaaPass.hpp"
 
 #include <memory>
 
-// 一帧渲染时各 AA 技术共用的资源指针（资源所有权在 AntiAliasingApp，技术只借用）
+class AATestScene;
+class SceneRenderer;
+class SingleSampleFbo;
+class MsaaFbo;
+class PostProcess;
+class TaaPass;
+
+// 一帧渲染上下文：App 持有资源，technique 只借用。按「共用 / 模式专用 / 帧状态」分组。
 struct AaFrameContext {
+    // --- 共用：sceneFbo 画场景，resolveFbo 收最终色再上屏 ---
     AATestScene *scene = nullptr;
     SceneRenderer *sceneRenderer = nullptr;
-    SingleSampleFbo *sceneFbo = nullptr;   // 单采样离屏：None / FXAA / TAA 画场景，Wipe 基线也复用
-    SingleSampleFbo *resolveFbo = nullptr; // 当前 AA 模式的最终颜色（再 blit / Wipe 上屏）
-    MsaaFbo *msaaFbo = nullptr;            // 仅 MSAA 使用
-    PostProcess *postProcess = nullptr;    // FXAA / blit
-    TaaPass *taaPass = nullptr;            // TAA history + jitter
+    SingleSampleFbo *sceneFbo = nullptr;
+    SingleSampleFbo *resolveFbo = nullptr;
     int renderW = 0;
     int renderH = 0;
-    glm::mat4 prevViewProj = glm::mat4(1.0f); // 上一帧无 jitter 的 VP，TAA 重投影用
-    bool hasPrevViewProj = false;             // 首帧 / 切模式后为 false，不做 history 混合
-    bool cameraDragging = false;              // 拖拽时 TAA 提高 blend，减少拖影
+
+    // --- 模式专用：MSAA / FXAA·blit / TAA，用不到的忽略 ---
+    MsaaFbo *msaaFbo = nullptr;
+    PostProcess *postProcess = nullptr;
+    TaaPass *taaPass = nullptr;
+
+    // --- 帧状态（TAA）：重投影矩阵、是否有历史、拖拽时提高 blend ---
+    glm::mat4 prevViewProj = glm::mat4(1.0f);
+    bool hasPrevViewProj = false;
+    bool cameraDragging = false;
 };
 
 // 策略接口：四种 AA 各一个实现；App 切模式只换 technique_，主循环不再写大 switch

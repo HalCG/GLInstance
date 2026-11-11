@@ -23,23 +23,23 @@ using namespace std;
 
 unsigned int TextureFromFile(const char *path, const string &directory, bool gamma = false);
 
+// Model：文件级资源（.gltf/.obj…）。Assimp 读入后拆成若干 Mesh；Draw 只是遍历 meshes。
+// 相对 Mesh：Model 管加载与组合，Mesh 管单块几何的 GPU 绘制。
 class Model
 {
   public:
-    // 模型数据
-    vector<Texture> textures_loaded; // 存储目前已加载的全部纹理，用于优化，确保同一纹理不会
-                                     // 被重复加载。
-    vector<Mesh> meshes;
-    string directory;
+    vector<Texture> textures_loaded; // 已加载贴图去重，避免同路径重复上传
+    vector<Mesh> meshes;             // 本文件拆出的全部子网格
+    string directory;                // 模型文件所在目录（解析相对贴图路径）
     bool gammaCorrection;
 
-    // 构造函数，需要一个指向 3D 模型的文件路径。
+    // path → loadModel（Assimp）→ processNode → processMesh → 填充 meshes
     Model(string const &path, bool gamma = false) : gammaCorrection(gamma)
     {
         loadModel(path);
     }
 
-    // 绘制模型及其全部网格
+    // 依次画全部子网格（单文件多 Mesh 时常见）
     void Draw(Shader &shader)
     {
         for (unsigned int i = 0; i < meshes.size(); i++)
@@ -58,45 +58,36 @@ class Model
     }
 
   private:
-    // 使用 Assimp 支持的扩展从文件加载模型，并将得到的网格存入 meshes 向量。
+    // Assimp 读文件 → 从根节点递归拆 Mesh
     void loadModel(string const &path)
     {
-        // 通过 Assimp 读取文件
         Assimp::Importer importer;
         const aiScene *scene = importer.ReadFile(path, aiProcess_Triangulate | aiProcess_GenSmoothNormals |
                                                            aiProcess_FlipUVs | aiProcess_CalcTangentSpace);
-        // 检查错误
-        if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode) // 若不为零
+        if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode)
         {
             cout << "ERROR::ASSIMP:: " << importer.GetErrorString() << endl;
             return;
         }
-        // 从文件路径中提取所在目录
         directory = path.substr(0, path.find_last_of('/'));
-
-        // 递归处理 Assimp 的根节点
         processNode(scene->mRootNode, scene);
     }
 
-    // 以递归方式处理节点：处理该节点上的每个网格，再对其
-    // 子节点（若有）重复此过程。
+    // 节点只存 mesh 索引与层级；真实顶点在 scene->mMeshes
     void processNode(aiNode *node, const aiScene *scene)
     {
-        // 处理当前节点上的每个网格
         for (unsigned int i = 0; i < node->mNumMeshes; i++)
         {
-            // 节点对象只包含用于索引场景中实际对象的索引。
-            // 场景保存全部数据，节点仅用于组织关系（如节点之间的层级）。
             aiMesh *mesh = scene->mMeshes[node->mMeshes[i]];
             meshes.push_back(processMesh(mesh, scene));
         }
-        // 处理完所有网格（若有）后，再递归处理每个子节点
         for (unsigned int i = 0; i < node->mNumChildren; i++)
         {
             processNode(node->mChildren[i], scene);
         }
     }
 
+    // aiMesh → 本工程 Mesh（顶点/索引/材质贴图）
     Mesh processMesh(aiMesh *mesh, const aiScene *scene)
     {
         // 待填充的数据

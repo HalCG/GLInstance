@@ -21,24 +21,27 @@ public:
     GLuint outputTexture() const { return history_[currentIndex_]; } // 混合结果，供 blit 到屏幕
 
 private:
-    GLuint history_[2] = {0, 0};
-    GLuint fbo_ = 0;
-    GLuint shader_ = 0;
-    GLuint quadVao_ = 0;
+    GLuint history_[2] = {0, 0}; // Ping-Pong：读上一帧 / 写本帧混合结果
+    GLuint fbo_ = 0;             // 绑 history_[write] 作 color attachment
+    GLuint shader_ = 0;          // taa.frag 程序
+    GLuint quadVao_ = 0;         // 全屏四边形
     GLuint quadVbo_ = 0;
-    GLint locCurrentColor_ = -1;
-    GLint locCurrentDepth_ = -1;
-    GLint locHistoryColor_ = -1;
-    GLint locInvViewProj_ = -1;
-    GLint locPrevViewProj_ = -1;
-    GLint locTexelSize_ = -1;
-    GLint locBlendFactor_ = -1;
-    GLint locHasHistory_ = -1;
-    int currentIndex_ = 0;
-    int frameIndex_ = 0;
+
+    // taa.frag uniform 位置缓存（init 里查一次）
+    GLint locCurrentColor_ = -1;  // 本帧场景色
+    GLint locCurrentDepth_ = -1;  // 本帧深度 → 世界坐标
+    GLint locHistoryColor_ = -1;  // 上一帧 history
+    GLint locInvViewProj_ = -1;   // 本帧无 jitter VP 逆
+    GLint locPrevViewProj_ = -1;  // 上一帧无 jitter VP
+    GLint locTexelSize_ = -1;     // 1/宽高，邻域 clamp
+    GLint locBlendFactor_ = -1;   // 当前帧混合权重
+    GLint locHasHistory_ = -1;    // 是否有可用 history
+
+    int currentIndex_ = 0; // history_ 写槽；读槽 = 1 - currentIndex_
+    int frameIndex_ = 0;   // Halton 序列帧号
     int width_ = 0;
     int height_ = 0;
-    bool validHistory_ = false;
+    bool validHistory_ = false; // false：下一帧直出，不混 history
 };
 
 #endif

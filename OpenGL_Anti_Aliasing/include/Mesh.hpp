@@ -58,11 +58,14 @@ struct Texture
                 format = GL_RGBA;
 
             glBindTexture(GL_TEXTURE_2D, textureID);
+            // level=0：只上传完整分辨率原图（mip 链的第 0 级），此时尚未生成更小级别
             glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, data);
+            // 由 level0 自动生成 1..N（半尺寸、1/4…直至 1×1）；层数 ≈ floor(log2(max(w,h)))+1
             glGenerateMipmap(GL_TEXTURE_2D);
 
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+            // 缩小：在相邻 mip 间三线性过滤，减轻远处闪烁；放大：只用 level0
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
@@ -78,27 +81,27 @@ struct Texture
     }
 };
 
+// Mesh：一块可绘制子网格（顶点/索引/贴图 + VAO）。
+// 可手搓（如地板），也可由 Model::processMesh 从 Assimp 拆出。真正 glDraw* 在这里。
 class Mesh
 {
   public:
-    // 网格数据
     vector<Vertex> vertices;
     vector<unsigned int> indices;
     vector<Texture> textures;
     unsigned int VAO;
     Mesh() = default;
-    // 构造函数
+
+    // 收齐 CPU 数据后 setupMesh() 上传 GPU（VBO/EBO/属性指针）
     Mesh(vector<Vertex> vertices, vector<unsigned int> indices, vector<Texture> textures)
     {
         this->vertices = vertices;
         this->indices = indices;
         this->textures = textures;
-
-        // 已具备全部所需数据，接下来设置顶点缓冲及其属性指针。
         setupMesh();
     }
 
-    // 渲染网格
+    // 绑贴图 uniform → glDrawElements（画这一块）
     void Draw(Shader &shader)
     {
         unsigned int diffuseNr = 1;

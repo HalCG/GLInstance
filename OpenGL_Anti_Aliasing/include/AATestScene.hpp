@@ -13,7 +13,7 @@ struct SceneObject {
     glm::mat4 model;
 };
 
-// 同一展陈场景：DamagedHelmet + 地板。四种 AA 共用，保证同位置对比公平。
+// 同一展陈场景：DamagedHelmet + 棋盘地板。四种 AA 共用，保证同位置对比公平。
 class AATestScene {
 public:
     bool init();

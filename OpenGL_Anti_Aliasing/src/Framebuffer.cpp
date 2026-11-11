@@ -72,16 +72,16 @@ void SingleSampleFbo::unbind() const {
 }
 
 void SingleSampleFbo::blitColorToDefault(int width, int height) const {
-    // None 模式：离屏 color 直接 blit 到窗口；不做抗锯齿计算
-    // 这里的 0 = 默认帧缓冲（屏幕后缓冲）
+    // 便捷封装：拷到窗口后缓冲（drawFbo = 0）
     blitColorTo(0, width, height);
 }
 
 void SingleSampleFbo::blitColorTo(GLuint drawFbo, int dstW, int dstH) const {
+    // 单采样 → 单采样：纯颜色拷贝（可能缩放）。与 MsaaFbo::resolveColorTo 同 API、不同语义。
     glBindFramebuffer(GL_READ_FRAMEBUFFER, fbo_);
-    glBindFramebuffer(GL_DRAW_FRAMEBUFFER, drawFbo); // drawFbo==0 时写到窗口
+    glBindFramebuffer(GL_DRAW_FRAMEBUFFER, drawFbo); // 0 = 窗口
     glBlitFramebuffer(0, 0, width_, height_, 0, 0, dstW, dstH, GL_COLOR_BUFFER_BIT, GL_NEAREST);
-    glBindFramebuffer(GL_FRAMEBUFFER, 0); // 恢复默认帧缓冲
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
 // 【多重采样离线 FBO (MsaaFbo)】：
@@ -148,10 +148,11 @@ void MsaaFbo::unbind() const {
 }
 
 void MsaaFbo::resolveColorTo(GLuint drawFbo, int dstW, int dstH) const {
-    // 源为 MULTISAMPLE 时，glBlitFramebuffer 会触发硬件 Resolve
+    // 多样本 → 单采样：同一 glBlitFramebuffer，驱动做 Resolve（N 子采样合成 1 色 = MSAA 收尾）
+    // 本 Demo：msaaFbo_ → resolveFbo_（再统一上屏）
     glBindFramebuffer(GL_READ_FRAMEBUFFER, fbo_);
-    glBindFramebuffer(GL_DRAW_FRAMEBUFFER, drawFbo); // drawFbo==0 时 resolve 到窗口
+    glBindFramebuffer(GL_DRAW_FRAMEBUFFER, drawFbo); // 0 = 窗口
     glBlitFramebuffer(0, 0, width_, height_, 0, 0, dstW, dstH, GL_COLOR_BUFFER_BIT, GL_NEAREST);
-    glBindFramebuffer(GL_FRAMEBUFFER, 0); // 恢复默认帧缓冲
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 

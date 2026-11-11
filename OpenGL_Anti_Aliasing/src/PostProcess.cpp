@@ -20,12 +20,10 @@ bool PostProcess::init() {
     const std::string vert = AppConfig::shaderPath("fullscreen.vert");
     const std::string blitFrag = AppConfig::shaderPath("blit.frag");
     const std::string fxaaFrag = AppConfig::shaderPath("fxaa.frag");
-    const std::string wipeFrag = AppConfig::shaderPath("wipe.frag");
     blitShader_ = compileProgram(vert.c_str(), blitFrag.c_str());
     fxaaShader_ = compileProgram(vert.c_str(), fxaaFrag.c_str());
-    wipeShader_ = compileProgram(vert.c_str(), wipeFrag.c_str());
 
-    if (blitShader_ == 0 || fxaaShader_ == 0 || wipeShader_ == 0) {
+    if (blitShader_ == 0 || fxaaShader_ == 0) {
         return false;
     }
     auto linked = [](GLuint prog) {
@@ -33,17 +31,13 @@ bool PostProcess::init() {
         glGetProgramiv(prog, GL_LINK_STATUS, &ok);
         return ok == GL_TRUE;
     };
-    if (!linked(blitShader_) || !linked(fxaaShader_) || !linked(wipeShader_)) {
+    if (!linked(blitShader_) || !linked(fxaaShader_)) {
         return false;
     }
 
     blitLocInput_ = glGetUniformLocation(blitShader_, "uInput");
     fxaaLocInput_ = glGetUniformLocation(fxaaShader_, "uInput");
     fxaaLocTexelSize_ = glGetUniformLocation(fxaaShader_, "uTexelSize");
-    wipeLocLeft_ = glGetUniformLocation(wipeShader_, "uLeft");
-    wipeLocRight_ = glGetUniformLocation(wipeShader_, "uRight");
-    wipeLocWipe_ = glGetUniformLocation(wipeShader_, "uWipe");
-    wipeLocTexelSize_ = glGetUniformLocation(wipeShader_, "uTexelSize");
 
     glGenVertexArrays(1, &quadVao_);
     glGenBuffers(1, &quadVbo_);
@@ -76,10 +70,6 @@ void PostProcess::shutdown() {
         glDeleteProgram(fxaaShader_);
         fxaaShader_ = 0;
     }
-    if (wipeShader_) {
-        glDeleteProgram(wipeShader_);
-        wipeShader_ = 0;
-    }
 }
 
 void PostProcess::resize(int width, int height) {
@@ -105,43 +95,14 @@ void PostProcess::blitTexture(GLuint colorTexture) const {
 
 // FXAA 模式：对场景离屏颜色图做全屏后处理抗锯齿，结果画到当前绑定的 FBO/屏幕
 void PostProcess::applyFxaa(GLuint colorTexture) const {
-    // 后处理不需要深度
     glDisable(GL_DEPTH_TEST);
     glUseProgram(fxaaShader_);
 
-    // 输入颜色图 → texture unit 0
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, colorTexture);
     glUniform1i(fxaaLocInput_, 0);
 
-    // texelSize：按分辨率换算的像素尺寸，供 FXAA 邻域采样
     glUniform2f(fxaaLocTexelSize_,
-                1.0f / static_cast<float>(width_),
-                1.0f / static_cast<float>(height_));
-
-    drawFullscreen();
-    glEnable(GL_DEPTH_TEST);
-}
-
-// 对比模式：左右两张图按 wipe 比例拼到同一全屏，便于同机位对比 AA 效果
-void PostProcess::applyWipe(GLuint leftTexture, GLuint rightTexture, float wipe) const {
-    // 后处理不需要深度
-    glDisable(GL_DEPTH_TEST);
-    glUseProgram(wipeShader_);
-
-    // 左图 → texture unit 0
-    glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, leftTexture);
-    glUniform1i(wipeLocLeft_, 0);
-
-    // 右图 → texture unit 1
-    glActiveTexture(GL_TEXTURE1);
-    glBindTexture(GL_TEXTURE_2D, rightTexture);
-    glUniform1i(wipeLocRight_, 1);
-
-    // wipe：分界位置；texelSize：按分辨率换算的像素尺寸
-    glUniform1f(wipeLocWipe_, wipe);
-    glUniform2f(wipeLocTexelSize_,
                 1.0f / static_cast<float>(width_),
                 1.0f / static_cast<float>(height_));
 

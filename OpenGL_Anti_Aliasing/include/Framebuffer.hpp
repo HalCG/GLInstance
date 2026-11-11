@@ -3,21 +3,23 @@
 
 #include <glad/glad.h>
 
-// 单采样离屏 FBO：None / FXAA / TAA 的 scene pass 输出（color + depth 纹理）
+// 单采样离屏 FBO：None / FXAA / TAA 的 scene 输出（普通 2D color + depth）
 class SingleSampleFbo {
 public:
-    void create(int width, int height);   // 分配 FBO 与 color/depth 纹理
-    void destroy();                       // 释放 GPU 资源
-    void resize(int width, int height);   // 尺寸变化时 destroy + create
+    void create(int width, int height);
+    void destroy();
+    void resize(int width, int height);
 
-    void bind() const;                    // 绑定为 GL_DRAW_FRAMEBUFFER
-    void unbind() const;                  // 解绑到默认 framebuffer
-    void blitColorToDefault(int width, int height) const; // None 模式：color 纹理 blit 到屏幕
+    void bind() const;
+    void unbind() const;
+
+    // blit：源已是单采样，glBlitFramebuffer 只做颜色拷贝（可缩放），不产生 AA
+    void blitColorToDefault(int width, int height) const; // → 窗口默认 FBO(0)
+    void blitColorTo(GLuint drawFbo, int dstW, int dstH) const; // → 指定 FBO（如 resolveFbo_）
 
     GLuint fbo() const { return fbo_; }
     GLuint colorTexture() const { return color_; }
     GLuint depthTexture() const { return depth_; }
-    void blitColorTo(GLuint drawFbo, int dstW, int dstH) const; // 复制颜色到目标 FBO
 
 private:
     GLuint fbo_ = 0;
@@ -27,16 +29,19 @@ private:
     int height_ = 0;
 };
 
-// 多重采样 FBO：MSAA 模式的 scene pass 输出
+// 多重采样离屏 FBO：MSAA scene 输出（TEXTURE_2D_MULTISAMPLE）
 class MsaaFbo {
 public:
-    void create(int width, int height, int samples); // 分配 multisample color/depth
+    void create(int width, int height, int samples);
     void destroy();
     void resize(int width, int height, int samples);
 
     void bind() const;
     void unbind() const;
-    void resolveColorTo(GLuint drawFbo, int dstW, int dstH) const; // MSAA resolve 到指定 FBO
+
+    // resolve：源是多样本；同样调 glBlitFramebuffer，但驱动会把 N 个子采样合成 1 个颜色
+    // （与单采样 blit 同 API，语义不同：拷贝 vs MSAA 收尾）
+    void resolveColorTo(GLuint drawFbo, int dstW, int dstH) const;
 
 private:
     GLuint fbo_ = 0;

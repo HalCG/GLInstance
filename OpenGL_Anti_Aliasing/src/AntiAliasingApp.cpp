@@ -94,8 +94,9 @@ bool AntiAliasingApp::initWindow() {
     return true;
 }
 
+// 窗口尺寸 × renderScale_ → 离屏渲染分辨率；scale<1 可放大锯齿便于对比 AA
 void AntiAliasingApp::computeRenderSize(int &outW, int &outH) const {
-    outW = std::max(1, static_cast<int>(static_cast<float>(width_) * renderScale_ + 0.5f));
+    outW = std::max(1, static_cast<int>(static_cast<float>(width_) * renderScale_ + 0.5f)); // +0.5 四舍五入
     outH = std::max(1, static_cast<int>(static_cast<float>(height_) * renderScale_ + 0.5f));
 }
 
@@ -104,8 +105,7 @@ void AntiAliasingApp::resizeTargets() {
         return;
     }
     computeRenderSize(renderW_, renderH_);
-    singleFbo_.resize(renderW_, renderH_);
-    baselineFbo_.resize(renderW_, renderH_);
+    sceneFbo_.resize(renderW_, renderH_);
     resolveFbo_.resize(renderW_, renderH_);
     const int samples = clampMsaaSamples(AppConfig::kMsaaSamplesPresets[msaaPresetIndex_]);
     msaaFbo_.resize(renderW_, renderH_, samples);
@@ -116,21 +116,28 @@ void AntiAliasingApp::resizeTargets() {
     hasPrevViewProj_ = false;
 }
 
-// 组装本帧策略上下文（指针借用，不转移所有权）
+// 组装本帧 ctx（与 AaFrameContext 分组一致；所有权仍在 App）
 AaFrameContext AntiAliasingApp::makeFrameContext() {
     AaFrameContext ctx;
+
+    // 共用
     ctx.scene = &scene_;
     ctx.sceneRenderer = &sceneRenderer_;
-    ctx.sceneFbo = &singleFbo_;
+    ctx.sceneFbo = &sceneFbo_;
     ctx.resolveFbo = &resolveFbo_;
+    ctx.renderW = renderW_;
+    ctx.renderH = renderH_;
+
+    // 模式专用
     ctx.msaaFbo = &msaaFbo_;
     ctx.postProcess = &postProcess_;
     ctx.taaPass = &taaPass_;
-    ctx.renderW = renderW_;
-    ctx.renderH = renderH_;
+
+    // 帧状态（TAA）
     ctx.prevViewProj = prevViewProj_;
     ctx.hasPrevViewProj = hasPrevViewProj_;
     ctx.cameraDragging = camera_.isDragging();
+
     return ctx;
 }
 
@@ -170,26 +177,6 @@ FrameCamera AntiAliasingApp::buildCamera(glm::vec2 jitterNdc) const {
     return camera;
 }
 
-// Wipe 左侧：同一机位、无 jitter、无 AA，写入 baselineFbo_
-void AntiAliasingApp::renderBaselineToBaseline(const FrameCamera &camera) {
-    FrameCamera baselineCam = camera;
-    baselineCam.projection = glm::perspective(
-        glm::radians(AppConfig::kFovDegrees),
-        static_cast<float>(width_ > 0 ? width_ : 1) / static_cast<float>(height_ > 0 ? height_ : 1),
-        AppConfig::kNearPlane, AppConfig::kFarPlane);
-    baselineCam.viewProjection = baselineCam.projection * baselineCam.view;
-    baselineCam.jitterNdc = glm::vec2(0.0f);
-
-    glViewport(0, 0, renderW_, renderH_);
-    glDisable(GL_MULTISAMPLE);
-    singleFbo_.bind();
-    glClearColor(0.08f, 0.09f, 0.12f, 1.0f);
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    sceneRenderer_.render(scene_, baselineCam);
-    singleFbo_.unbind();
-    singleFbo_.blitColorTo(baselineFbo_.fbo(), renderW_, renderH_);
-}
-
 void AntiAliasingApp::renderFrame() {
     if (width_ == 0 || height_ == 0 || !technique_) {
         return;
@@ -208,32 +195,23 @@ void AntiAliasingApp::renderFrame() {
     perf_.scenePass.setEnabled(measureGpu);
     perf_.postPass.setEnabled(measureGpu);
 
-    // --- Scene：策略产出 resolveFbo（可选先画 Wipe 基线）---
+    // --- Scene：策略产出 resolveFbo，再 blit 上屏 ---
+    // 每帧重建 ctx：指针多半不变，但 prevViewProj / hasPrevViewProj / dragging 等帧状态要带到本帧
     AaFrameContext ctx = makeFrameContext();
     const glm::vec2 jitter = technique_->beginFrameJitter(ctx);
     const FrameCamera camera = buildCamera(jitter);
 
     perf_.scenePass.begin();
-    const bool doWipe = wipeCompare_ && currentMode_ != AAMode::None;
-    if (doWipe) {
-        renderBaselineToBaseline(camera);
-    }
     technique_->renderToResolve(camera, ctx);
     perf_.frameStats().scenePassMs = perf_.scenePass.endMs();
 
-    // --- Present：Wipe 拼左右，或直接 blit resolve 到默认帧缓冲 ---
+    // Scene/FXAA/TAA 用 renderW_/renderH_；上屏按窗口分辨率 blit
     perf_.postPass.begin();
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
     glViewport(0, 0, static_cast<GLsizei>(width_), static_cast<GLsizei>(height_));
     glClearColor(0.08f, 0.09f, 0.12f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    postProcess_.resize(static_cast<int>(width_), static_cast<int>(height_));
-    if (doWipe) {
-        postProcess_.applyWipe(baselineFbo_.colorTexture(), resolveFbo_.colorTexture(), wipeAmount_);
-    } else {
-        resolveFbo_.blitColorToDefault(static_cast<int>(width_), static_cast<int>(height_));
-    }
-    postProcess_.resize(renderW_, renderH_); // 恢复内部分辨率，供下帧 FXAA/TAA 使用
+    resolveFbo_.blitColorToDefault(static_cast<int>(width_), static_cast<int>(height_));
     perf_.frameStats().postPassMs = perf_.postPass.endMs();
 
     // 供下一帧 TAA 重投影
@@ -241,6 +219,10 @@ void AntiAliasingApp::renderFrame() {
     hasPrevViewProj_ = true;
     perf_.endFrame();
 
+    drawUi();
+}
+
+void AntiAliasingApp::drawUi() {
     ImGui_ImplOpenGL3_NewFrame();
     ImGui_ImplGlfw_NewFrame();
     ImGui::NewFrame();
@@ -249,7 +231,7 @@ void AntiAliasingApp::renderFrame() {
     ImGui::SetNextWindowSize(ImVec2(380, 560), ImGuiCond_FirstUseEver);
     if (ImGui::Begin("Anti-Aliasing Control Panel (抗锯齿控制面板)")) {
         ImGui::Text("Window: %u x %u | Internal: %d x %d", width_, height_, renderW_, renderH_);
-        ImGui::TextWrapped("同一场景、同一相机、同一交互；切换模式或拖 Wipe 只改变 AA。");
+        ImGui::TextWrapped("同一场景、同一相机、同一交互；切换模式只改变 AA。");
         ImGui::Separator();
 
         ImGui::Text("Anti-Aliasing Mode (1-4):");
@@ -289,12 +271,6 @@ void AntiAliasingApp::renderFrame() {
         }
 
         ImGui::Separator();
-        ImGui::Text("同机位对比:");
-        ImGui::Checkbox("Wipe：左 None / 右 当前AA（同位置）", &wipeCompare_);
-        if (wipeCompare_) {
-            ImGui::SliderFloat("分割线", &wipeAmount_, 0.05f, 0.95f, "%.2f");
-            ImGui::TextWrapped("对准头盔轮廓或通风口边缘拖动，看锯齿差异。");
-        }
         ImGui::Text("可选：降低内部分辨率放大锯齿");
         const char *scaleLabels[] = {"50%", "75%", "100% (默认)"};
         const float scales[] = {0.5f, 0.75f, 1.0f};
@@ -304,8 +280,12 @@ void AntiAliasingApp::renderFrame() {
             resizeTargets();
         }
         ImGui::Checkbox("Auto Orbit (可选)", &autoOrbit_);
-        if (ImGui::Checkbox("VSync", &vsyncEnabled_)) {
+        if (ImGui::Checkbox("VSync（建议开）", &vsyncEnabled_)) {
             glfwSwapInterval(vsyncEnabled_ ? 1 : 0);
+        }
+        if (!vsyncEnabled_) {
+            ImGui::TextColored(ImVec4(1.0f, 0.45f, 0.35f, 1.0f),
+                               "VSync 关闭时无帧率上限，易打满 GPU 导致整机卡死。");
         }
 
         ImGui::Separator();
@@ -317,7 +297,7 @@ void AntiAliasingApp::renderFrame() {
 
         ImGui::Separator();
         ImGui::BulletText("LMB/MMB/RMB + Wheel: 相机（模式切换不改机位）");
-        ImGui::BulletText("1-4: 切 AA   C: Wipe   [/]: MSAA");
+        ImGui::BulletText("1-4: 切 AA   [/]: MSAA");
     }
     ImGui::End();
 
@@ -333,19 +313,25 @@ void AntiAliasingApp::run() {
     }
 }
 
+// 释放顺序大致与 init 相反：先 UI / 策略，再 Pass·FBO，最后场景与 GLFW
 void AntiAliasingApp::shutdown() {
+    // UI
     ImGui_ImplOpenGL3_Shutdown();
     ImGui_ImplGlfw_Shutdown();
     ImGui::DestroyContext();
 
+    // AA 策略与 Pass（先丢 technique，避免悬空借用）
     technique_.reset();
     taaPass_.shutdown();
     postProcess_.shutdown();
     sceneRenderer_.shutdown();
+
+    // 离屏 FBO
     msaaFbo_.destroy();
     resolveFbo_.destroy();
-    baselineFbo_.destroy();
-    singleFbo_.destroy();
+    sceneFbo_.destroy();
+
+    // 计时 / 场景 / 窗口
     perf_.postPass.shutdown();
     perf_.scenePass.shutdown();
     scene_.shutdown();
@@ -353,6 +339,7 @@ void AntiAliasingApp::shutdown() {
     s_instance_ = nullptr;
 }
 
+// 键盘 [ / ] 切换 MSAA 档位（2x↔4x）：只算夹紧后的下标，不改状态
 int AntiAliasingApp::nextMsaaPreset(int delta) const {
     int idx = msaaPresetIndex_ + delta;
     if (idx < 0) {
@@ -471,9 +458,6 @@ void AntiAliasingApp::keyCallback(GLFWwindow *window, int key, int scancode, int
         }
         break;
     }
-    case GLFW_KEY_C:
-        s_instance_->wipeCompare_ = !s_instance_->wipeCompare_;
-        break;
     case GLFW_KEY_O:
         s_instance_->autoOrbit_ = !s_instance_->autoOrbit_;
         break;

@@ -16,13 +16,15 @@ uniform bool uHasHistory;
 // 【历史帧重投影 (Reprojection)】：
 // uInvViewProj / uPrevViewProj 均为 **unjittered** VP（CPU 侧保证）。
 // Scene Pass 的子像素 jitter 只影响光栅化，不进入重投影，避免静止帧亚像素漂移。
+// out：GLSL 参数限定符，赋值会写回调用方（≠ C++ 引用；见 docs §8.5）
 vec3 reprojectHistory(vec2 uv, out bool valid) {
+    // 本帧屏幕 → 世界 → 上一帧屏幕（详见 docs §8.6）
     float depth = texture(uCurrentDepth, uv).r;
-    vec4 ndc = vec4(uv * 2.0 - 1.0, depth * 2.0 - 1.0, 1.0);
+    vec4 ndc = vec4(uv * 2.0 - 1.0, depth * 2.0 - 1.0, 1.0); // [0,1] → NDC
     vec4 world = uInvViewProj * ndc;
-    world /= world.w;
+    world /= world.w;           // 透视除法 → 世界笛卡尔点（不是 NDC）
     vec4 prevNdc = uPrevViewProj * world;
-    prevNdc /= prevNdc.w;
+    prevNdc /= prevNdc.w;       // 同为 /w，落点是上一帧 NDC
     vec2 prevUv = prevNdc.xy * 0.5 + 0.5;
     valid = prevUv.x >= 0.0 && prevUv.x <= 1.0 && prevUv.y >= 0.0 && prevUv.y <= 1.0;
     return texture(uHistoryColor, prevUv).rgb;

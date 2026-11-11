@@ -9,6 +9,7 @@
 
 namespace {
 
+// 从 resources/ 加载 2D 贴图（stb），失败返回 0
 GLuint loadTexture2D(const std::string &relativePath) {
     const std::string fullPath = AppConfig::resourcePath(relativePath);
     GLuint tex = 0;
@@ -43,6 +44,7 @@ GLuint loadTexture2D(const std::string &relativePath) {
     return tex;
 }
 
+// glTF 若未带上 diffuse，则手动挂一张 albedo，避免纯黑
 void ensureDiffuseTexture(Model &model, const std::string &relativePath) {
     for (const Mesh &mesh : model.meshes) {
         for (const Texture &tex : mesh.textures) {
@@ -64,6 +66,7 @@ void ensureDiffuseTexture(Model &model, const std::string &relativePath) {
     }
 }
 
+// 程序生成棋盘格：高对比边缘，便于观察锯齿 / AA 效果
 GLuint createCheckerTexture(int size = 512, int cells = 24) {
     std::vector<unsigned char> pixels(static_cast<size_t>(size * size * 3));
     const int cell = std::max(1, size / cells);
@@ -98,6 +101,7 @@ Vertex makeVertex(const glm::vec3 &p, const glm::vec3 &n, const glm::vec2 &uv) {
     return ver;
 }
 
+// Y=0 平面四边形；uvScale 控制棋盘重复密度
 Mesh buildFloorMesh(GLuint texture, float halfExtent, float uvScale) {
     const float h = halfExtent;
     const float u = uvScale;
@@ -137,7 +141,7 @@ bool AATestScene::init() {
     ensureDiffuseTexture(*helmet_, "models/DamagedHelmet/Default_albedo.jpg");
 
     objects_.clear();
-    // 中央主模型 + 两侧，轮廓边缘足够看 AA，又不像刑场
+    // 中央主模型 + 两侧，轮廓边缘足够看 AA
     objects_.push_back({makeHelmetTransform(glm::vec3(0.0f, 0.0f, 0.0f), 25.0f, AppConfig::kHeroHelmetScale)});
     objects_.push_back({makeHelmetTransform(glm::vec3(-2.8f, 0.0f, 1.2f), -35.0f, AppConfig::kSideHelmetScale)});
     objects_.push_back({makeHelmetTransform(glm::vec3(2.8f, 0.0f, 1.2f), 55.0f, AppConfig::kSideHelmetScale)});
@@ -154,12 +158,14 @@ void AATestScene::shutdown() {
 }
 
 void AATestScene::drawOpaque(Shader &shader) const {
+    // 先地板后头盔；model 矩阵按物体切换
     shader.setMat4("model", glm::mat4(1.0f));
     floor_.Draw(shader);
 
     if (!helmet_) {
         return;
     }
+    // 同一头盔模型画三次：只换 model（位置 / 朝向 / 缩放）
     for (const SceneObject &obj : objects_) {
         shader.setMat4("model", obj.model);
         helmet_->Draw(shader);

@@ -44,14 +44,15 @@ bool TaaPass::init() {
     glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), reinterpret_cast<void *>(2 * sizeof(float)));
     glBindVertexArray(0);
 
-    locCurrentColor_ = glGetUniformLocation(shader_, "uCurrentColor");
-    locCurrentDepth_ = glGetUniformLocation(shader_, "uCurrentDepth");
-    locHistoryColor_ = glGetUniformLocation(shader_, "uHistoryColor");
-    locInvViewProj_ = glGetUniformLocation(shader_, "uInvViewProj");
-    locPrevViewProj_ = glGetUniformLocation(shader_, "uPrevViewProj");
-    locTexelSize_ = glGetUniformLocation(shader_, "uTexelSize");
-    locBlendFactor_ = glGetUniformLocation(shader_, "uBlendFactor");
-    locHasHistory_ = glGetUniformLocation(shader_, "uHasHistory");
+    // 缓存 taa.frag uniform 位置，每帧 apply 时直接 glUniform*，避免反复按名查找
+    locCurrentColor_ = glGetUniformLocation(shader_, "uCurrentColor"); // 本帧场景颜色
+    locCurrentDepth_ = glGetUniformLocation(shader_, "uCurrentDepth"); // 本帧深度 → 反推世界坐标
+    locHistoryColor_ = glGetUniformLocation(shader_, "uHistoryColor"); // 上一帧混合结果（重投影采样）
+    locInvViewProj_ = glGetUniformLocation(shader_, "uInvViewProj");   // 本帧无 jitter VP 的逆
+    locPrevViewProj_ = glGetUniformLocation(shader_, "uPrevViewProj"); // 上一帧无 jitter VP → history UV
+    locTexelSize_ = glGetUniformLocation(shader_, "uTexelSize");       // 1/宽高，邻域 AABB clamp
+    locBlendFactor_ = glGetUniformLocation(shader_, "uBlendFactor");   // 当前帧占比（拖相机时加大）
+    locHasHistory_ = glGetUniformLocation(shader_, "uHasHistory");     // false：首帧/重置，直出当前色
 
     return shader_ != 0;
 }
@@ -155,6 +156,8 @@ void TaaPass::apply(GLuint currentColor, GLuint currentDepth, const FrameCamera 
 
     glDisable(GL_DEPTH_TEST);
     glUseProgram(shader_);
+    
+    // slot0 本帧颜色 / slot1 本帧深度(重投影) / slot2 上一帧 history
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, currentColor);
     glUniform1i(locCurrentColor_, 0);
@@ -165,7 +168,15 @@ void TaaPass::apply(GLuint currentColor, GLuint currentDepth, const FrameCamera 
     glBindTexture(GL_TEXTURE_2D, history_[readIndex]);
     glUniform1i(locHistoryColor_, 2);
 
-    // 重投影必须用 unjittered 矩阵；jitter 只影响 Scene Pass 光栅化
+    // ---- TAA 重投影核心（对应 taa.frag::reprojectHistory）----
+    // 流程：本帧 UV+depth → NDC → *uInvViewProj → 世界坐标 → *uPrevViewProj → 上一帧 UV → 采 history
+    //
+    // uInvViewProj：本帧 **无 jitter** VP 的逆。把「当前像素 + 深度」还原到世界空间。
+    // uPrevViewProj：上一帧 **无 jitter** VP。把同一世界点投回上一帧屏幕，得到 history 采样 UV。
+    //
+    // 为何必须 unjittered：Halton 抖动只加在 Scene Pass 的 projection 上，用来多帧超采样；
+    // 若重投影也带 jitter，静止画面每个像素的 history UV 会每帧漂移，产生闪烁/拖影。
+    // App 侧：buildCamera 存 unjittered VP；帧末 prevViewProj_ = camera.unjitteredViewProjection。
     glUniformMatrix4fv(locInvViewProj_, 1, GL_FALSE, &camera.invUnjitteredViewProjection[0][0]);
     glUniformMatrix4fv(locPrevViewProj_, 1, GL_FALSE, &prevViewProj[0][0]);
     glUniform2f(locTexelSize_, 1.0f / static_cast<float>(width_), 1.0f / static_cast<float>(height_));
