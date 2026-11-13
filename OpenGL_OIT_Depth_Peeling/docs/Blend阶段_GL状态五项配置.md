@@ -1,3 +1,5 @@
+# Blend 阶段 GL 状态五项配置
+
 这几行出现在 **Peel 完成之后、全屏 Blend 之前**，专门配置「如何把 `fboPeel_.color`（当前层）叠进 `fboAccum_`（累积缓冲）」。五项设置是一套组合，缺一项都可能错。
 
 ---
@@ -7,12 +9,12 @@
 ```
 每一层循环:
   ① Peel 画场景 → fboPeel_.color / 深度纹理   （深度测试 ON）
-  ② 下面 286–290 行：改 GL 状态
+  ② 下面 413–421 行：改 GL 状态
   ③ 全屏 quad + depth_peeling_blend → fboAccum_  （混合 ON，深度 OFF）
-  ④ 299–301 行：恢复状态，准备下一层 Peel
+  ④ 433–435 行：恢复状态，准备下一层 Peel
 ```
 
-Peel 负责 **选层**；286–290 负责 **按正确公式叠色**。
+Peel 负责 **选层**；413–421 负责 **按正确公式叠色**。
 
 ---
 
@@ -101,7 +103,7 @@ FragColor = frontColor + background * frontColor.a;
 
 ## 五项如何协同（一张表）
 
-| 设置                | Peel 阶段             | Blend 阶段（286–290）             |
+| 设置                | Peel 阶段             | Blend 阶段（413–421）             |
 | ------------------- | --------------------- | --------------------------------- |
 | `GL_BLEND`          | 关                    | **开** → 才能累积多层             |
 | `GL_DEPTH_TEST`     | **开** + `GL_LESS`    | **关** → 全屏必写到每个像素       |
@@ -132,11 +134,11 @@ modelQuad_->Draw(*shaderBlend_, fboAccum_.fbo,
 | `fboPeel_.color` | 作为 `texture_diffuse` 传给 blend.frag                       |
 | `{false, true}`  | **不清颜色**（保留已累积），**清深度**（为乒乓换深度附件准备） |
 
-286–290 管 **怎么混**；`Draw` 管 **往哪混、采样谁**。
+413–421 管 **怎么混**；`Draw` 管 **往哪混、采样谁**。
 
 ---
 
-## 299–301 行：为何要恢复
+## 433–435 行：为何要恢复
 
 ```cpp
 glDisable(GL_BLEND);
@@ -151,4 +153,4 @@ glEnable(GL_DEPTH_TEST);
 
 ## 一句话
 
-286–290 在 Blend 阶段的作用是：**关掉深度竞争，打开混合，用 `glBlendFuncSeparate` 把当前剥离层按从近到远的 Under 公式并入 `fboAccum_`，Alpha 通道记录剩余透射，供更多层 Peel 和最终加背景使用。**
+413–421 在 Blend 阶段的作用是：**关掉深度竞争，打开混合，用 `glBlendFuncSeparate` 把当前剥离层按从近到远的 Under 公式并入 `fboAccum_`，Alpha 通道记录剩余透射，供更多层 Peel 和最终加背景使用。**

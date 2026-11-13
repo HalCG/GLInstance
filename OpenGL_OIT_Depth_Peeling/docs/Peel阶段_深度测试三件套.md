@@ -1,6 +1,8 @@
+# Peel 阶段深度测试三件套（glEnable / DepthFunc / DepthMask）
+
 这三行在 `initPeelBuffers()` 里，为后面的 **Peel Pass（剥离绘制）** 打开并配置 **硬件深度测试**。和片元里的 `discard` 分工不同。
 
-```200:202:e:\opengl\liuhaonian\OpenGL_OIT_Depth_Peeling\src\DepthPeelingApp.cpp
+```286:288:../src/DepthPeelingApp.cpp
   glEnable(GL_DEPTH_TEST);
   glDepthFunc(GL_LESS);
   glDepthMask(GL_TRUE);
@@ -41,7 +43,7 @@ OpenGL 里 `gl_FragCoord.z` 越小越近；Peel 前深度常清成 `1.0`（最�
 
 **Peel 阶段**（`drawSceneLayer`）：上面三行保持有效 → 用深度测试选本层最前片元，并写入 `outputDepthIndex_` 对应的深度纹理。
 
-**Blend 阶段**（约 287–288 行）会临时改掉：
+**Blend 阶段**（约 414–415 行）会临时改掉：
 
 ```cpp
 glDepthMask(GL_FALSE);   // 不写深度
@@ -54,7 +56,7 @@ glDisable(GL_DEPTH_TEST); // 不做深度比较
 
 ## 和 `initPeelBuffers` 里 `glClearDepth(0.0f)` 的关系
 
-帧初两个 FBO 深度清 **0.0**（`initPeelBuffers` 190 行附近），那是 **历史深度纹理** 的初始状态。
+帧初两个 FBO 深度清 **0.0**（`initPeelBuffers` 约 275 行附近），那是 **历史深度纹理** 的初始状态。
 
 每一层 Peel 前在 `peelAndBlend` 里对 `fboPeel_` 会：
 

@@ -54,9 +54,9 @@ for (int layer = 0; layer < AppConfig::kMaxDepthPeelLayers; ++layer) {
 
 ---
 
-## 4. 阶段 A：准备剥离 FBO（270–276 行）
+## 4. 阶段 A：准备剥离 FBO（约 392–399 行）
 
-```266:276:e:\opengl\liuhaonian\OpenGL_OIT_Depth_Peeling\src\DepthPeelingApp.cpp
+```392:399:../src/DepthPeelingApp.cpp
     glBindFramebuffer(GL_FRAMEBUFFER, fboPeel_.fbo);
     glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D,
                            depthTexture(outputDepthIndex_), 0);
@@ -74,9 +74,9 @@ for (int layer = 0; layer < AppConfig::kMaxDepthPeelLayers; ++layer) {
 
 ---
 
-## 5. 阶段 B：Peel Pass（278–281 行）— 最关键
+## 5. 阶段 B：Peel Pass（约 402–406 行）— 最关键
 
-```278:281:e:\opengl\liuhaonian\OpenGL_OIT_Depth_Peeling\src\DepthPeelingApp.cpp
+```402:406:../src/DepthPeelingApp.cpp
     glBeginQuery(GL_SAMPLES_PASSED, queryId_);
     drawSceneLayer(*shaderPeel_, fboPeel_.fbo, inputDepthIndex_,
                    outputDepthIndex_);
@@ -122,7 +122,7 @@ if (gl_FragCoord.z <= frontDepth) {
 
 ## 7. 阶段 D：Blend Pass（285–294 行）— 第二关键
 
-```285:294:e:\opengl\liuhaonian\OpenGL_OIT_Depth_Peeling\src\DepthPeelingApp.cpp
+```285:294:../src/DepthPeelingApp.cpp
     shaderBlend_->use();
     glEnable(GL_BLEND);
     glDepthMask(GL_FALSE);
@@ -163,7 +163,7 @@ Blend 着色器只采样 `fboPeel_.color`，混合由固定管线完成。
 
 ## 8. 阶段 E：乒乓交换（296–297 行）
 
-```296:297:e:\opengl\liuhaonian\OpenGL_OIT_Depth_Peeling\src\DepthPeelingApp.cpp
+```296:297:../src/DepthPeelingApp.cpp
     inputDepthIndex_ = (inputDepthIndex_ + 1) % 2;
     outputDepthIndex_ = (outputDepthIndex_ + 1) % 2;
 ```
@@ -204,7 +204,7 @@ Blend 着色器只采样 `fboPeel_.color`，混合由固定管线完成。
 
 ## 9. 阶段 F：恢复状态 + 提前退出（299–305 行）
 
-```299:305:e:\opengl\liuhaonian\OpenGL_OIT_Depth_Peeling\src\DepthPeelingApp.cpp
+```299:305:../src/DepthPeelingApp.cpp
     glDisable(GL_BLEND);
     glDepthMask(GL_TRUE);
     glEnable(GL_DEPTH_TEST);
@@ -232,7 +232,7 @@ layer=n: [Peel] → sampleCount==0 → break
 
 ---
 
-## 11. 三个易混点
+## 11. 三个注意点
 
 **① Peel 与 Blend 分工**
 

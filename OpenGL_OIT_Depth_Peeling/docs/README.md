@@ -8,6 +8,25 @@
 
 Depth Peeling 的最大优势是**兼容性极好**——它只需要标准的深度测试和 FBO，不需要任何 OpenGL 4.3+ 的高级特性（SSBO、Image Texture、Atomic Counter）。但代价是渲染 Pass 数与场景深度复杂度成正比。
 
+> **传统 alpha 混合是什么？与三种 OIT 如何对比？**  
+> 参见：[OpenGL_OIT_传统Alpha混合与三种方案对比.md](../../docs/OpenGL_OIT_传统Alpha混合与三种方案对比.md)。
+
+### 专题文档（本目录）
+
+| 文档 | 内容 |
+| :--- | :--- |
+| [OpenGL深度剥离OIT关键技术详解.md](./OpenGL深度剥离OIT关键技术详解.md) | 流程 → 机制 → 问答整合版总览 |
+| [peelAndBlend详细解释.md](./peelAndBlend详细解释.md) | 剥离循环逐步拆解（Peel / Blend / 乒乓） |
+| [Peel阶段_深度测试三件套.md](./Peel阶段_深度测试三件套.md) | `glEnable` / `DepthFunc` / `DepthMask` |
+| [Blend阶段_GL状态五项配置.md](./Blend阶段_GL状态五项配置.md) | Blend Pass 五项 GL 状态与协同 |
+| [Blend全屏脚手架与硬件混合.md](./Blend全屏脚手架与硬件混合.md) | blend 全屏 Pass；与 Peel 区分；硬件混合阶段 |
+| [多Pass数据流示意.html](./多Pass数据流示意.html) | Peel / Blend / Final 数据流示意 |
+| [FrontToBack混合_src_dst与公式详解.md](./FrontToBack混合_src_dst与公式详解.md) | src/dst、四参数与公式；与 Linked List Over 对比 |
+| [glBlendFuncSeparate.md](./glBlendFuncSeparate.md) | 同上主题的短注入口 |
+| [waitSampleCount详细解释.md](./waitSampleCount详细解释.md) | `GL_SAMPLES_PASSED` 与提前终止 |
+| [颜色与深度关系.md](./颜色与深度关系.md) | `fboPeel_` 颜色/深度职责与乒乓 |
+| [glDepthMask与深度写入管线.md](./glDepthMask与深度写入管线.md) | 深度写入发生在管线哪一阶段 |
+
 ---
 
 ## 1. Depth Peeling 原理
@@ -254,7 +273,7 @@ GLuint waitSampleCount() {
 
 #### Q1. Peel Pass 与 Blend Pass 之间，OpenGL 全局状态机是如何切换的？
 
-在 [DepthPeelingApp.cpp](file:///i:/opengl/liuhaonian/OpenGL_OIT_Depth_Peeling/src/DepthPeelingApp.cpp#L273-L310) 中，每一层迭代包含两个 Pass，全局状态机在两者之间交替切换：
+在 [`DepthPeelingApp.cpp`](../src/DepthPeelingApp.cpp) 的 `peelAndBlend()` 中，每一层迭代包含两个 Pass，全局状态机在两者之间交替切换：
 
 | 渲染 Pass | 目标 FBO | 深度测试 `GL_DEPTH_TEST` | 深度写入 `glDepthMask` | 颜色混合 `GL_BLEND` | 核心操作 |
 | :--- | :--- | :--- | :--- | :--- | :--- |

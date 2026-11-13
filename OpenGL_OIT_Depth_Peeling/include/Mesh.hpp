@@ -143,11 +143,11 @@ public:
    * @param inputCubeMaps 输入的 textureCubeMap
    * @param rendermodel 渲染模式 GL_TRIANGLES\GL_TRIANGLE_STRIP
    */
+  // framebuffer = 画到哪（Blend 时即 dst 所在 FBO）；inputTextures = 采样输入（Blend 时多为 src）
   void Draw(Shader &shader, GLuint framebuffer,
             const std::vector<std::pair<std::string, GLuint>> &inputTextures,
             const std::vector<std::pair<std::string, GLuint>> &inputCubeMaps,
             GLuint rendermodel, std::vector<bool> clearColorDepth) {
-    // 绘制网格
     glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
 
     if (clearColorDepth[0]) {

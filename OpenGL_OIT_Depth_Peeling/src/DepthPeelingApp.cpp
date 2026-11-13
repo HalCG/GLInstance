@@ -329,8 +329,7 @@ void DepthPeelingApp::drawSceneLayer(Shader &shader, GLuint targetFbo,
                  glm::vec2(static_cast<float>(width_),
                            static_cast<float>(height_)));
 
-  // 辅助绘图 Lambda 函数：传入网格模型、世界空间位置 pos、以及漫反射纹理 ID (diffuseId)
-  // diffuseId 作用：向 Shader "texture_diffuse" 绑定纹理，提供物体的表面固有颜色 (RGB) 和片元 Alpha 透明度 (A)
+  // Peel：带 MVP 的场景绘制（Blend 见 blendPeelLayerToAccum）
   auto draw = [&](Model &model, const glm::vec3 &pos, GLuint diffuseId)
   {
     shader.setMat4("model", modelMatrix(pos));
@@ -379,7 +378,9 @@ GLuint DepthPeelingApp::waitSampleCount()
 //    - 如果 sampleCount == 0，说明场景中所有像素的透明重叠层已全部剥离完毕，循环直接 `break` 提前退出！
 // 3. 混合累积 (Blend Phase)：
 //    - `glEnable(GL_BLEND)` + `glDisable(GL_DEPTH_TEST)` + `glDepthMask(GL_FALSE)`。
-//    - 使用 Front-to-Back 混合公式 (`GL_DST_ALPHA, GL_ONE, GL_ZERO, GL_ONE_MINUS_SRC_ALPHA`) 将当前剥离层的颜色融合到 fboAccum_.fbo 中。
+//    - 使用 Front-to-Back（从近到远 / 浅→深，不是从深到浅）混合公式
+//      (`GL_DST_ALPHA, GL_ONE, GL_ZERO, GL_ONE_MINUS_SRC_ALPHA`) 将当前剥离层融进 fboAccum_：
+//      先混入离眼睛最近的一层（权重最大、受后续层影响最小），再混入更远的层（乘剩余透射 A_dst）。
 // 4. 乒乓交换 (Ping-Pong Swap)：
 //    - 交换 inputDepthIndex_ 与 outputDepthIndex_ 索引。
 void DepthPeelingApp::peelAndBlend()
@@ -398,43 +399,27 @@ void DepthPeelingApp::peelAndBlend()
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
-    // 开启遮挡查询统计当前层绘制片元数
+    // ========== A. Peel：画的是 3D 场景（Spot + 三块玻璃），有 model/view/projection ==========
     glBeginQuery(GL_SAMPLES_PASSED, queryId_);
-    // 2. 触发绘制：片元通过 Shader (z > frontDepth) 筛选后，OpenGL 硬件管线(GL_LESS + glDepthMask(TRUE))
-    //    自动将当前剥离出的深度 gl_FragCoord.z 写入上述绑定的 depthTexture(outputDepthIndex_) 纹理中！
+    // 片元经 Shader (z > frontDepth) 筛选后，硬件 Z-Test 写入本层深度纹理
     drawSceneLayer(*shaderPeel_, fboPeel_.fbo, inputDepthIndex_,
                    outputDepthIndex_);
     glEndQuery(GL_SAMPLES_PASSED);
 
     const GLuint sampleCount = waitSampleCount();
 
-    // --- 步骤 B: 混合当前层到累积缓冲区 (Blend Pass) ---
-    shaderBlend_->use();
-    glEnable(GL_BLEND);       // 开启硬件混合（关混合=覆盖写入；开混合=将新旧颜色按公式融算）
-    glDepthMask(GL_FALSE);    // 禁用深度写入
-    glDisable(GL_DEPTH_TEST); // 禁用深度测试
-    // Front-to-Back 混合规则：
-    // Source (源): 当前刚剥离出的浅层颜色 (fboPeel_.color)； Destination (目标): FBO 已有旧累积颜色 (fboAccum_.color)
-    // 实体遮挡原理: 若剥离出 Alpha=1 的实体，剩余透光率算式为 (1 - 1) = 0 归零；后续所有剥离层颜色均乘以 0 彻底无效（自动遮挡）！
-    // RGB公式: C_final = C_src * A_dst + C_dst;  Alpha公式: A_final = A_dst * (1 - A_src)
-    glBlendFuncSeparate(GL_DST_ALPHA, GL_ONE, GL_ZERO,
-                        GL_ONE_MINUS_SRC_ALPHA);
+    // ========== B. Blend：不是再画场景；全屏贴图，把 fboPeel_.color 混进 fboAccum_ ==========
+    blendPeelLayerToAccum();
 
-    // 触发绘制：硬件自动将 fboPeel_.color (Source) 融进 fboAccum_.fbo (Destination)
-    modelQuad_->Draw(*shaderBlend_, fboAccum_.fbo,
-                     {{"texture_diffuse", fboPeel_.color.id}}, {},
-                     GL_TRIANGLES, {false, true});
-
-    // 乒乓索引交换
+    // 乒乓交换深度索引，供下一层 Peel 使用
     inputDepthIndex_ = (inputDepthIndex_ + 1) % 2;
     outputDepthIndex_ = (outputDepthIndex_ + 1) % 2;
 
-    // 恢复状态机为下一次 Peel Pass 做准备
+    // 恢复深度状态，准备下一层 Peel
     glDisable(GL_BLEND);
     glDepthMask(GL_TRUE);
     glEnable(GL_DEPTH_TEST);
 
-    // 如果本层没有剥离出任何新片元，提前终止循环！
     if (sampleCount <= 0)
     {
       break;
@@ -442,14 +427,40 @@ void DepthPeelingApp::peelAndBlend()
   }
 }
 
-// 将累积的 Front-to-Back OIT 混合结果与不透明背景合成并输出到默认窗口 FBO 0
+// Blend：全屏贴图 Pass（≠ Peel 再画场景）
+// blend.vert/frag 几乎只产出 src；叠进 fboAccum_ 靠 glBlend* —— docs/Blend全屏脚手架与硬件混合.md
+void DepthPeelingApp::blendPeelLayerToAccum()
+{
+  shaderBlend_->use();
+  glEnable(GL_BLEND);
+  glDepthMask(GL_FALSE);    // 不写深度（深度乒乓留给 Peel）
+  glDisable(GL_DEPTH_TEST); // 全屏必覆盖每个像素
+  // C' = Csrc·Adst + Cdst ;  A' = Adst·(1-Asrc)  —— 公式在硬件，不在 blend.frag
+  glBlendFuncSeparate(GL_DST_ALPHA, GL_ONE, GL_ZERO,
+                      GL_ONE_MINUS_SRC_ALPHA);
+
+  // 全屏无 MVP quad（blend.vert：gl_Position=aPos），不是再画 3D 场景/玻璃
+  modelQuad_->Draw(
+      *shaderBlend_,                                  // Blend 脚手架着色器
+      fboAccum_.fbo,                                  // 画到 accum；FBO 已有像素 = dst（累加色，不必当纹理传入）
+      {{"texture_diffuse", fboPeel_.color.id}},       // 采样本层 peel → FragColor = src
+      {},                                             // 无 cubemap
+      GL_TRIANGLES,                                   // 绘制模式
+      {false, true});                                 // 不清颜色（保住 dst），只清深度
+}
+
+// Final：全屏画到默认 FBO 0（上屏）。背景合成在 final.frag 里做，不是 glBlend*
 void DepthPeelingApp::compositeToScreen()
 {
   shaderFinal_->use();
   shaderFinal_->setVec3("background_color", bgColor_);
-  modelQuad_->Draw(*shaderFinal_, 0,
-                   {{"texture_diffuse", fboAccum_.color.id}}, {}, GL_TRIANGLES,
-                   {true, true});
+  modelQuad_->Draw(
+      *shaderFinal_,
+      0,                                          // 默认帧缓冲 = 上屏
+      {{"texture_diffuse", fboAccum_.color.id}},  // 读累积结果
+      {},
+      GL_TRIANGLES,
+      {true, true});                              // 清屏后再画
 }
 
 void DepthPeelingApp::endFrame()

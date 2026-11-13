@@ -126,7 +126,7 @@ outputDepthIndex_ = (outputDepthIndex_ + 1) % 2;
 
 **为何乒乓？** 同一 Pass 内，深度纹理不能既作 FBO 深度附件被写入，又被片元着色器采样。乒乓是 **读写分离的实现手段**；存的是 **真实剥离深度**，不是装饰。
 
-**颜色与深度的关系（易混点）**：
+**颜色与深度的关系**：
 
 - **Peel 阶段**：同一 winning 片元 **同时** 写 `fboPeel_.color` 与 output 深度纹理 → **强相关**。
 - **Blend 阶段**：只采样 `fboPeel_.color`，**不用** peel 深度 → **无公式关系**。
@@ -526,4 +526,4 @@ compositeToScreen: accum + background → 屏幕
 
 ---
 
-*整合自 OpenGL_OIT_Depth_Peeling 源码及 OIT_MD 目录下问答整理。第一版概述见同目录 `OpenGL深度剥离OIT透明渲染详解.md`。*
+*整合自 OpenGL_OIT_Depth_Peeling 源码及专题短文问答整理。完整实现说明见同目录 [README.md](./README.md)。*

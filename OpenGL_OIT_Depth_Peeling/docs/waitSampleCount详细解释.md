@@ -4,7 +4,7 @@
 
 在 `peelAndBlend()` 里，每一层剥离画完之后：
 
-```278:305:e:\opengl\liuhaonian\OpenGL_OIT_Depth_Peeling\src\DepthPeelingApp.cpp
+```402:409:../src/DepthPeelingApp.cpp
     glBeginQuery(GL_SAMPLES_PASSED, queryId_);
     drawSceneLayer(*shaderPeel_, fboPeel_.fbo, inputDepthIndex_,
                    outputDepthIndex_);
@@ -22,7 +22,7 @@
 
 ## 函数逐行在做什么
 
-```255:264:e:\opengl\liuhaonian\OpenGL_OIT_Depth_Peeling\src\DepthPeelingApp.cpp
+```356:368:../src/DepthPeelingApp.cpp
 GLuint DepthPeelingApp::waitSampleCount() {
   GLint available = 0;
   while (!available) {

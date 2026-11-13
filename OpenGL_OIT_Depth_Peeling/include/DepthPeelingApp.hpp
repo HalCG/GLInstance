@@ -44,8 +44,11 @@ private:
 
   glm::mat4 modelMatrix(const glm::vec3 &translation,
                         float scale = 0.5f) const;
+  /** Peel：用 3D MVP 把整场景（Spot+玻璃）再画一遍，写入 fboPeel_ */
   void drawSceneLayer(Shader &shader, GLuint targetFbo, int inputDepthIndex,
                       int outputDepthIndex);
+  /** Blend：全屏 quad（无 MVP），采样 fboPeel_.color，硬件混合进 fboAccum_ */
+  void blendPeelLayerToAccum();
   GLuint depthTexture(int index) const;
   GLuint waitSampleCount();
 
