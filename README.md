@@ -58,7 +58,7 @@ cmake --build out/build/x64-msvc-2026 --config Debug --target OpenGL_Rendering_P
 cmake --build out/build/x64-msvc-2026 --config Debug --target OpenGL_Anti_Aliasing
 ```
 
-VS Code / Cursor：`.vscode/tasks.json` 的 **CMake: Configure MSVC 2026** 与各 **Build: MSVC 2026 (...)**；调试用 `.vscode/launch.json`（含 PBR / Nanite 等）。
+VS Code：`.vscode/tasks.json` 的 **CMake: Configure MSVC 2026** 与各 **Build: MSVC 2026 (...)**；调试用 `.vscode/launch.json`（含 PBR / Nanite 等）。
 
 ---
 

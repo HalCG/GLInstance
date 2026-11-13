@@ -10,7 +10,7 @@
  * 4. Back-to-Front Over 混合：从不透明物体底色 (texture_opaque) 开始，依次做 over 运算混合半透明片段，输出最终 Color。
  */
 
-#define MAX_FRAGMENTS 75
+#define MAX_FRAGMENTS 75 // 单像素最多排几层；局部数组硬顶，非 API 常量
 
 layout (location = 0) out vec4 FragColor;
 

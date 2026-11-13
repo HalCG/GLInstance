@@ -1,4 +1,4 @@
-﻿# OpenGL OIT 之 Linked List 实现
+# OpenGL OIT 之 Linked List 实现
 
 > 源码地址：[GitHub 仓库](https://github.com/HalCG/OpenGLInstance/tree/main/OpenGL_OIT_Linked_list)  
 
@@ -8,11 +8,25 @@
 
 **OIT（Order-Independent Transparency，与顺序无关的透明度）** 就是为了解决这个问题而生的。本文介绍 OIT 三种主流方案之一：**基于逐像素链表的 OIT（Linked List OIT）**。
 
+> **传统 alpha 混合是什么？与三种 OIT 如何对比？**  
+> 见仓库总览：[OpenGL_OIT_传统Alpha混合与三种方案对比.md](../../docs/OpenGL_OIT_传统Alpha混合与三种方案对比.md)（建议先读）。
+
+### 专题短文（本目录）
+
+| 文档 | 内容 |
+| :--- | :--- |
+| [OpenGL_Buffer绑定与Data_SubData.md](./OpenGL_Buffer绑定与Data_SubData.md) | `BindBuffer` / `BindBufferBase`、`Data`/`SubData`；为何顶点只用 `BindBuffer`+`AttribPointer` |
+| [OpenGL_ImageUnit与BindImageTexture.md](./OpenGL_ImageUnit与BindImageTexture.md) | Image Unit、`BindImageTexture` 七参数 |
+| [OpenGL_PBO与TexSubImage2D清头指针.md](./OpenGL_PBO与TexSubImage2D清头指针.md) | `PIXEL_UNPACK_BUFFER`、PBO、`TexSubImage2D` 参数与清头指针四步 |
+
 ---
 
 ## 1. 什么是 OIT？为什么需要它？
 
 ### 1.1 传统透明渲染的困境
+
+> 完整说明（公式、`glBlendFunc`、深度写、CPU 排序流程）见：  
+> [OpenGL_OIT_传统Alpha混合与三种方案对比.md](../../docs/OpenGL_OIT_传统Alpha混合与三种方案对比.md)。
 
 在标准渲染管线中，透明物体的绘制顺序直接决定了最终颜色：
 
@@ -175,6 +189,10 @@ layout(binding = 0, offset = 0) uniform atomic_uint nextNodeCounter;
 uint nodeIndex = atomicCounterIncrement(nextNodeCounter);
 ```
 
+- `binding = 0`：Atomic Counter 绑定点（对上 `glBindBufferBase(..., 0, …)`）  
+- `offset = 0`：该计数器在 buffer 内的**字节偏移**；一块 buffer 可放多个计数器（如 `offset = 4` 为第二个 `uint`）。本工程只有一个，故为 0。  
+- 更完整说明见 [OpenGL_Buffer绑定与Data_SubData.md](./OpenGL_Buffer绑定与Data_SubData.md) §3.2.1。
+
 ### 3.2 SSBO (Shader Storage Buffer Object) —— 链表存储
 
 ```cpp
@@ -204,11 +222,15 @@ maxNodes = width * height * 20 = 800 * 600 * 20 = 9,600,000 个节点
 **Shader 侧使用**：
 ```glsl
 layout(binding = 0, std430) buffer linkedLists {
-    NodeType nodes[];
+    NodeType nodes[];  // 末尾不定长数组：长度由 CPU BufferData 决定
 };
 // 写入: nodes[nodeIndex].color = color;
 // 读取: NodeType node = nodes[idx];
 ```
+
+- `nodes[]` **不是** C 那种编译期定长数组；SSBO block **最后一个成员**可不写长度，整块 buffer 当该数组用。  
+- 容量由 `glBufferData(..., maxNodes_ * nodeSize, …)` 决定。  
+- 详见 [OpenGL_Buffer绑定与Data_SubData.md](./OpenGL_Buffer绑定与Data_SubData.md) §6.4。
 
 ### 3.3 Image Texture —— 头指针纹理
 
@@ -602,6 +624,28 @@ layout(binding = 0, std430) buffer linkedLists { NodeType nodes[]; };
 
 const float EPSILON = 0.0001;
 ```
+
+**为何 `MAX_FRAGMENTS` 是 75？**（不是 OpenGL 规定值，是工程上限）
+
+合成 Pass 要把当前像素的链表拷进**固定长度**局部数组 `frags[]` 再排序；GLSL 要求这种数组长度为编译期常量，故用 `#define` 封顶。
+
+| 考虑 | 说明 |
+| :--- | :--- |
+| 够用 | 本 Demo 主要是少数重叠透明 Quad，远小于 75 |
+| 局部成本 | 每节点≈24B，75 个≈1.8KB/像素线程；再大占寄存器/临时存储，影响占用率 |
+| 实现限制 | 驱动对片元局部数组大小有上限，不能开到几千 |
+| 安全阀 | 链表异常长时截断，避免死循环 / 爆局部内存 |
+
+超过 75 的更近层可能被丢掉（遍历到上限就停），极端重叠时可能不准，对本 Demo 通常无感。
+
+与全局节点池区分：
+
+| | `maxNodes_ = w*h*20` | `MAX_FRAGMENTS 75` |
+| :--- | :--- | :--- |
+| 范围 | **整屏** SSBO 节点池 | **单像素**合成时最多层数 |
+| 含义 | 平均每像素约 20 节点的全局预算 | 排序用局部数组硬顶 |
+
+场景更复杂可调大 75（注意性能）；简单 Demo 也可更小。
 
 ### 3.2 主逻辑
 
@@ -1321,13 +1365,16 @@ Transparent Draw → Pipeline → **Depth Mask: Write Enabled**（OIT 透明 Pas
 
 ## 15. 附录：通用管线与状态机机制（摘自通用知识点汇总）
 
-### glBindBufferBase vs glBindFramebuffer`n
+> Buffer / Image 绑定的完整说明见专题短文：  
+> [OpenGL_Buffer绑定与Data_SubData.md](./OpenGL_Buffer绑定与Data_SubData.md)、[OpenGL_ImageUnit与BindImageTexture.md](./OpenGL_ImageUnit与BindImageTexture.md)。
+
+### glBindBufferBase vs glBindFramebuffer
 | 维度 | glBindBufferBase | glBindFramebuffer |
 | :--- | :--- | :--- |
 | **绑定对象** | 数据缓冲区（Buffer Object，如 SSBO / UBO） | 帧缓冲区对象（Framebuffer Object, FBO） |
 | **核心作用** | 将通用数据 Block 关联到 Shader 的**索引绑定点（Indexed Binding Point）**，供 Shader 读写数据 | 指定 Shader 渲染输出的**目标（Render Target）**，决定像素画到哪里 |
 | **对应 GLSL 声明** | layout(std430, binding = N) buffer BlockName { ... }; | layout(location = N) out vec4 FragColor; |
-| **典型使用场景** | 传递点光源数组、相机/视图矩阵块、实例数据等 | 切换到屏幕 ( ) 或 G-Buffer / Shadow Map 离屏 FBO |
+| **典型使用场景** | 传递点光源数组、相机/视图矩阵块、实例数据等 | 切换到屏幕 (0) 或 G-Buffer / Shadow Map 离屏 FBO |
 
 > **关键结论**：
 > - glBindBufferBase 解决的是 **数据输入/输出管道** 的映射；

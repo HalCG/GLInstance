@@ -320,6 +320,7 @@ bool LinkedListOITApp::initOITBuffers() {
     // 作用：保存每个屏幕像素 (x, y) 处链表头节点的 Index。初始全为 0xFFFFFFFF (即 NULL)
     glGenTextures(1, &headPtrTexture_);
     glBindTexture(GL_TEXTURE_2D, headPtrTexture_);
+    //纹理分配不可变存储（定格式 + 宽高）
     glTexStorage2D(GL_TEXTURE_2D, 1, GL_R32UI, width_, height_);
     // 将 Texture 的 Mip level 0 绑定到 Shader Image Unit 0，允许读写 (GL_READ_WRITE)
     glBindImageTexture(0, headPtrTexture_, 0, GL_FALSE, 0, GL_READ_WRITE, GL_R32UI);
@@ -481,10 +482,11 @@ void LinkedListOITApp::renderTransparentPass() {
     // 2. 绑定 SSBO 节点链表
     glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, linkedListBuffer_);
 
-    // 3. 重新建立头指针 Image 绑定与 PBO 快速清空
-    glBindImageTexture(0, headPtrTexture_, 0, GL_FALSE, 0, GL_READ_WRITE, GL_R32UI);
-    glBindBuffer(GL_PIXEL_UNPACK_BUFFER, clearBuf_);
-    glBindTexture(GL_TEXTURE_2D, headPtrTexture_);
+    // 3. 头指针：Image 挂 unit0 + PBO 整幅清 NULL（详见 docs/OpenGL_PBO与TexSubImage2D清头指针.md）
+    glBindImageTexture(0, headPtrTexture_, 0, GL_FALSE, 0, GL_READ_WRITE, GL_R32UI); // 给 shader，不参与清空
+    glBindBuffer(GL_PIXEL_UNPACK_BUFFER, clearBuf_);   // 上传源 PBO（UNPACK = Buffer→纹理）
+    glBindTexture(GL_TEXTURE_2D, headPtrTexture_);     // 上传目标
+    // SubImage 只改内容；绑 PBO 时 nullptr = PBO 偏移 0（非 CPU 指针）
     glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, width_, height_, GL_RED_INTEGER, GL_UNSIGNED_INT, nullptr);
     glBindBuffer(GL_PIXEL_UNPACK_BUFFER, 0);
 
@@ -553,7 +555,7 @@ void LinkedListOITApp::renderCompositePass() {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     glEnable(GL_DEPTH_TEST);
-    glDepthMask(GL_TRUE);
+    glDepthMask(GL_TRUE);//仅恢复状态，对算法本身无影响
 
     compositeShader_->use();
     quad_->Draw(*compositeShader_, 0,

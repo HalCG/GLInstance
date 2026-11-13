@@ -10,7 +10,7 @@
  *    将旧的头指针值读出作为新节点的 next 指针，并将 headPointers 指向 newIndex。
  */
 
-#define MAX_FRAGMENTS 75
+#define MAX_FRAGMENTS 75 // 与 composite 对齐的单像素层数上限（本文件未直接使用）
 
 layout (location = 0) out vec4 FragColor;
 in vec3 vertexPos;

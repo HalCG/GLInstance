@@ -80,14 +80,12 @@ bool StochasticTransparencyApp::init() {
              static_cast<GLsizei>(height_));
   glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
 
-  // 1. 开启 MSAA 硬件多采样支持
-  glEnable(GL_MULTISAMPLE);
+  glEnable(GL_MULTISAMPLE);  // MSAA 多采样缓冲（半透明载体）
 
-  // 2. 开启采样点掩码写使能 (GL_SAMPLE_MASK)
-  // 必须开启此标志，Fragment Shader 中对 gl_SampleMask[0] 的赋值才会对硬件多重采样覆盖测试生效
+  // 允许 FS 写 gl_SampleMask；关闭则 shader 赋值无效，掩码保持全 1 → 无随机覆盖半透明
   glEnable(GL_SAMPLE_MASK);
 
-  // 3. 正常开启深度测试与深度写入 (Stochastic Transparency 中所有透明物体均像不透明物体一样更新 Z-Buffer)
+  // 透明/不透明均按采样点测深、写深（Mask 定覆盖，Z 定同点胜者）
   glEnable(GL_DEPTH_TEST);
   glDepthFunc(GL_LEQUAL);
   glDepthMask(GL_TRUE);
